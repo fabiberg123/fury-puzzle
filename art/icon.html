@@ -1,0 +1,23 @@
+<!doctype html><html><head><style>@font-face{font-family:Bungee;src:url(../www/fonts/bungee-latin-400-normal.woff2)}body{margin:0;background:transparent}</style></head><body>
+<canvas id="c"></canvas>
+<script src="color.js"></script><script src="paint.js"></script>
+<script>
+function star(g,cx,cy,s,a){g.save();g.globalAlpha=a;g.fillStyle='#fff';g.beginPath();g.moveTo(cx,cy-s);g.quadraticCurveTo(cx,cy,cx+s,cy);g.quadraticCurveTo(cx,cy,cx,cy+s);g.quadraticCurveTo(cx,cy,cx-s,cy);g.quadraticCurveTo(cx,cy,cx,cy-s);g.fill();g.restore()}
+const cols=['#ff3b2f','#ff7a1a','#e8245e','#ffc233'];
+function blocks(g,cx,cy,size){ // 2x2 glossy blocks, slight tilt
+  g.save();g.translate(cx,cy);g.rotate(-0.12);
+  g.shadowColor='rgba(255,90,20,.8)';g.shadowBlur=size*.35;
+  const b=size;[[0,0],[1,0],[0,1],[1,1]].forEach(([x,y],i)=>{const t=document.createElement('canvas');t.width=t.height=b;paintBlock(t.getContext('2d'),b,cols[i],'gloss',i);g.drawImage(t,(x-1)*b,(y-1)*b)});
+  g.restore();g.shadowBlur=0;
+  star(g,cx+size*1.05,cy-size*1.05,size*.28,1);star(g,cx-size*1.15,cy+size*.95,size*.16,.85);
+}
+function bg(g,w,h){const r=g.createRadialGradient(w/2,h*.2,0,w/2,h*.45,Math.max(w,h)*.8);r.addColorStop(0,'#7a2410');r.addColorStop(.55,'#2a0a05');r.addColorStop(1,'#120403');g.fillStyle=r;g.fillRect(0,0,w,h)}
+window.render=async(kind,w,h)=>{await document.fonts.load('40px Bungee');const c=document.getElementById('c');c.width=w;c.height=h;const g=c.getContext('2d');g.clearRect(0,0,w,h);
+  if(kind==='fg'){blocks(g,w/2,h/2,w*.19)}
+  else if(kind==='full'){bg(g,w,h);blocks(g,w/2,h/2,w*.27)}
+  else if(kind==='round'){g.save();g.beginPath();g.arc(w/2,h/2,w/2,0,7);g.clip();bg(g,w,h);blocks(g,w/2,h/2,w*.25);g.restore()}
+  else {bg(g,w,h);const m=Math.min(w,h);blocks(g,w/2,h/2-m*.12,m*.14);g.fillStyle='#fff3e6';g.textAlign='center';
+    const fs=m*.16;g.font=fs+'px Bungee';const gr=g.createLinearGradient(0,h/2+m*.12,0,h/2+m*.3);gr.addColorStop(0,'#ffc233');gr.addColorStop(1,'#ff5a14');g.fillStyle=gr;g.fillText('FURY',w/2,h/2+m*.3);
+    g.fillStyle='#fff3e6';g.font=(m*.065)+'px Bungee';g.fillText('P U Z Z L E',w/2,h/2+m*.42)}
+  return c.toDataURL('image/png')};
+</script></body></html>

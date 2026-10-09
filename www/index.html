@@ -1,0 +1,1549 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);box-sizing:border-box}body{margin:0}[hidden]{display:none!important}</style><link rel="stylesheet" href="fonts/fonts.css">
+<title>Fury Puzzle</title>
+<style>
+/* Layout: one-screen game — HUD on top, canvas stage (fury bar + board + tray), tool row, ad banner strip.
+   Each skin is its own single visual world; JS writes these tokens per skin. */
+:root{
+  --bg:#120504; --fg:#fff3e6; --muted:rgba(255,236,220,.62); --accent:#ff6a1a; --accent2:#ffc233;
+  --panel:rgba(30,10,7,.86); --edge:rgba(255,120,60,.28); --btnfg:#1a0703;
+  --display:"Bungee","Impact","Arial Black",system-ui,sans-serif;
+  --body:"Baloo 2","Trebuchet MS",system-ui,sans-serif;
+  color-scheme:dark;
+}
+html,body{height:100%;overflow:hidden;background:#0d0403;overscroll-behavior:none}
+body{font-family:var(--body);color:var(--fg);-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+#app{position:relative;height:100%;display:flex;flex-direction:column;background:var(--bg);color:var(--fg);transition:background .4s}
+button{font-family:var(--body)}
+.hud{display:grid;grid-template-columns:48px 1fr 48px;align-items:center;gap:8px;padding:8px 16px 0}
+.icon{position:relative;width:44px;height:44px;border-radius:14px;border:1px solid var(--edge);background:var(--panel);color:var(--fg);display:grid;place-items:center;cursor:pointer}
+.icon svg{width:22px;height:22px}
+.icon:focus-visible,.btn:focus-visible,.skin:focus-visible,.tool:focus-visible{outline:3px solid var(--accent2);outline-offset:2px}
+.scorebox{text-align:center;line-height:1}
+.toprow{display:flex;justify-content:center;gap:14px;font-weight:800;font-size:15px;font-variant-numeric:tabular-nums}
+.best{display:inline-flex;align-items:center;gap:5px;color:var(--accent2)}
+.best svg{width:17px;height:17px}
+.coins{display:inline-flex;align-items:center;gap:5px;color:var(--fg)}
+svg.coin{width:17px;height:17px;flex:none}
+.score{font-family:var(--display);font-size:clamp(32px,9vw,46px);margin-top:3px;font-variant-numeric:tabular-nums;text-shadow:0 3px 0 rgba(0,0,0,.35)}
+.score.bump{animation:bump .25s ease-out}
+@keyframes bump{40%{transform:scale(1.12)}}
+.tobest{height:16px;font-size:13px;font-weight:700;color:var(--muted);margin-top:2px}
+.tobest.rec{color:var(--accent2);font-family:var(--display);font-weight:400}
+#stage{position:relative;flex:1;min-height:0}
+#cv{position:absolute;inset:0;width:100%;height:100%;touch-action:none;display:block}
+.tools{display:flex;justify-content:center;gap:14px;padding:4px 16px 6px;flex:none}
+.tool{position:relative;width:62px;height:50px;border-radius:16px;border:1px solid var(--edge);background:var(--panel);color:var(--fg);cursor:pointer;display:grid;place-items:center;padding:0}
+.tool svg{width:26px;height:26px}
+.tool .cnt{position:absolute;top:-6px;right:-6px;min-width:22px;height:22px;padding:0 5px;border-radius:11px;background:var(--accent2);color:var(--btnfg);font-family:var(--display);font-size:12px;display:grid;place-items:center;box-shadow:0 2px 0 rgba(0,0,0,.3)}
+.tool .cnt.zero{background:#5d9cff;color:#fff}
+.tool.on{background:var(--accent2);color:var(--btnfg);animation:wob .6s infinite}
+@keyframes wob{50%{transform:rotate(-6deg) scale(1.05)}}
+.tool:disabled{opacity:.4}
+.banner{height:56px;flex:none;display:grid;place-items:center;margin:0 16px 6px;border-radius:10px;border:1px dashed var(--edge);color:var(--muted);font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+.banner.native{border:0;margin:0}
+.dot{position:absolute;top:-4px;right:-4px;width:14px;height:14px;border-radius:50%;background:#ff3355;border:2px solid var(--panel)}
+
+#toast{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);z-index:4;max-width:calc(100% - 32px);padding:8px 16px;border-radius:99px;background:var(--panel);border:1px solid var(--edge);font-weight:800;font-size:15px;text-align:center;pointer-events:none;transition:opacity .25s,transform .25s}
+#toast[hidden]{display:block!important;opacity:0;transform:translate(-50%,10px)}
+#stuck{position:absolute;left:16px;right:16px;bottom:10px;z-index:3;display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:16px;background:var(--panel);border:1px solid var(--accent);animation:pop .3s}
+#stuck p{margin:0;flex:1;font-weight:800;font-size:15px;line-height:1.2}
+#stuck .btn{font-size:14px;padding:10px 12px}
+
+.overlay{position:absolute;inset:0;display:grid;place-items:center;padding:16px;background:rgba(0,0,0,.55);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);z-index:5;animation:fade .25s ease-out;overflow-y:auto}
+@keyframes fade{from{opacity:0}}
+.card{width:min(370px,100%);background:var(--panel);border:1px solid var(--edge);border-radius:24px;padding:22px 18px;text-align:center;display:flex;flex-direction:column;gap:12px;box-shadow:0 20px 60px rgba(0,0,0,.5);animation:pop .3s cubic-bezier(.2,1.4,.4,1)}
+@keyframes pop{from{transform:scale(.85);opacity:0}}
+.card h2{font-family:var(--display);font-weight:400;font-size:25px;margin:0;text-wrap:balance}
+.card p{margin:0;color:var(--muted);font-size:16px}
+.btn{position:relative;font-family:var(--display);font-size:18px;border:0;border-radius:16px;padding:13px 16px;cursor:pointer;color:var(--btnfg);background:linear-gradient(180deg,var(--accent2),var(--accent));box-shadow:0 5px 0 rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;gap:8px;line-height:1.1}
+.btn:active{transform:translateY(3px);box-shadow:0 2px 0 rgba(0,0,0,.35)}
+.btn:disabled{opacity:.45;pointer-events:none}
+.btn.ghost{background:transparent;color:var(--fg);border:1px solid var(--edge);box-shadow:none;font-size:15px}
+.btn.video{background:linear-gradient(180deg,#7fd1ff,#3b82f6);color:#fff;font-size:15px}
+.btn svg{width:20px;height:20px;flex:none}
+.btn small{font-family:var(--body);font-weight:800;font-size:12px;opacity:.8}
+.row{display:flex;gap:10px}.row>*{flex:1}
+.pill{align-self:center;display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:99px;border:1px solid var(--edge);font-weight:800;font-variant-numeric:tabular-nums}
+
+.logo{font-family:var(--display);line-height:.9;margin:2px 0 4px}
+.logo .l1{font-size:62px;background:linear-gradient(180deg,var(--accent2),var(--accent) 70%);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 4px 0 rgba(0,0,0,.4));display:block;animation:flicker 3s infinite}
+.logo .l2{font-size:26px;letter-spacing:.18em;display:block}
+@keyframes flicker{0%,100%{filter:drop-shadow(0 4px 0 rgba(0,0,0,.4))}50%{filter:drop-shadow(0 4px 0 rgba(0,0,0,.4)) drop-shadow(0 0 18px var(--accent))}}
+.big{font-family:var(--display);font-size:52px;line-height:1;font-variant-numeric:tabular-nums}
+.label{font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.record{align-self:center;font-family:var(--display);font-size:14px;padding:6px 12px;border-radius:99px;background:var(--accent2);color:var(--btnfg);animation:pop .4s .2s both cubic-bezier(.2,1.6,.4,1)}
+.earn{display:flex;align-items:center;justify-content:center;gap:8px;font-family:var(--display);font-size:24px;color:var(--accent2)}
+.earn svg.coin{width:26px;height:26px}
+
+.skins{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.skin{position:relative;border-radius:16px;border:2px solid transparent;padding:0;overflow:hidden;cursor:pointer;background:none;color:inherit;font:inherit;text-align:left}
+.skin canvas{display:block;width:100%;height:66px}
+.skin span{display:flex;align-items:center;justify-content:space-between;gap:6px;padding:6px 10px;font-weight:800;font-size:15px;background:rgba(0,0,0,.4);color:#fff}
+.skin span em{font-style:normal;display:inline-flex;align-items:center;gap:4px;font-size:14px}
+.skin.locked canvas{filter:grayscale(.7) brightness(.6)}
+.skin .lock{position:absolute;top:8px;right:8px;width:28px;height:28px;border-radius:50%;background:rgba(0,0,0,.6);display:grid;place-items:center;color:#fff}
+.skin .lock svg{width:15px;height:15px}
+.skin.confirm span{background:var(--accent);color:var(--btnfg)}
+.skin[aria-pressed="true"]{border-color:var(--accent2)}
+.toggles{display:flex;flex-direction:column;gap:8px}
+.tog{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-radius:14px;border:1px solid var(--edge);font-weight:700;font-size:16px;cursor:pointer;background:none;color:var(--fg)}
+.tog b{font-family:var(--display);font-weight:400;font-size:13px;color:var(--accent2)}
+
+.gift{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.gday{border-radius:14px;border:1px solid var(--edge);padding:8px 4px;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;font-weight:800;color:var(--muted)}
+.gday b{font-family:var(--display);font-weight:400;font-size:15px;color:var(--fg);display:flex;align-items:center;gap:3px}
+.gday svg{width:16px;height:16px}
+.gday.done{opacity:.45}
+.gday.today{border:2px solid var(--accent2);background:rgba(255,194,51,.12);color:var(--accent2);animation:wob 1.4s infinite}
+.gday.d7{grid-column:span 2}
+
+.mlist{display:flex;flex-direction:column;gap:10px;text-align:left}
+.mis{border:1px solid var(--edge);border-radius:16px;padding:10px 12px;display:grid;grid-template-columns:1fr auto;gap:6px 10px;align-items:center}
+.mis .t{font-weight:800;font-size:15px;line-height:1.2}
+.mis .bar{grid-column:1;height:8px;border-radius:9px;background:rgba(127,127,127,.25);overflow:hidden}
+.mis .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--accent2),var(--accent))}
+.mis .n{font-size:12px;color:var(--muted);font-weight:700;font-variant-numeric:tabular-nums}
+.mis .rw{grid-row:1/span 3;grid-column:2}
+.mis .rw .btn{font-size:14px;padding:8px 10px}
+.mis .rw .pill{font-size:14px}
+.mis.claimed{opacity:.5}
+
+.toolinfo{display:flex;flex-direction:column;align-items:center;gap:6px}
+.toolinfo .ti{width:64px;height:64px;border-radius:20px;background:var(--accent2);color:var(--btnfg);display:grid;place-items:center}
+.toolinfo .ti svg{width:36px;height:36px}
+
+.helpb{text-align:start;display:flex;flex-direction:column;gap:14px;max-height:min(58vh,520px);overflow-y:auto;padding-inline-end:4px}
+.helpb h3{margin:0 0 4px;font-family:var(--display);font-weight:400;font-size:17px;color:var(--accent2)}
+.helpb p{color:var(--fg);opacity:.9;font-size:15px;line-height:1.45}
+.helpb ul{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-direction:column;gap:8px}
+.helpb li{display:flex;align-items:center;gap:10px;font-size:15px;line-height:1.3}
+.helpb li canvas,.helpb li .hi{width:36px;height:36px;flex:none;border-radius:10px}
+.helpb li .hi{display:grid;place-items:center;background:var(--accent2);color:var(--btnfg)}.helpb li .hi svg{width:22px;height:22px}
+.langs{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.lang{display:flex;align-items:center;gap:8px;padding:10px;border-radius:14px;border:1px solid var(--edge);background:none;color:var(--fg);font-weight:800;font-size:15px;cursor:pointer;text-align:start}
+.lang b{font-size:20px;font-weight:400}.lang[aria-pressed="true"]{border:2px solid var(--accent2);background:rgba(255,194,51,.12)}
+.btn .gl{width:18px;height:18px}
+.musb,.sndl{display:flex;flex-direction:column;gap:8px;text-align:start;max-height:min(58vh,520px);overflow-y:auto;padding-inline-end:4px}
+.musb h3{margin:8px 0 0;font-family:var(--display);font-weight:400;font-size:15px;color:var(--accent2);display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.musb h3 small{font-family:var(--body);font-weight:700;font-size:12px;color:var(--muted)}
+.musb p{font-size:14px}
+.vol{display:flex;align-items:center;gap:12px;padding:6px 14px;font-weight:700}.vol input{flex:1;accent-color:var(--accent)}
+.seg{display:flex;gap:6px}.seg button{flex:1;padding:9px 6px;border-radius:12px;border:1px solid var(--edge);background:none;color:var(--fg);font-weight:800;font-size:13px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--accent2);color:var(--btnfg);border-color:transparent}
+.trk{display:flex;gap:6px;align-items:stretch}.trk .tname{flex:1;min-width:0;display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:14px;border:1px solid var(--edge);background:none;color:var(--fg);font-weight:800;font-size:15px;cursor:pointer;text-align:start}
+.trk .tname span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.trk .tname i{font-style:normal;width:18px;text-align:center;color:var(--accent2)}
+.trk.on .tname{border:2px solid var(--accent2);background:rgba(255,194,51,.12)}
+.trk .tdel{min-width:44px;border-radius:14px;border:1px solid var(--edge);background:none;color:var(--fg);font-weight:800;cursor:pointer;padding:0 10px}
+.snd{border:1px solid var(--edge);border-radius:16px;padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+.snd.on{border:2px solid var(--accent2)}
+.sndtop{display:flex;align-items:center;justify-content:space-between;gap:8px}.sndtop b{font-size:16px}
+.snd .btn{font-size:14px;padding:9px 12px}.snd .btn.pv{flex:none}
+.ach{font-size:13px;font-weight:700;color:var(--muted);display:grid;gap:4px}.ach .bar{height:7px;border-radius:9px;background:rgba(127,127,127,.25);overflow:hidden}.ach .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--accent2),var(--accent))}
+#adsim{background:#000;backdrop-filter:none;z-index:9}
+#adsim .card{background:#111;border-color:#333;color:#eee}
+.adbar{height:6px;border-radius:9px;background:#333;overflow:hidden}.adbar i{display:block;height:100%;width:0;background:#4ade80;transition:width .2s linear}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head><body>
+
+<div id="app">
+  <header class="hud">
+    <button class="icon" id="btnPause" data-ta="pause" aria-label="Pausa"><svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1.5"/><rect x="14" y="5" width="4" height="14" rx="1.5"/></svg></button>
+    <div class="scorebox">
+      <div class="toprow">
+        <span class="best"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 7l4.5 4L12 4l4.5 7L21 7l-2 12H5z"/></svg><span id="best">0</span></span>
+        <span class="coins"><i class="coinslot"></i><span class="coinval">0</span></span>
+      </div>
+      <div class="score" id="score">0</div>
+      <div class="tobest" id="tobest"></div>
+    </div>
+    <button class="icon" id="btnSkin" data-ta="themes" aria-label="Temas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a9 9 0 1 0 0 18c1.2 0 2-.8 2-2 0-.6-.3-1-.6-1.4-.3-.4-.6-.8-.6-1.4 0-1.1.9-2 2-2H17a4 4 0 0 0 4-4c0-4-4-7.2-9-7.2z"/><circle cx="7.5" cy="11" r="1.3" fill="currentColor"/><circle cx="10" cy="7" r="1.3" fill="currentColor"/><circle cx="15" cy="7" r="1.3" fill="currentColor"/></svg></button>
+  </header>
+  <div id="stage">
+    <canvas id="cv"></canvas>
+    <div id="toast" hidden></div>
+    <div id="stuck" hidden><p data-i="stuck"></p><button class="btn ghost" id="btnGiveUp" data-i="giveUp"></button></div>
+  </div>
+  <div class="tools">
+    <button class="tool" data-t="hammer" data-ta="hammer" aria-label="Martillo"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13.5 3.5l7 7-2.2 2.2-2.4-2.4-8.6 8.6a1.8 1.8 0 0 1-2.6 0l-.6-.6a1.8 1.8 0 0 1 0-2.6l8.6-8.6-1.4-1.4z"/></svg><b class="cnt">0</b></button>
+    <button class="tool" data-t="shuffle" data-ta="shuffle" aria-label="Cambiar piezas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h3c5 0 5 10 10 10h3M17 14l3 3-3 3M4 17h3c1.6 0 2.7-1 3.6-2.4M13.4 9.4C14.3 8 15.4 7 17 7h3M17 4l3 3-3 3"/></svg><b class="cnt">0</b></button>
+    <button class="tool" data-t="undo" data-ta="undo" aria-label="Deshacer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14L4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg><b class="cnt">0</b></button>
+  </div>
+  <div class="banner" id="banner" data-i="banner"></div>
+
+  <div class="overlay" id="ovStart">
+    <div class="card">
+      <div class="logo"><span class="l1">FURY</span><span class="l2">PUZZLE</span></div>
+      <span class="pill"><i class="coinslot"></i><span class="coinval">0</span></span>
+      <button class="btn" id="btnPlay"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l13-7.5z"/></svg><span data-i="play"></span></button>
+      <div class="row">
+        <button class="btn ghost" id="btnStartMis"><span data-i="missions"></span><i class="dot misdot" hidden></i></button>
+        <button class="btn ghost" id="btnStartSkin" data-i="themes"></button>
+      </div>
+      <div class="row">
+        <button class="btn ghost" id="btnStartMusic"><svg class="gl" viewBox="0 0 24 24" fill="currentColor"><path d="M9 17.5a3 3 0 1 1-2-2.83V5l12-2v11.5a3 3 0 1 1-2-2.83V6.3l-8 1.33z"/></svg><span data-i="music"></span></button>
+        <button class="btn ghost" id="btnStartSnd"><svg class="gl" viewBox="0 0 24 24" fill="currentColor"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span data-i="sounds"></span></button>
+      </div>
+      <div class="row">
+        <button class="btn ghost" id="btnStartHelp" data-i="howto"></button>
+        <button class="btn ghost langbtn" id="btnStartLang"><svg class="gl" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z"/></svg><span class="langname"></span></button>
+      </div>
+      <button class="btn ghost" id="btnStartGift" hidden><span data-i="gift"></span><i class="dot"></i></button>
+      <button class="btn ghost" id="btnStartExit" data-i="exit" hidden></button>
+      <div class="label"><span data-i="best"></span>: <span id="startBest">0</span></div>
+    </div>
+  </div>
+
+  <div class="overlay" id="ovOver" hidden>
+    <div class="card">
+      <h2 data-i="noSpace"></h2>
+      <div class="label" data-i="points"></div>
+      <div class="big" id="overScore">0</div>
+      <div class="record" id="overRecord" data-i="newRecord" hidden></div>
+      <p><span data-i="best"></span>: <span id="overBest">0</span></p>
+      <div class="earn" id="overEarn"></div>
+      <button class="btn video" id="btnDouble"><span data-i="doubleCoins"></span><small data-i="video"></small></button>
+      <button class="btn" id="btnContinue"><span><span data-i="keepPlaying"></span><br><small data-i="watchVideo"></small></span></button>
+      <button class="btn ghost" id="btnAgain" data-i="playAgain"></button>
+    </div>
+  </div>
+
+  <div class="overlay" id="ovPause" hidden>
+    <div class="card">
+      <h2 data-i="pause"></h2>
+      <button class="btn" id="btnResume" data-i="resume"></button>
+      <div class="toggles">
+        <button class="tog" id="togSound"><span data-i="sound"></span> <b></b></button>
+        <button class="tog" id="togVib"><span data-i="vibration"></span> <b></b></button>
+      </div>
+      <div class="row"><button class="btn ghost" id="btnPauseMis"><span data-i="missions"></span><i class="dot misdot" hidden></i></button><button class="btn ghost" id="btnPauseSkin" data-i="themes"></button></div>
+      <div class="row"><button class="btn ghost" id="btnPauseMusic"><svg class="gl" viewBox="0 0 24 24" fill="currentColor"><path d="M9 17.5a3 3 0 1 1-2-2.83V5l12-2v11.5a3 3 0 1 1-2-2.83V6.3l-8 1.33z"/></svg><span data-i="music"></span></button><button class="btn ghost" id="btnPauseSnd"><svg class="gl" viewBox="0 0 24 24" fill="currentColor"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span data-i="sounds"></span></button></div>
+      <div class="row"><button class="btn ghost" id="btnPauseHelp" data-i="howto"></button><button class="btn ghost langbtn" id="btnPauseLang"><svg class="gl" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z"/></svg><span class="langname"></span></button></div>
+      <div class="row"><button class="btn ghost" id="btnRestart" data-i="newGame"></button><button class="btn ghost" id="btnPauseExit" data-i="exit"></button></div>
+    </div>
+  </div>
+
+  <div class="overlay" id="ovSkin" hidden>
+    <div class="card">
+      <h2 data-i="themes"></h2>
+      <span class="pill"><i class="coinslot"></i><span class="coinval">0</span></span>
+      <div class="skins" id="skinList"></div>
+      <button class="btn video" id="btnCoinVideo" data-i="coinVideo"></button>
+      <button class="btn" id="btnSkinDone" data-i="done"></button>
+    </div>
+  </div>
+
+  <div class="overlay" id="ovGift" hidden>
+    <div class="card">
+      <h2 data-i="gift"></h2>
+      <p id="giftText"></p>
+      <div class="gift" id="giftGrid"></div>
+      <button class="btn" id="btnGiftClaim" data-i="claim"></button>
+      <button class="btn video" id="btnGiftDouble"><span data-i="claim2"></span><small data-i="video"></small></button>
+    </div>
+  </div>
+
+  <div class="overlay" id="ovMis" hidden>
+    <div class="card">
+      <h2 data-i="misTitle"></h2>
+      <div class="mlist" id="misList"></div>
+      <p style="font-size:13px" data-i="misTomorrow"></p>
+      <button class="btn" id="btnMisDone" data-i="done"></button>
+    </div>
+  </div>
+
+  <div class="overlay" id="ovTool" hidden>
+    <div class="card">
+      <div class="toolinfo"><div class="ti" id="toolIcon"></div><h2 id="toolName">Martillo</h2><p id="toolDesc"></p><span class="pill"><span data-i="have"></span> <b id="toolHave">0</b></span></div>
+      <button class="btn" id="btnToolBuy"></button>
+      <button class="btn video" id="btnToolVideo" data-i="videoFree"></button>
+      <button class="btn ghost" id="btnToolClose" data-i="close"></button>
+    </div>
+  </div>
+
+  <div class="overlay" id="ovHelp" hidden>
+    <div class="card">
+      <h2 data-i="howto"></h2>
+      <div class="helpb" id="helpBody"></div>
+      <button class="btn" id="btnHelpDone" data-i="done"></button>
+    </div>
+  </div>
+
+  <div class="overlay" id="ovLang" hidden>
+    <div class="card">
+      <h2 data-i="language"></h2>
+      <div class="langs" id="langList"></div>
+      <button class="btn" id="btnLangDone" data-i="done"></button>
+    </div>
+  </div>
+
+  <div class="overlay" id="ovMusic" hidden>
+    <div class="card">
+      <h2 data-i="music"></h2>
+      <div class="musb" id="musBody"></div>
+      <button class="btn" id="btnMusDone" data-i="done"></button>
+    </div>
+  </div>
+
+  <div class="overlay" id="ovSnd" hidden>
+    <div class="card">
+      <h2 data-i="sounds"></h2>
+      <span class="pill"><i class="coinslot"></i><span class="coinval">0</span></span>
+      <div class="sndl" id="sndList"></div>
+      <button class="btn" id="btnSndDone" data-i="done"></button>
+    </div>
+  </div>
+  <input type="file" id="songFile" accept="audio/*,.mp3,.m4a,.ogg,.wav" hidden>
+
+  <div class="overlay" id="ovExit" hidden>
+    <div class="card">
+      <h2 data-i="exitQ"></h2>
+      <p data-i="exitText"></p>
+      <button class="btn" id="btnExitMenu" data-i="toMenu"></button>
+      <button class="btn ghost" id="btnExitApp" data-i="closeGame" hidden></button>
+      <button class="btn ghost" id="btnExitCancel" data-i="cancel"></button>
+    </div>
+  </div>
+
+  <div class="overlay" id="adsim" hidden>
+    <div class="card">
+      <div class="label" style="color:#aaa" data-i="adTest"></div>
+      <h2 id="adTitle"></h2>
+      <p id="adText" style="color:#aaa"></p>
+      <div class="adbar"><i id="adProg"></i></div>
+      <button class="btn ghost" id="adClose" style="color:#eee;border-color:#444" disabled></button>
+    </div>
+  </div>
+</div>
+
+<script>
+(()=>{
+'use strict';
+/* ================= IDIOMAS ================= */
+const LANGS=[
+ {c:"en",n:"English",f:"🇺🇸"},{c:"id",n:"Bahasa Indonesia",f:"🇮🇩"},{c:"vi",n:"Tiếng Việt",f:"🇻🇳"},{c:"pt",n:"Português (Brasil)",f:"🇧🇷"},
+ {c:"hi",n:"हिन्दी",f:"🇮🇳"},{c:"es",n:"Español",f:"🇲🇽"},{c:"tr",n:"Türkçe",f:"🇹🇷"},{c:"fil",n:"Filipino",f:"🇵🇭"},{c:"ur",n:"اردو",f:"🇵🇰"},{c:"ru",n:"Русский",f:"🇷🇺"}];
+const I18N={
+es:{play:"Jugar",missions:"Misiones",themes:"Temas",gift:"Regalo diario",best:"Récord",howto:"Cómo jugar",exit:"Salir",language:"Idioma",
+noSpace:"¡Sin espacio!",points:"Puntos",newRecord:"¡Nuevo récord!",doubleCoins:"Duplicar monedas",video:"(video)",keepPlaying:"Seguir jugando",watchVideo:"ver un video",playAgain:"Jugar de nuevo",
+pause:"Pausa",resume:"Continuar",sound:"Sonido",vibration:"Vibración",yes:"SÍ",no:"NO",newGame:"Nueva partida",
+coinVideo:"Ver video: +50 monedas",done:"Listo",buyQ:"¿Comprar?",
+skin_fury:"Furia",skin_neon:"Neón",skin_candy:"Caramelo",skin_ocean:"Océano",skin_wood:"Madera",skin_gems:"Joyas",
+giftText:"Entra todos los días: el premio crece.",giftStreak:"¡Llevas {n} días seguidos! Si faltas un día, vuelves al día 1.",claim:"Reclamar",claim2:"Reclamar x2",day:"Día {n}",
+misTitle:"Misiones de hoy",misTomorrow:"Mañana hay misiones nuevas.",misDone:"Hecha",
+m_lines:"Rompe {n} líneas",m_combo:"Haz {n} combos",m_multi:"Rompe 3 líneas de un golpe ({n} veces)",m_power:"Activa {n} superpoderes",m_fury:"Activa el Modo Furia {n} veces",m_score:"Consigue {n} puntos en una partida",m_games:"Juega {n} partidas",m_pieces:"Coloca {n} piezas",
+have:"Tienes:",buyFor:"Comprar por {n}",videoFree:"Ver video: +1 gratis",close:"Cerrar",
+adTest:"Anuncio de prueba",adRewardTitle:"Video con premio",adRewardText:"En la app real aquí se ve un video de Google AdMob. Al terminar, te da el premio.",adTitle:"Anuncio",adText:"Aquí aparece un anuncio de pantalla completa entre partidas.",wait:"Espera {n}…",
+t_tapBlock:"Toca un bloque para romperlo",t_noUndo:"No hay jugada para deshacer",t_undone:"Jugada deshecha",t_mission:"¡Misión cumplida! Reclámala en Misiones",t_furyEnd:"Se terminó el Modo Furia",t_needCoins:"Te faltan {n} monedas",t_unlocked:"¡Tema {name} desbloqueado!",t_double:"¡Premio doble!",t_claimed:"¡Premio reclamado!",t_noVideo:"No hay video disponible ahora. Prueba en un rato.",t_plusOne:"+1 {tool}",
+toBest:"Te faltan {n} para tu récord",stuck:"¡Sin espacio! Usa una herramienta para salvarte.",giveUp:"Terminar",banner:"Espacio para publicidad",
+hammer:"Martillo",hammerD:"Rompe el bloque que elijas.",shuffle:"Cambiar piezas",shuffleD:"Te da piezas nuevas.",undo:"Deshacer",undoD:"Vuelve atrás tu última jugada.",
+c_fury:"FURIA",c_furyOn:"FURIA x3 · {n}s",c_x2:"PUNTOS x2 · {n}s",c_ice:"HIELO: piezas fáciles",
+p_bomb:"¡BOMBA!",p_bolt:"¡RAYO!",p_rainbow:"¡ARCOÍRIS!",p_x2:"¡PUNTOS x2!",p_ice:"¡HIELO!",
+pr2:"¡Bien!",pr3:"¡Genial!",pr4:"¡Increíble!",pr5:"¡FURIA TOTAL!",combo:"COMBO x{n}",boardClear:"¡TABLERO LIMPIO!",furyMode:"¡MODO FURIA!",x3:"PUNTOS x3",
+exitQ:"¿Salir?",exitText:"Tu partida queda guardada.",toMenu:"Ir al menú principal",closeGame:"Cerrar el juego",cancel:"Cancelar",
+h_goal_t:"Objetivo",h_goal:"Arrastra las piezas al tablero. Si llenas una fila o una columna completa, explota y ganas puntos. Cuando ninguna pieza entra, la partida termina.",
+h_combo_t:"Combos",h_combo:"Rompe líneas en jugadas seguidas para hacer combos: cada combo multiplica tus puntos. Romper varias líneas a la vez da muchos más puntos.",
+h_fury_t:"Modo Furia",h_fury:"Cada línea, combo y superpoder llena la barra de Furia. Cuando se llena, durante 15 segundos todos los puntos valen x3.",
+h_pow_t:"Superpoderes",h_pow:"Algunas piezas traen un bloque con un ícono. Rompe la línea donde está para activarlo:",
+h_bomb:"Bomba: explota los bloques de alrededor.",h_bolt:"Rayo: borra su fila y su columna.",h_rainbow:"Arcoíris: borra todos los bloques de ese color.",h_x2:"x2: puntos dobles durante 20 segundos.",h_ice:"Hielo: te da piezas pequeñas y fáciles.",
+h_tools_t:"Herramientas",h_tools:"Se compran con monedas o mirando un video. Si te quedas sin espacio, úsalas para salvarte.",
+h_coins_t:"Monedas y premios",h_coins:"Ganas monedas al terminar cada partida, con las misiones y con el regalo diario. Úsalas para comprar herramientas y desbloquear temas nuevos."},
+
+en:{play:"Play",missions:"Missions",themes:"Themes",gift:"Daily gift",best:"Best",howto:"How to play",exit:"Exit",language:"Language",
+noSpace:"No space left!",points:"Score",newRecord:"New record!",doubleCoins:"Double coins",video:"(video)",keepPlaying:"Keep playing",watchVideo:"watch a video",playAgain:"Play again",
+pause:"Paused",resume:"Resume",sound:"Sound",vibration:"Vibration",yes:"ON",no:"OFF",newGame:"New game",
+coinVideo:"Watch video: +50 coins",done:"Done",buyQ:"Buy?",
+skin_fury:"Fury",skin_neon:"Neon",skin_candy:"Candy",skin_ocean:"Ocean",skin_wood:"Wood",skin_gems:"Gems",
+giftText:"Come back every day: the prize gets bigger.",giftStreak:"{n} days in a row! Miss a day and you go back to day 1.",claim:"Claim",claim2:"Claim x2",day:"Day {n}",
+misTitle:"Today's missions",misTomorrow:"New missions tomorrow.",misDone:"Done",
+m_lines:"Clear {n} lines",m_combo:"Make {n} combos",m_multi:"Clear 3 lines at once ({n} times)",m_power:"Trigger {n} power-ups",m_fury:"Activate Fury Mode {n} times",m_score:"Score {n} points in one game",m_games:"Play {n} games",m_pieces:"Place {n} pieces",
+have:"You have:",buyFor:"Buy for {n}",videoFree:"Watch video: +1 free",close:"Close",
+adTest:"Test ad",adRewardTitle:"Rewarded video",adRewardText:"In the real app, a Google AdMob video plays here. When it ends, you get the reward.",adTitle:"Ad",adText:"A full-screen ad appears here between games.",wait:"Wait {n}…",
+t_tapBlock:"Tap a block to smash it",t_noUndo:"Nothing to undo",t_undone:"Move undone",t_mission:"Mission complete! Claim it in Missions",t_furyEnd:"Fury Mode is over",t_needCoins:"You need {n} more coins",t_unlocked:"{name} theme unlocked!",t_double:"Double prize!",t_claimed:"Prize claimed!",t_noVideo:"No video available right now. Try again soon.",t_plusOne:"+1 {tool}",
+toBest:"{n} more to beat your record",stuck:"No space left! Use a tool to save yourself.",giveUp:"End game",banner:"Ad space",
+hammer:"Hammer",hammerD:"Smashes the block you choose.",shuffle:"New pieces",shuffleD:"Gives you new pieces.",undo:"Undo",undoD:"Takes back your last move.",
+c_fury:"FURY",c_furyOn:"FURY x3 · {n}s",c_x2:"POINTS x2 · {n}s",c_ice:"ICE: easy pieces",
+p_bomb:"BOMB!",p_bolt:"LIGHTNING!",p_rainbow:"RAINBOW!",p_x2:"POINTS x2!",p_ice:"FREEZE!",
+pr2:"Nice!",pr3:"Great!",pr4:"Amazing!",pr5:"TOTAL FURY!",combo:"COMBO x{n}",boardClear:"BOARD CLEAR!",furyMode:"FURY MODE!",x3:"POINTS x3",
+exitQ:"Exit?",exitText:"Your game is saved.",toMenu:"Go to main menu",closeGame:"Close the game",cancel:"Cancel",
+h_goal_t:"Goal",h_goal:"Drag the pieces onto the board. Fill a whole row or column and it explodes for points. When no piece fits, the game ends.",
+h_combo_t:"Combos",h_combo:"Clear lines on back-to-back moves to build combos: each combo multiplies your points. Clearing several lines at once scores much more.",
+h_fury_t:"Fury Mode",h_fury:"Every line, combo and power-up fills the Fury bar. When it is full, all points are worth x3 for 15 seconds.",
+h_pow_t:"Power-ups",h_pow:"Some pieces carry a block with an icon. Clear its line to trigger it:",
+h_bomb:"Bomb: blows up the blocks around it.",h_bolt:"Lightning: clears its row and column.",h_rainbow:"Rainbow: clears every block of that color.",h_x2:"x2: double points for 20 seconds.",h_ice:"Ice: gives you small, easy pieces.",
+h_tools_t:"Tools",h_tools:"Buy them with coins or by watching a video. If you run out of space, use them to save yourself.",
+h_coins_t:"Coins and prizes",h_coins:"You earn coins at the end of every game, from missions and from the daily gift. Spend them on tools and new themes."},
+
+pt:{play:"Jogar",missions:"Missões",themes:"Temas",gift:"Presente diário",best:"Recorde",howto:"Como jogar",exit:"Sair",language:"Idioma",
+noSpace:"Sem espaço!",points:"Pontos",newRecord:"Novo recorde!",doubleCoins:"Dobrar moedas",video:"(vídeo)",keepPlaying:"Continuar jogando",watchVideo:"assistir a um vídeo",playAgain:"Jogar de novo",
+pause:"Pausa",resume:"Continuar",sound:"Som",vibration:"Vibração",yes:"SIM",no:"NÃO",newGame:"Novo jogo",
+coinVideo:"Ver vídeo: +50 moedas",done:"Pronto",buyQ:"Comprar?",
+skin_fury:"Fúria",skin_neon:"Neon",skin_candy:"Doce",skin_ocean:"Oceano",skin_wood:"Madeira",skin_gems:"Joias",
+giftText:"Volte todo dia: o prêmio aumenta.",giftStreak:"{n} dias seguidos! Se faltar um dia, volta para o dia 1.",claim:"Resgatar",claim2:"Resgatar x2",day:"Dia {n}",
+misTitle:"Missões de hoje",misTomorrow:"Amanhã tem missões novas.",misDone:"Feita",
+m_lines:"Quebre {n} linhas",m_combo:"Faça {n} combos",m_multi:"Quebre 3 linhas de uma vez ({n} vezes)",m_power:"Ative {n} poderes",m_fury:"Ative o Modo Fúria {n} vezes",m_score:"Faça {n} pontos em uma partida",m_games:"Jogue {n} partidas",m_pieces:"Coloque {n} peças",
+have:"Você tem:",buyFor:"Comprar por {n}",videoFree:"Ver vídeo: +1 grátis",close:"Fechar",
+adTest:"Anúncio de teste",adRewardTitle:"Vídeo com prêmio",adRewardText:"No app real, aqui aparece um vídeo do Google AdMob. Ao terminar, você ganha o prêmio.",adTitle:"Anúncio",adText:"Aqui aparece um anúncio em tela cheia entre as partidas.",wait:"Aguarde {n}…",
+t_tapBlock:"Toque em um bloco para quebrá-lo",t_noUndo:"Nenhuma jogada para desfazer",t_undone:"Jogada desfeita",t_mission:"Missão cumprida! Resgate em Missões",t_furyEnd:"O Modo Fúria acabou",t_needCoins:"Faltam {n} moedas",t_unlocked:"Tema {name} desbloqueado!",t_double:"Prêmio em dobro!",t_claimed:"Prêmio resgatado!",t_noVideo:"Nenhum vídeo disponível agora. Tente daqui a pouco.",t_plusOne:"+1 {tool}",
+toBest:"Faltam {n} para o seu recorde",stuck:"Sem espaço! Use uma ferramenta para se salvar.",giveUp:"Encerrar",banner:"Espaço para anúncio",
+hammer:"Martelo",hammerD:"Quebra o bloco que você escolher.",shuffle:"Trocar peças",shuffleD:"Dá peças novas.",undo:"Desfazer",undoD:"Volta sua última jogada.",
+c_fury:"FÚRIA",c_furyOn:"FÚRIA x3 · {n}s",c_x2:"PONTOS x2 · {n}s",c_ice:"GELO: peças fáceis",
+p_bomb:"BOMBA!",p_bolt:"RAIO!",p_rainbow:"ARCO-ÍRIS!",p_x2:"PONTOS x2!",p_ice:"GELO!",
+pr2:"Boa!",pr3:"Demais!",pr4:"Incrível!",pr5:"FÚRIA TOTAL!",combo:"COMBO x{n}",boardClear:"TABULEIRO LIMPO!",furyMode:"MODO FÚRIA!",x3:"PONTOS x3",
+exitQ:"Sair?",exitText:"Sua partida fica salva.",toMenu:"Ir ao menu principal",closeGame:"Fechar o jogo",cancel:"Cancelar",
+h_goal_t:"Objetivo",h_goal:"Arraste as peças para o tabuleiro. Ao completar uma linha ou coluna inteira, ela explode e você ganha pontos. Quando nenhuma peça cabe, a partida acaba.",
+h_combo_t:"Combos",h_combo:"Quebre linhas em jogadas seguidas para fazer combos: cada combo multiplica seus pontos. Quebrar várias linhas de uma vez vale muito mais.",
+h_fury_t:"Modo Fúria",h_fury:"Cada linha, combo e poder enche a barra de Fúria. Quando ela enche, todos os pontos valem x3 por 15 segundos.",
+h_pow_t:"Poderes",h_pow:"Algumas peças trazem um bloco com um ícone. Quebre a linha dele para ativá-lo:",
+h_bomb:"Bomba: explode os blocos ao redor.",h_bolt:"Raio: limpa a linha e a coluna dele.",h_rainbow:"Arco-íris: limpa todos os blocos dessa cor.",h_x2:"x2: pontos em dobro por 20 segundos.",h_ice:"Gelo: dá peças pequenas e fáceis.",
+h_tools_t:"Ferramentas",h_tools:"Compre com moedas ou assistindo a um vídeo. Se ficar sem espaço, use-as para se salvar.",
+h_coins_t:"Moedas e prêmios",h_coins:"Você ganha moedas no fim de cada partida, nas missões e no presente diário. Use-as para comprar ferramentas e desbloquear temas novos."},
+
+id:{play:"Main",missions:"Misi",themes:"Tema",gift:"Hadiah harian",best:"Rekor",howto:"Cara bermain",exit:"Keluar",language:"Bahasa",
+noSpace:"Tidak ada ruang!",points:"Skor",newRecord:"Rekor baru!",doubleCoins:"Gandakan koin",video:"(video)",keepPlaying:"Lanjut main",watchVideo:"tonton video",playAgain:"Main lagi",
+pause:"Jeda",resume:"Lanjutkan",sound:"Suara",vibration:"Getar",yes:"NYALA",no:"MATI",newGame:"Permainan baru",
+coinVideo:"Tonton video: +50 koin",done:"Selesai",buyQ:"Beli?",
+skin_fury:"Amarah",skin_neon:"Neon",skin_candy:"Permen",skin_ocean:"Samudra",skin_wood:"Kayu",skin_gems:"Permata",
+giftText:"Datang setiap hari: hadiahnya makin besar.",giftStreak:"{n} hari berturut-turut! Kalau absen sehari, kembali ke hari 1.",claim:"Ambil",claim2:"Ambil x2",day:"Hari {n}",
+misTitle:"Misi hari ini",misTomorrow:"Misi baru besok.",misDone:"Selesai",
+m_lines:"Hancurkan {n} garis",m_combo:"Buat {n} kombo",m_multi:"Hancurkan 3 garis sekaligus ({n} kali)",m_power:"Aktifkan {n} kekuatan",m_fury:"Aktifkan Mode Amarah {n} kali",m_score:"Raih {n} poin dalam satu permainan",m_games:"Mainkan {n} permainan",m_pieces:"Letakkan {n} kepingan",
+have:"Kamu punya:",buyFor:"Beli seharga {n}",videoFree:"Tonton video: +1 gratis",close:"Tutup",
+adTest:"Iklan uji coba",adRewardTitle:"Video berhadiah",adRewardText:"Di aplikasi asli, video Google AdMob muncul di sini. Setelah selesai, kamu dapat hadiahnya.",adTitle:"Iklan",adText:"Iklan layar penuh muncul di sini di antara permainan.",wait:"Tunggu {n}…",
+t_tapBlock:"Ketuk balok untuk menghancurkannya",t_noUndo:"Tidak ada langkah untuk dibatalkan",t_undone:"Langkah dibatalkan",t_mission:"Misi selesai! Ambil di Misi",t_furyEnd:"Mode Amarah selesai",t_needCoins:"Kurang {n} koin",t_unlocked:"Tema {name} terbuka!",t_double:"Hadiah ganda!",t_claimed:"Hadiah diambil!",t_noVideo:"Video belum tersedia. Coba lagi nanti.",t_plusOne:"+1 {tool}",
+toBest:"Kurang {n} untuk rekormu",stuck:"Tidak ada ruang! Pakai alat untuk menyelamatkan diri.",giveUp:"Akhiri",banner:"Ruang iklan",
+hammer:"Palu",hammerD:"Menghancurkan balok pilihanmu.",shuffle:"Ganti kepingan",shuffleD:"Memberimu kepingan baru.",undo:"Batalkan",undoD:"Membatalkan langkah terakhirmu.",
+c_fury:"AMARAH",c_furyOn:"AMARAH x3 · {n}d",c_x2:"POIN x2 · {n}d",c_ice:"ES: kepingan mudah",
+p_bomb:"BOM!",p_bolt:"PETIR!",p_rainbow:"PELANGI!",p_x2:"POIN x2!",p_ice:"ES!",
+pr2:"Bagus!",pr3:"Keren!",pr4:"Luar biasa!",pr5:"AMARAH TOTAL!",combo:"KOMBO x{n}",boardClear:"PAPAN BERSIH!",furyMode:"MODE AMARAH!",x3:"POIN x3",
+exitQ:"Keluar?",exitText:"Permainanmu tersimpan.",toMenu:"Ke menu utama",closeGame:"Tutup game",cancel:"Batal",
+h_goal_t:"Tujuan",h_goal:"Seret kepingan ke papan. Penuhi satu baris atau kolom dan ia meledak memberi poin. Jika tidak ada kepingan yang muat, permainan berakhir.",
+h_combo_t:"Kombo",h_combo:"Hancurkan garis pada langkah berturut-turut untuk membuat kombo: setiap kombo melipatgandakan poinmu. Menghancurkan beberapa garis sekaligus memberi poin jauh lebih banyak.",
+h_fury_t:"Mode Amarah",h_fury:"Setiap garis, kombo, dan kekuatan mengisi bar Amarah. Saat penuh, semua poin bernilai x3 selama 15 detik.",
+h_pow_t:"Kekuatan",h_pow:"Beberapa kepingan membawa balok berikon. Hancurkan garisnya untuk mengaktifkannya:",
+h_bomb:"Bom: meledakkan balok di sekitarnya.",h_bolt:"Petir: menghapus baris dan kolomnya.",h_rainbow:"Pelangi: menghapus semua balok berwarna sama.",h_x2:"x2: poin ganda selama 20 detik.",h_ice:"Es: memberimu kepingan kecil yang mudah.",
+h_tools_t:"Alat",h_tools:"Beli dengan koin atau dengan menonton video. Jika kehabisan ruang, pakai untuk menyelamatkan diri.",
+h_coins_t:"Koin dan hadiah",h_coins:"Kamu dapat koin di akhir setiap permainan, dari misi, dan dari hadiah harian. Pakai untuk membeli alat dan membuka tema baru."},
+
+vi:{play:"Chơi",missions:"Nhiệm vụ",themes:"Giao diện",gift:"Quà hằng ngày",best:"Kỷ lục",howto:"Cách chơi",exit:"Thoát",language:"Ngôn ngữ",
+noSpace:"Hết chỗ!",points:"Điểm",newRecord:"Kỷ lục mới!",doubleCoins:"Nhân đôi xu",video:"(video)",keepPlaying:"Chơi tiếp",watchVideo:"xem video",playAgain:"Chơi lại",
+pause:"Tạm dừng",resume:"Tiếp tục",sound:"Âm thanh",vibration:"Rung",yes:"BẬT",no:"TẮT",newGame:"Ván mới",
+coinVideo:"Xem video: +50 xu",done:"Xong",buyQ:"Mua?",
+skin_fury:"Cuồng nộ",skin_neon:"Neon",skin_candy:"Kẹo",skin_ocean:"Đại dương",skin_wood:"Gỗ",skin_gems:"Đá quý",
+giftText:"Vào mỗi ngày: phần thưởng càng lớn.",giftStreak:"{n} ngày liên tiếp! Bỏ lỡ một ngày sẽ quay về ngày 1.",claim:"Nhận",claim2:"Nhận x2",day:"Ngày {n}",
+misTitle:"Nhiệm vụ hôm nay",misTomorrow:"Ngày mai có nhiệm vụ mới.",misDone:"Xong",
+m_lines:"Phá {n} hàng",m_combo:"Tạo {n} combo",m_multi:"Phá 3 hàng cùng lúc ({n} lần)",m_power:"Kích hoạt {n} sức mạnh",m_fury:"Kích hoạt Chế độ Cuồng nộ {n} lần",m_score:"Đạt {n} điểm trong một ván",m_games:"Chơi {n} ván",m_pieces:"Đặt {n} khối",
+have:"Bạn có:",buyFor:"Mua với {n}",videoFree:"Xem video: +1 miễn phí",close:"Đóng",
+adTest:"Quảng cáo thử",adRewardTitle:"Video có thưởng",adRewardText:"Trong ứng dụng thật, video Google AdMob sẽ hiện ở đây. Xem xong bạn nhận thưởng.",adTitle:"Quảng cáo",adText:"Quảng cáo toàn màn hình hiện ở đây giữa các ván.",wait:"Chờ {n}…",
+t_tapBlock:"Chạm vào một ô để đập vỡ",t_noUndo:"Không có nước để hoàn tác",t_undone:"Đã hoàn tác",t_mission:"Hoàn thành nhiệm vụ! Nhận thưởng ở Nhiệm vụ",t_furyEnd:"Chế độ Cuồng nộ đã kết thúc",t_needCoins:"Bạn còn thiếu {n} xu",t_unlocked:"Đã mở giao diện {name}!",t_double:"Thưởng gấp đôi!",t_claimed:"Đã nhận thưởng!",t_noVideo:"Hiện chưa có video. Hãy thử lại sau.",t_plusOne:"+1 {tool}",
+toBest:"Còn {n} điểm nữa để phá kỷ lục",stuck:"Hết chỗ! Dùng công cụ để cứu ván.",giveUp:"Kết thúc",banner:"Vị trí quảng cáo",
+hammer:"Búa",hammerD:"Đập vỡ ô bạn chọn.",shuffle:"Đổi khối",shuffleD:"Cho bạn khối mới.",undo:"Hoàn tác",undoD:"Quay lại nước đi vừa rồi.",
+c_fury:"CUỒNG NỘ",c_furyOn:"CUỒNG NỘ x3 · {n}s",c_x2:"ĐIỂM x2 · {n}s",c_ice:"BĂNG: khối dễ",
+p_bomb:"BOM!",p_bolt:"SẤM SÉT!",p_rainbow:"CẦU VỒNG!",p_x2:"ĐIỂM x2!",p_ice:"BĂNG!",
+pr2:"Tốt!",pr3:"Tuyệt!",pr4:"Đỉnh quá!",pr5:"CUỒNG NỘ!",combo:"COMBO x{n}",boardClear:"SẠCH BẢNG!",furyMode:"CUỒNG NỘ!",x3:"ĐIỂM x3",
+exitQ:"Thoát?",exitText:"Ván chơi của bạn đã được lưu.",toMenu:"Về menu chính",closeGame:"Đóng trò chơi",cancel:"Hủy",
+h_goal_t:"Mục tiêu",h_goal:"Kéo các khối vào bảng. Lấp đầy một hàng hoặc một cột, nó sẽ nổ và bạn được điểm. Khi không còn khối nào vừa, ván chơi kết thúc.",
+h_combo_t:"Combo",h_combo:"Phá hàng ở các lượt liên tiếp để tạo combo: mỗi combo nhân điểm của bạn. Phá nhiều hàng cùng lúc được nhiều điểm hơn hẳn.",
+h_fury_t:"Chế độ Cuồng nộ",h_fury:"Mỗi hàng, combo và sức mạnh đều làm đầy thanh Cuồng nộ. Khi đầy, mọi điểm được nhân x3 trong 15 giây.",
+h_pow_t:"Sức mạnh",h_pow:"Một số khối có ô mang biểu tượng. Phá hàng chứa nó để kích hoạt:",
+h_bomb:"Bom: nổ tung các ô xung quanh.",h_bolt:"Sấm sét: xóa cả hàng và cột của nó.",h_rainbow:"Cầu vồng: xóa mọi ô cùng màu.",h_x2:"x2: nhân đôi điểm trong 20 giây.",h_ice:"Băng: cho bạn khối nhỏ, dễ đặt.",
+h_tools_t:"Công cụ",h_tools:"Mua bằng xu hoặc xem video. Khi hết chỗ, hãy dùng chúng để cứu ván.",
+h_coins_t:"Xu và phần thưởng",h_coins:"Bạn nhận xu sau mỗi ván, từ nhiệm vụ và quà hằng ngày. Dùng xu để mua công cụ và mở giao diện mới."},
+
+hi:{play:"खेलें",missions:"मिशन",themes:"थीम",gift:"रोज़ का तोहफ़ा",best:"रिकॉर्ड",howto:"कैसे खेलें",exit:"बाहर निकलें",language:"भाषा",
+noSpace:"जगह नहीं बची!",points:"अंक",newRecord:"नया रिकॉर्ड!",doubleCoins:"सिक्के दोगुने करें",video:"(वीडियो)",keepPlaying:"खेलते रहें",watchVideo:"वीडियो देखें",playAgain:"फिर से खेलें",
+pause:"रुका हुआ",resume:"जारी रखें",sound:"आवाज़",vibration:"वाइब्रेशन",yes:"चालू",no:"बंद",newGame:"नया गेम",
+coinVideo:"वीडियो देखें: +50 सिक्के",done:"ठीक है",buyQ:"खरीदें?",
+skin_fury:"रोष",skin_neon:"नियॉन",skin_candy:"कैंडी",skin_ocean:"समुद्र",skin_wood:"लकड़ी",skin_gems:"रत्न",
+giftText:"रोज़ आएँ: इनाम बढ़ता जाता है।",giftStreak:"लगातार {n} दिन! एक दिन छूटा तो फिर से दिन 1 से शुरू।",claim:"लें",claim2:"x2 लें",day:"दिन {n}",
+misTitle:"आज के मिशन",misTomorrow:"कल नए मिशन आएँगे।",misDone:"पूरा",
+m_lines:"{n} लाइनें तोड़ें",m_combo:"{n} कॉम्बो बनाएँ",m_multi:"एक साथ 3 लाइनें तोड़ें ({n} बार)",m_power:"{n} पावर-अप चलाएँ",m_fury:"रोष मोड {n} बार चालू करें",m_score:"एक गेम में {n} अंक पाएँ",m_games:"{n} गेम खेलें",m_pieces:"{n} टुकड़े रखें",
+have:"आपके पास:",buyFor:"{n} में खरीदें",videoFree:"वीडियो देखें: +1 मुफ़्त",close:"बंद करें",
+adTest:"टेस्ट विज्ञापन",adRewardTitle:"इनाम वाला वीडियो",adRewardText:"असली ऐप में यहाँ Google AdMob का वीडियो चलेगा। खत्म होने पर इनाम मिलेगा।",adTitle:"विज्ञापन",adText:"गेम के बीच यहाँ पूरी स्क्रीन का विज्ञापन आता है।",wait:"रुकें {n}…",
+t_tapBlock:"तोड़ने के लिए किसी ब्लॉक पर टैप करें",t_noUndo:"वापस लेने के लिए कोई चाल नहीं",t_undone:"चाल वापस ली गई",t_mission:"मिशन पूरा! मिशन में जाकर इनाम लें",t_furyEnd:"रोष मोड खत्म",t_needCoins:"{n} सिक्के और चाहिए",t_unlocked:"{name} थीम खुल गई!",t_double:"दोगुना इनाम!",t_claimed:"इनाम मिल गया!",t_noVideo:"अभी कोई वीडियो नहीं है। थोड़ी देर बाद कोशिश करें।",t_plusOne:"+1 {tool}",
+toBest:"रिकॉर्ड तोड़ने के लिए {n} अंक और",stuck:"जगह नहीं बची! बचने के लिए कोई टूल इस्तेमाल करें।",giveUp:"गेम खत्म करें",banner:"विज्ञापन की जगह",
+hammer:"हथौड़ा",hammerD:"आपका चुना ब्लॉक तोड़ता है।",shuffle:"टुकड़े बदलें",shuffleD:"नए टुकड़े देता है।",undo:"वापस लें",undoD:"आपकी पिछली चाल वापस लेता है।",
+c_fury:"रोष",c_furyOn:"रोष x3 · {n}s",c_x2:"अंक x2 · {n}s",c_ice:"बर्फ़: आसान टुकड़े",
+p_bomb:"बम!",p_bolt:"बिजली!",p_rainbow:"इंद्रधनुष!",p_x2:"अंक x2!",p_ice:"बर्फ़!",
+pr2:"बढ़िया!",pr3:"शानदार!",pr4:"कमाल!",pr5:"पूरा रोष!",combo:"कॉम्बो x{n}",boardClear:"बोर्ड साफ़!",furyMode:"रोष मोड!",x3:"अंक x3",
+exitQ:"बाहर निकलें?",exitText:"आपका गेम सेव है।",toMenu:"मुख्य मेनू पर जाएँ",closeGame:"गेम बंद करें",cancel:"रद्द करें",
+h_goal_t:"लक्ष्य",h_goal:"टुकड़ों को बोर्ड पर खींचें। पूरी पंक्ति या कॉलम भरते ही वह फट जाती है और अंक मिलते हैं। जब कोई टुकड़ा फिट न हो, गेम खत्म।",
+h_combo_t:"कॉम्बो",h_combo:"लगातार चालों में लाइनें तोड़कर कॉम्बो बनाएँ: हर कॉम्बो आपके अंक बढ़ाता है। एक साथ कई लाइनें तोड़ने पर कहीं ज़्यादा अंक मिलते हैं।",
+h_fury_t:"रोष मोड",h_fury:"हर लाइन, कॉम्बो और पावर-अप रोष बार भरता है। बार भरते ही 15 सेकंड तक सभी अंक x3 हो जाते हैं।",
+h_pow_t:"पावर-अप",h_pow:"कुछ टुकड़ों में आइकन वाला ब्लॉक होता है। उसे चलाने के लिए उसकी लाइन तोड़ें:",
+h_bomb:"बम: आसपास के ब्लॉक उड़ा देता है।",h_bolt:"बिजली: उसकी पंक्ति और कॉलम साफ़ करती है।",h_rainbow:"इंद्रधनुष: उस रंग के सारे ब्लॉक साफ़ करता है।",h_x2:"x2: 20 सेकंड तक दोगुने अंक।",h_ice:"बर्फ़: छोटे और आसान टुकड़े देती है।",
+h_tools_t:"टूल",h_tools:"इन्हें सिक्कों से या वीडियो देखकर पाएँ। जगह खत्म होने पर इनसे खुद को बचाएँ।",
+h_coins_t:"सिक्के और इनाम",h_coins:"हर गेम के अंत में, मिशन से और रोज़ के तोहफ़े से सिक्के मिलते हैं। इनसे टूल खरीदें और नई थीम खोलें।"},
+
+tr:{play:"Oyna",missions:"Görevler",themes:"Temalar",gift:"Günlük hediye",best:"Rekor",howto:"Nasıl oynanır",exit:"Çıkış",language:"Dil",
+noSpace:"Yer kalmadı!",points:"Puan",newRecord:"Yeni rekor!",doubleCoins:"Altınları ikiye katla",video:"(video)",keepPlaying:"Oynamaya devam",watchVideo:"video izle",playAgain:"Tekrar oyna",
+pause:"Duraklatıldı",resume:"Devam et",sound:"Ses",vibration:"Titreşim",yes:"AÇIK",no:"KAPALI",newGame:"Yeni oyun",
+coinVideo:"Video izle: +50 altın",done:"Tamam",buyQ:"Satın al?",
+skin_fury:"Öfke",skin_neon:"Neon",skin_candy:"Şeker",skin_ocean:"Okyanus",skin_wood:"Ahşap",skin_gems:"Mücevher",
+giftText:"Her gün gel: ödül büyüsün.",giftStreak:"Üst üste {n} gün! Bir gün kaçırırsan 1. güne dönersin.",claim:"Al",claim2:"x2 al",day:"{n}. gün",
+misTitle:"Bugünün görevleri",misTomorrow:"Yarın yeni görevler var.",misDone:"Tamam",
+m_lines:"{n} sıra patlat",m_combo:"{n} kombo yap",m_multi:"Tek hamlede 3 sıra patlat ({n} kez)",m_power:"{n} güçlendirici kullan",m_fury:"Öfke Modunu {n} kez aç",m_score:"Bir oyunda {n} puan yap",m_games:"{n} oyun oyna",m_pieces:"{n} parça yerleştir",
+have:"Sende:",buyFor:"{n} altına al",videoFree:"Video izle: +1 bedava",close:"Kapat",
+adTest:"Test reklamı",adRewardTitle:"Ödüllü video",adRewardText:"Gerçek uygulamada burada Google AdMob videosu oynar. Bitince ödülünü alırsın.",adTitle:"Reklam",adText:"Oyunlar arasında burada tam ekran reklam çıkar.",wait:"Bekle {n}…",
+t_tapBlock:"Kırmak için bir bloğa dokun",t_noUndo:"Geri alınacak hamle yok",t_undone:"Hamle geri alındı",t_mission:"Görev tamam! Ödülünü Görevler bölümünden al",t_furyEnd:"Öfke Modu bitti",t_needCoins:"{n} altın daha lazım",t_unlocked:"{name} teması açıldı!",t_double:"Çifte ödül!",t_claimed:"Ödül alındı!",t_noVideo:"Şu an video yok. Biraz sonra dene.",t_plusOne:"+1 {tool}",
+toBest:"Rekoruna {n} puan kaldı",stuck:"Yer kalmadı! Kurtulmak için bir araç kullan.",giveUp:"Bitir",banner:"Reklam alanı",
+hammer:"Çekiç",hammerD:"Seçtiğin bloğu kırar.",shuffle:"Parçaları değiştir",shuffleD:"Sana yeni parçalar verir.",undo:"Geri al",undoD:"Son hamleni geri alır.",
+c_fury:"ÖFKE",c_furyOn:"ÖFKE x3 · {n}sn",c_x2:"PUAN x2 · {n}sn",c_ice:"BUZ: kolay parçalar",
+p_bomb:"BOMBA!",p_bolt:"YILDIRIM!",p_rainbow:"GÖKKUŞAĞI!",p_x2:"PUAN x2!",p_ice:"BUZ!",
+pr2:"Güzel!",pr3:"Harika!",pr4:"İnanılmaz!",pr5:"TAM ÖFKE!",combo:"KOMBO x{n}",boardClear:"TAHTA TEMİZ!",furyMode:"ÖFKE MODU!",x3:"PUAN x3",
+exitQ:"Çıkılsın mı?",exitText:"Oyunun kaydedildi.",toMenu:"Ana menüye dön",closeGame:"Oyunu kapat",cancel:"İptal",
+h_goal_t:"Amaç",h_goal:"Parçaları tahtaya sürükle. Bir satırı ya da sütunu tamamen doldurursan patlar ve puan kazanırsın. Hiçbir parça sığmazsa oyun biter.",
+h_combo_t:"Kombolar",h_combo:"Art arda hamlelerde sıra patlatarak kombo yap: her kombo puanını katlar. Aynı anda birkaç sıra patlatmak çok daha fazla puan verir.",
+h_fury_t:"Öfke Modu",h_fury:"Her sıra, kombo ve güçlendirici Öfke çubuğunu doldurur. Çubuk dolunca 15 saniye boyunca tüm puanlar x3 olur.",
+h_pow_t:"Güçlendiriciler",h_pow:"Bazı parçalarda simgeli bir blok vardır. Etkinleştirmek için bulunduğu sırayı patlat:",
+h_bomb:"Bomba: çevresindeki blokları patlatır.",h_bolt:"Yıldırım: satırını ve sütununu temizler.",h_rainbow:"Gökkuşağı: o renkteki tüm blokları temizler.",h_x2:"x2: 20 saniye çift puan.",h_ice:"Buz: küçük ve kolay parçalar verir.",
+h_tools_t:"Araçlar",h_tools:"Altınla ya da video izleyerek alınır. Yerin kalmazsa kurtulmak için kullan.",
+h_coins_t:"Altınlar ve ödüller",h_coins:"Her oyunun sonunda, görevlerden ve günlük hediyeden altın kazanırsın. Araç almak ve yeni temaları açmak için harca."},
+
+fil:{play:"Maglaro",missions:"Mga Misyon",themes:"Mga Tema",gift:"Araw-araw na regalo",best:"Rekord",howto:"Paano maglaro",exit:"Lumabas",language:"Wika",
+noSpace:"Wala nang espasyo!",points:"Puntos",newRecord:"Bagong rekord!",doubleCoins:"Doblehin ang coins",video:"(video)",keepPlaying:"Ituloy ang laro",watchVideo:"manood ng video",playAgain:"Maglaro ulit",
+pause:"Nakahinto",resume:"Ituloy",sound:"Tunog",vibration:"Vibrate",yes:"ON",no:"OFF",newGame:"Bagong laro",
+coinVideo:"Manood ng video: +50 coins",done:"Tapos",buyQ:"Bilhin?",
+skin_fury:"Fury",skin_neon:"Neon",skin_candy:"Kendi",skin_ocean:"Karagatan",skin_wood:"Kahoy",skin_gems:"Hiyas",
+giftText:"Bumalik araw-araw: lumalaki ang premyo.",giftStreak:"{n} araw nang sunod-sunod! Kapag lumaktaw ka ng isang araw, babalik ka sa araw 1.",claim:"Kunin",claim2:"Kunin x2",day:"Araw {n}",
+misTitle:"Mga misyon ngayon",misTomorrow:"May bagong misyon bukas.",misDone:"Tapos na",
+m_lines:"Bumasag ng {n} linya",m_combo:"Gumawa ng {n} combo",m_multi:"Bumasag ng 3 linya nang sabay ({n} beses)",m_power:"Gumamit ng {n} power-up",m_fury:"I-activate ang Fury Mode nang {n} beses",m_score:"Umiskor ng {n} puntos sa isang laro",m_games:"Maglaro ng {n} laro",m_pieces:"Maglagay ng {n} piraso",
+have:"Mayroon ka:",buyFor:"Bilhin sa {n}",videoFree:"Manood ng video: +1 libre",close:"Isara",
+adTest:"Test na ad",adRewardTitle:"Video na may premyo",adRewardText:"Sa totoong app, may video ng Google AdMob dito. Pagkatapos, makukuha mo ang premyo.",adTitle:"Ad",adText:"Dito lumalabas ang full-screen na ad sa pagitan ng mga laro.",wait:"Sandali {n}…",
+t_tapBlock:"I-tap ang isang block para basagin",t_noUndo:"Walang galaw na maibabalik",t_undone:"Naibalik ang galaw",t_mission:"Tapos ang misyon! Kunin sa Mga Misyon",t_furyEnd:"Tapos na ang Fury Mode",t_needCoins:"Kulang ka ng {n} coins",t_unlocked:"Bukas na ang temang {name}!",t_double:"Dobleng premyo!",t_claimed:"Nakuha ang premyo!",t_noVideo:"Walang video ngayon. Subukan ulit mamaya.",t_plusOne:"+1 {tool}",
+toBest:"{n} na lang para sa rekord mo",stuck:"Wala nang espasyo! Gumamit ng tool para makaligtas.",giveUp:"Tapusin",banner:"Puwesto ng ad",
+hammer:"Martilyo",hammerD:"Binabasag ang block na pipiliin mo.",shuffle:"Palitan ang piraso",shuffleD:"Bibigyan ka ng bagong piraso.",undo:"Ibalik",undoD:"Ibinabalik ang huli mong galaw.",
+c_fury:"FURY",c_furyOn:"FURY x3 · {n}s",c_x2:"PUNTOS x2 · {n}s",c_ice:"YELO: madaling piraso",
+p_bomb:"BOMBA!",p_bolt:"KIDLAT!",p_rainbow:"BAHAGHARI!",p_x2:"PUNTOS x2!",p_ice:"YELO!",
+pr2:"Ayos!",pr3:"Galing!",pr4:"Grabe!",pr5:"TOTAL FURY!",combo:"COMBO x{n}",boardClear:"MALINIS ANG BOARD!",furyMode:"FURY MODE!",x3:"PUNTOS x3",
+exitQ:"Lalabas na?",exitText:"Naka-save ang laro mo.",toMenu:"Pumunta sa main menu",closeGame:"Isara ang laro",cancel:"Kanselahin",
+h_goal_t:"Layunin",h_goal:"I-drag ang mga piraso sa board. Kapag napuno mo ang isang buong hanay o kolum, sasabog ito at may puntos ka. Kapag wala nang kasyang piraso, tapos ang laro.",
+h_combo_t:"Combo",h_combo:"Bumasag ng linya sa sunod-sunod na galaw para gumawa ng combo: bawat combo ay nagpaparami ng puntos mo. Mas malaki ang puntos kapag maraming linya ang sabay na nabasag.",
+h_fury_t:"Fury Mode",h_fury:"Bawat linya, combo at power-up ay nagpupuno sa Fury bar. Kapag puno na, x3 ang lahat ng puntos sa loob ng 15 segundo.",
+h_pow_t:"Mga power-up",h_pow:"May mga pirasong may block na may icon. Basagin ang linya nito para ma-activate:",
+h_bomb:"Bomba: pinasasabog ang mga block sa paligid.",h_bolt:"Kidlat: nililinis ang hanay at kolum nito.",h_rainbow:"Bahaghari: nililinis ang lahat ng block na kapareho ng kulay.",h_x2:"x2: dobleng puntos sa loob ng 20 segundo.",h_ice:"Yelo: bibigyan ka ng maliliit at madadaling piraso.",
+h_tools_t:"Mga tool",h_tools:"Bilhin gamit ang coins o sa panonood ng video. Kapag naubusan ka ng espasyo, gamitin ang mga ito para makaligtas.",
+h_coins_t:"Coins at premyo",h_coins:"May coins ka sa dulo ng bawat laro, mula sa mga misyon at sa araw-araw na regalo. Gamitin ang mga ito para bumili ng tools at magbukas ng bagong tema."},
+
+ur:{play:"کھیلیں",missions:"مشن",themes:"تھیمز",gift:"روزانہ تحفہ",best:"ریکارڈ",howto:"کیسے کھیلیں",exit:"باہر نکلیں",language:"زبان",
+noSpace:"جگہ ختم!",points:"پوائنٹس",newRecord:"نیا ریکارڈ!",doubleCoins:"سکے دگنے کریں",video:"(ویڈیو)",keepPlaying:"کھیل جاری رکھیں",watchVideo:"ویڈیو دیکھیں",playAgain:"دوبارہ کھیلیں",
+pause:"رکا ہوا",resume:"جاری رکھیں",sound:"آواز",vibration:"وائبریشن",yes:"آن",no:"آف",newGame:"نیا کھیل",
+coinVideo:"ویڈیو دیکھیں: +50 سکے",done:"ٹھیک ہے",buyQ:"خریدیں؟",
+skin_fury:"غصہ",skin_neon:"نیون",skin_candy:"کینڈی",skin_ocean:"سمندر",skin_wood:"لکڑی",skin_gems:"جواہر",
+giftText:"روز آئیں: انعام بڑھتا جائے گا۔",giftStreak:"لگاتار {n} دن! ایک دن چھوٹا تو دوبارہ دن 1 سے۔",claim:"حاصل کریں",claim2:"x2 حاصل کریں",day:"دن {n}",
+misTitle:"آج کے مشن",misTomorrow:"کل نئے مشن آئیں گے۔",misDone:"مکمل",
+m_lines:"{n} لائنیں توڑیں",m_combo:"{n} کومبو بنائیں",m_multi:"ایک ساتھ 3 لائنیں توڑیں ({n} بار)",m_power:"{n} پاور اپ چلائیں",m_fury:"غصہ موڈ {n} بار چلائیں",m_score:"ایک کھیل میں {n} پوائنٹس بنائیں",m_games:"{n} کھیل کھیلیں",m_pieces:"{n} ٹکڑے رکھیں",
+have:"آپ کے پاس:",buyFor:"{n} میں خریدیں",videoFree:"ویڈیو دیکھیں: +1 مفت",close:"بند کریں",
+adTest:"ٹیسٹ اشتہار",adRewardTitle:"انعامی ویڈیو",adRewardText:"اصل ایپ میں یہاں Google AdMob کی ویڈیو چلے گی۔ ختم ہونے پر انعام ملے گا۔",adTitle:"اشتہار",adText:"کھیلوں کے درمیان یہاں پوری اسکرین کا اشتہار آتا ہے۔",wait:"انتظار کریں {n}…",
+t_tapBlock:"توڑنے کے لیے کسی بلاک کو چھوئیں",t_noUndo:"واپس لینے کو کوئی چال نہیں",t_undone:"چال واپس لے لی گئی",t_mission:"مشن مکمل! مشن میں جا کر انعام لیں",t_furyEnd:"غصہ موڈ ختم",t_needCoins:"مزید {n} سکے چاہییں",t_unlocked:"{name} تھیم کھل گئی!",t_double:"دگنا انعام!",t_claimed:"انعام مل گیا!",t_noVideo:"ابھی کوئی ویڈیو نہیں۔ تھوڑی دیر بعد کوشش کریں۔",t_plusOne:"+1 {tool}",
+toBest:"ریکارڈ کے لیے مزید {n} پوائنٹس",stuck:"جگہ ختم! بچنے کے لیے کوئی ٹول استعمال کریں۔",giveUp:"ختم کریں",banner:"اشتہار کی جگہ",
+hammer:"ہتھوڑا",hammerD:"آپ کا چنا ہوا بلاک توڑتا ہے۔",shuffle:"ٹکڑے بدلیں",shuffleD:"نئے ٹکڑے دیتا ہے۔",undo:"واپس لیں",undoD:"آپ کی آخری چال واپس لیتا ہے۔",
+c_fury:"غصہ",c_furyOn:"غصہ x3 · {n}s",c_x2:"پوائنٹس x2 · {n}s",c_ice:"برف: آسان ٹکڑے",
+p_bomb:"بم!",p_bolt:"بجلی!",p_rainbow:"قوس قزح!",p_x2:"پوائنٹس x2!",p_ice:"برف!",
+pr2:"خوب!",pr3:"زبردست!",pr4:"کمال!",pr5:"مکمل غصہ!",combo:"کومبو x{n}",boardClear:"بورڈ صاف!",furyMode:"غصہ موڈ!",x3:"پوائنٹس x3",
+exitQ:"باہر نکلیں؟",exitText:"آپ کا کھیل محفوظ ہے۔",toMenu:"مین مینو پر جائیں",closeGame:"کھیل بند کریں",cancel:"منسوخ",
+h_goal_t:"مقصد",h_goal:"ٹکڑوں کو بورڈ پر گھسیٹیں۔ پوری قطار یا کالم بھرنے پر وہ پھٹ جاتا ہے اور پوائنٹس ملتے ہیں۔ جب کوئی ٹکڑا فٹ نہ ہو تو کھیل ختم۔",
+h_combo_t:"کومبو",h_combo:"لگاتار چالوں میں لائنیں توڑ کر کومبو بنائیں: ہر کومبو آپ کے پوائنٹس بڑھاتا ہے۔ ایک ساتھ کئی لائنیں توڑنے پر کہیں زیادہ پوائنٹس ملتے ہیں۔",
+h_fury_t:"غصہ موڈ",h_fury:"ہر لائن، کومبو اور پاور اپ غصے کی بار بھرتا ہے۔ بار بھرنے پر 15 سیکنڈ تک تمام پوائنٹس x3 ہو جاتے ہیں۔",
+h_pow_t:"پاور اپ",h_pow:"کچھ ٹکڑوں میں آئیکن والا بلاک ہوتا ہے۔ اسے چلانے کے لیے اس کی لائن توڑیں:",
+h_bomb:"بم: آس پاس کے بلاک اڑا دیتا ہے۔",h_bolt:"بجلی: اس کی قطار اور کالم صاف کرتی ہے۔",h_rainbow:"قوس قزح: اس رنگ کے سارے بلاک صاف کرتی ہے۔",h_x2:"x2: 20 سیکنڈ تک دگنے پوائنٹس۔",h_ice:"برف: چھوٹے اور آسان ٹکڑے دیتی ہے۔",
+h_tools_t:"ٹولز",h_tools:"انہیں سکوں سے یا ویڈیو دیکھ کر حاصل کریں۔ جگہ ختم ہو جائے تو ان سے خود کو بچائیں۔",
+h_coins_t:"سکے اور انعامات",h_coins:"ہر کھیل کے آخر میں، مشنز سے اور روزانہ تحفے سے سکے ملتے ہیں۔ ان سے ٹولز خریدیں اور نئی تھیمز کھولیں۔"},
+
+ru:{play:"Играть",missions:"Задания",themes:"Темы",gift:"Ежедневный подарок",best:"Рекорд",howto:"Как играть",exit:"Выход",language:"Язык",
+noSpace:"Нет места!",points:"Очки",newRecord:"Новый рекорд!",doubleCoins:"Удвоить монеты",video:"(видео)",keepPlaying:"Продолжить игру",watchVideo:"посмотреть видео",playAgain:"Играть снова",
+pause:"Пауза",resume:"Продолжить",sound:"Звук",vibration:"Вибрация",yes:"ВКЛ",no:"ВЫКЛ",newGame:"Новая игра",
+coinVideo:"Видео: +50 монет",done:"Готово",buyQ:"Купить?",
+skin_fury:"Ярость",skin_neon:"Неон",skin_candy:"Конфеты",skin_ocean:"Океан",skin_wood:"Дерево",skin_gems:"Самоцветы",
+giftText:"Заходи каждый день: награда растёт.",giftStreak:"Серия: {n}! Если пропустишь день, начнёшь сначала.",claim:"Забрать",claim2:"Забрать x2",day:"День {n}",
+misTitle:"Задания на сегодня",misTomorrow:"Завтра будут новые задания.",misDone:"Готово",
+m_lines:"Собери линии: {n}",m_combo:"Сделай комбо: {n}",m_multi:"Убери 3 линии за раз (раз: {n})",m_power:"Активируй усилители: {n}",m_fury:"Включи режим Ярости (раз: {n})",m_score:"Набери {n} очков за игру",m_games:"Сыграй игр: {n}",m_pieces:"Поставь фигуры: {n}",
+have:"У тебя:",buyFor:"Купить за {n}",videoFree:"Видео: +1 бесплатно",close:"Закрыть",
+adTest:"Тестовая реклама",adRewardTitle:"Видео с наградой",adRewardText:"В настоящем приложении здесь идёт видео Google AdMob. После просмотра ты получишь награду.",adTitle:"Реклама",adText:"Здесь между играми показывается полноэкранная реклама.",wait:"Подожди {n}…",
+t_tapBlock:"Нажми на блок, чтобы разбить его",t_noUndo:"Нечего отменять",t_undone:"Ход отменён",t_mission:"Задание выполнено! Забери награду в Заданиях",t_furyEnd:"Режим Ярости закончился",t_needCoins:"Не хватает монет: {n}",t_unlocked:"Тема «{name}» открыта!",t_double:"Двойная награда!",t_claimed:"Награда получена!",t_noVideo:"Сейчас нет видео. Попробуй чуть позже.",t_plusOne:"+1 {tool}",
+toBest:"До рекорда осталось: {n}",stuck:"Нет места! Используй инструмент, чтобы спастись.",giveUp:"Завершить",banner:"Место для рекламы",
+hammer:"Молот",hammerD:"Разбивает выбранный блок.",shuffle:"Новые фигуры",shuffleD:"Даёт новые фигуры.",undo:"Отмена хода",undoD:"Отменяет последний ход.",
+c_fury:"ЯРОСТЬ",c_furyOn:"ЯРОСТЬ x3 · {n}с",c_x2:"ОЧКИ x2 · {n}с",c_ice:"ЛЁД: лёгкие фигуры",
+p_bomb:"БОМБА!",p_bolt:"МОЛНИЯ!",p_rainbow:"РАДУГА!",p_x2:"ОЧКИ x2!",p_ice:"ЛЁД!",
+pr2:"Хорошо!",pr3:"Отлично!",pr4:"Невероятно!",pr5:"ЯРОСТЬ!",combo:"КОМБО x{n}",boardClear:"ПОЛЕ ЧИСТО!",furyMode:"РЕЖИМ ЯРОСТИ!",x3:"ОЧКИ x3",
+exitQ:"Выйти?",exitText:"Игра сохранена.",toMenu:"В главное меню",closeGame:"Закрыть игру",cancel:"Отмена",
+h_goal_t:"Цель",h_goal:"Перетаскивай фигуры на поле. Заполни целый ряд или столбец, и он взорвётся, принеся очки. Когда ни одна фигура не помещается, игра заканчивается.",
+h_combo_t:"Комбо",h_combo:"Убирай линии несколько ходов подряд, чтобы делать комбо: каждое комбо умножает очки. Убрать несколько линий за раз выгоднее всего.",
+h_fury_t:"Режим Ярости",h_fury:"Каждая линия, комбо и усилитель заполняют шкалу Ярости. Когда она полная, 15 секунд все очки умножаются на 3.",
+h_pow_t:"Усилители",h_pow:"В некоторых фигурах есть блок со значком. Убери его линию, чтобы активировать:",
+h_bomb:"Бомба: взрывает блоки вокруг.",h_bolt:"Молния: убирает свой ряд и столбец.",h_rainbow:"Радуга: убирает все блоки этого цвета.",h_x2:"x2: двойные очки 20 секунд.",h_ice:"Лёд: даёт маленькие и лёгкие фигуры.",
+h_tools_t:"Инструменты",h_tools:"Покупай их за монеты или за просмотр видео. Когда закончится место, используй их, чтобы спастись.",
+h_coins_t:"Монеты и награды",h_coins:"Монеты дают в конце каждой игры, за задания и за ежедневный подарок. Трать их на инструменты и новые темы."}
+};
+
+const I18N_ADD={
+es:{music:"Música",sounds:"Sonidos",volume:"Volumen",gameMusic:"Música del juego",yourSongs:"Tus canciones",slotsInfo:"{a} de {b} lugares usados",addSong:"Agregar canción",buySlot:"Comprar otro lugar",maxSongs:"Llegaste al máximo de 10 canciones",repeatOne:"Repetir esta",repeatAll:"Todas en orden",del:"Borrar",delQ:"¿Borrar?",songAdded:"¡Canción agregada!",songErr:"No se pudo cargar ese archivo",songBig:"El archivo es muy grande (máximo 30 MB)",listen:"Escuchar",use:"Usar",inUse:"En uso",achievement:"Logro",t_ach:"¡Logro cumplido! Pack {name} desbloqueado",trk_0:"Ritmo de fuego",trk_1:"Calma",snd_classic:"Clásico",snd_arcade:"Arcade retro",snd_cartoon:"Caricatura",snd_wood:"Marimba",snd_drums:"Tambores",snd_water:"Agua",snd_crystal:"Cristal",snd_piano:"Piano",snd_space:"Espacial",snd_electro:"Electrónico",snd_epic:"Furia épica",a_comboMax:"Haz un combo x{n}",a_clears:"Limpia el tablero {n} veces",h_music_t:"Música y sonidos",h_music:"En Música puedes escuchar la música del juego o cargar tus propias canciones MP3 (hasta 10). En Sonidos eliges el pack de efectos: escúchalos antes y desbloquéalos con logros o con monedas.",noStorage:"Este dispositivo no permite guardar canciones"},
+en:{music:"Music",sounds:"Sounds",volume:"Volume",gameMusic:"Game music",yourSongs:"Your songs",slotsInfo:"{a} of {b} slots used",addSong:"Add song",buySlot:"Buy another slot",maxSongs:"You reached the maximum of 10 songs",repeatOne:"Repeat this one",repeatAll:"Play all in order",del:"Delete",delQ:"Delete?",songAdded:"Song added!",songErr:"That file could not be loaded",songBig:"The file is too big (30 MB max)",listen:"Listen",use:"Use",inUse:"In use",achievement:"Achievement",t_ach:"Achievement unlocked! The {name} pack is yours",trk_0:"Fire Beat",trk_1:"Chill",snd_classic:"Classic",snd_arcade:"Retro Arcade",snd_cartoon:"Cartoon",snd_wood:"Marimba",snd_drums:"Drums",snd_water:"Water",snd_crystal:"Crystal",snd_piano:"Piano",snd_space:"Space",snd_electro:"Electro",snd_epic:"Epic Fury",a_comboMax:"Make a x{n} combo",a_clears:"Clear the whole board {n} times",h_music_t:"Music and sounds",h_music:"In Music you can play the game's music or load your own MP3 songs (up to 10). In Sounds you pick the effects pack: preview them first and unlock them with achievements or coins.",noStorage:"This device cannot save songs"},
+pt:{music:"Música",sounds:"Sons",volume:"Volume",gameMusic:"Música do jogo",yourSongs:"Suas músicas",slotsInfo:"{a} de {b} espaços usados",addSong:"Adicionar música",buySlot:"Comprar mais um espaço",maxSongs:"Você chegou ao máximo de 10 músicas",repeatOne:"Repetir esta",repeatAll:"Todas em ordem",del:"Apagar",delQ:"Apagar?",songAdded:"Música adicionada!",songErr:"Não foi possível carregar esse arquivo",songBig:"O arquivo é muito grande (máximo 30 MB)",listen:"Ouvir",use:"Usar",inUse:"Em uso",achievement:"Conquista",t_ach:"Conquista alcançada! Pacote {name} desbloqueado",trk_0:"Batida de fogo",trk_1:"Calma",snd_classic:"Clássico",snd_arcade:"Arcade retrô",snd_cartoon:"Desenho animado",snd_wood:"Marimba",snd_drums:"Tambores",snd_water:"Água",snd_crystal:"Cristal",snd_piano:"Piano",snd_space:"Espacial",snd_electro:"Eletrônico",snd_epic:"Fúria épica",a_comboMax:"Faça um combo x{n}",a_clears:"Limpe o tabuleiro {n} vezes",h_music_t:"Música e sons",h_music:"Em Música você ouve a música do jogo ou carrega suas próprias músicas MP3 (até 10). Em Sons você escolhe o pacote de efeitos: ouça antes e desbloqueie com conquistas ou moedas.",noStorage:"Este aparelho não permite salvar músicas"},
+id:{music:"Musik",sounds:"Suara efek",volume:"Volume",gameMusic:"Musik game",yourSongs:"Lagumu",slotsInfo:"{a} dari {b} slot terpakai",addSong:"Tambah lagu",buySlot:"Beli slot lagi",maxSongs:"Kamu sudah mencapai maksimum 10 lagu",repeatOne:"Ulangi lagu ini",repeatAll:"Semua berurutan",del:"Hapus",delQ:"Hapus?",songAdded:"Lagu ditambahkan!",songErr:"File itu tidak bisa dimuat",songBig:"File terlalu besar (maks. 30 MB)",listen:"Dengar",use:"Pakai",inUse:"Dipakai",achievement:"Pencapaian",t_ach:"Pencapaian tercapai! Paket {name} terbuka",trk_0:"Irama Api",trk_1:"Santai",snd_classic:"Klasik",snd_arcade:"Arkade Retro",snd_cartoon:"Kartun",snd_wood:"Marimba",snd_drums:"Drum",snd_water:"Air",snd_crystal:"Kristal",snd_piano:"Piano",snd_space:"Luar Angkasa",snd_electro:"Elektro",snd_epic:"Amarah Epik",a_comboMax:"Buat kombo x{n}",a_clears:"Bersihkan papan {n} kali",h_music_t:"Musik dan suara",h_music:"Di Musik kamu bisa memutar musik game atau memuat lagu MP3 milikmu (hingga 10). Di Suara efek kamu memilih paket efek: dengarkan dulu, lalu buka dengan pencapaian atau koin.",noStorage:"Perangkat ini tidak bisa menyimpan lagu"},
+vi:{music:"Nhạc",sounds:"Âm thanh",volume:"Âm lượng",gameMusic:"Nhạc trong game",yourSongs:"Bài hát của bạn",slotsInfo:"Đã dùng {a}/{b} chỗ",addSong:"Thêm bài hát",buySlot:"Mua thêm chỗ",maxSongs:"Bạn đã đạt tối đa 10 bài hát",repeatOne:"Lặp bài này",repeatAll:"Phát lần lượt",del:"Xóa",delQ:"Xóa?",songAdded:"Đã thêm bài hát!",songErr:"Không thể tải tệp này",songBig:"Tệp quá lớn (tối đa 30 MB)",listen:"Nghe thử",use:"Dùng",inUse:"Đang dùng",achievement:"Thành tích",t_ach:"Đạt thành tích! Đã mở gói {name}",trk_0:"Nhịp lửa",trk_1:"Thư giãn",snd_classic:"Cổ điển",snd_arcade:"Arcade cổ",snd_cartoon:"Hoạt hình",snd_wood:"Marimba",snd_drums:"Trống",snd_water:"Nước",snd_crystal:"Pha lê",snd_piano:"Piano",snd_space:"Vũ trụ",snd_electro:"Điện tử",snd_epic:"Cuồng nộ sử thi",a_comboMax:"Tạo combo x{n}",a_clears:"Dọn sạch bảng {n} lần",h_music_t:"Nhạc và âm thanh",h_music:"Trong Nhạc, bạn nghe nhạc của game hoặc tải bài MP3 của mình (tối đa 10). Trong Âm thanh, bạn chọn gói hiệu ứng: nghe thử trước rồi mở khóa bằng thành tích hoặc xu.",noStorage:"Thiết bị này không lưu được bài hát"},
+hi:{music:"संगीत",sounds:"आवाज़ें",volume:"वॉल्यूम",gameMusic:"गेम का संगीत",yourSongs:"आपके गाने",slotsInfo:"{b} में से {a} जगह इस्तेमाल",addSong:"गाना जोड़ें",buySlot:"एक और जगह खरीदें",maxSongs:"आप 10 गानों की सीमा तक पहुँच गए",repeatOne:"यही दोहराएँ",repeatAll:"सभी क्रम से",del:"हटाएँ",delQ:"हटाएँ?",songAdded:"गाना जुड़ गया!",songErr:"यह फ़ाइल नहीं खुल सकी",songBig:"फ़ाइल बहुत बड़ी है (अधिकतम 30 MB)",listen:"सुनें",use:"इस्तेमाल करें",inUse:"चालू",achievement:"उपलब्धि",t_ach:"उपलब्धि पूरी! {name} पैक खुल गया",trk_0:"आग की धुन",trk_1:"सुकून",snd_classic:"क्लासिक",snd_arcade:"रेट्रो आर्केड",snd_cartoon:"कार्टून",snd_wood:"मरिम्बा",snd_drums:"ढोल",snd_water:"पानी",snd_crystal:"क्रिस्टल",snd_piano:"पियानो",snd_space:"अंतरिक्ष",snd_electro:"इलेक्ट्रो",snd_epic:"महा रोष",a_comboMax:"x{n} कॉम्बो बनाएँ",a_clears:"बोर्ड {n} बार पूरा साफ़ करें",h_music_t:"संगीत और आवाज़ें",h_music:"संगीत में आप गेम का संगीत सुन सकते हैं या अपने MP3 गाने (10 तक) डाल सकते हैं। आवाज़ें में इफ़ेक्ट पैक चुनें: पहले सुनें, फिर उपलब्धियों या सिक्कों से खोलें।",noStorage:"यह डिवाइस गाने सेव नहीं कर सकता"},
+tr:{music:"Müzik",sounds:"Sesler",volume:"Ses düzeyi",gameMusic:"Oyun müziği",yourSongs:"Şarkıların",slotsInfo:"{b} yerden {a} tanesi dolu",addSong:"Şarkı ekle",buySlot:"Bir yer daha satın al",maxSongs:"En fazla 10 şarkıya ulaştın",repeatOne:"Bunu tekrarla",repeatAll:"Hepsi sırayla",del:"Sil",delQ:"Silinsin mi?",songAdded:"Şarkı eklendi!",songErr:"Bu dosya yüklenemedi",songBig:"Dosya çok büyük (en fazla 30 MB)",listen:"Dinle",use:"Kullan",inUse:"Kullanılıyor",achievement:"Başarım",t_ach:"Başarım tamam! {name} paketi açıldı",trk_0:"Ateş Ritmi",trk_1:"Sakin",snd_classic:"Klasik",snd_arcade:"Retro Atari",snd_cartoon:"Çizgi Film",snd_wood:"Marimba",snd_drums:"Davul",snd_water:"Su",snd_crystal:"Kristal",snd_piano:"Piyano",snd_space:"Uzay",snd_electro:"Elektro",snd_epic:"Destansı Öfke",a_comboMax:"x{n} kombo yap",a_clears:"Tahtayı {n} kez tamamen temizle",h_music_t:"Müzik ve sesler",h_music:"Müzik bölümünde oyunun müziğini dinleyebilir ya da kendi MP3 şarkılarını yükleyebilirsin (en fazla 10). Sesler bölümünde efekt paketini seçersin: önce dinle, sonra başarımlarla ya da altınla aç.",noStorage:"Bu cihaz şarkı kaydedemiyor"},
+fil:{music:"Musika",sounds:"Mga tunog",volume:"Lakas",gameMusic:"Musika ng laro",yourSongs:"Mga kanta mo",slotsInfo:"{a} sa {b} puwesto ang gamit",addSong:"Magdagdag ng kanta",buySlot:"Bumili ng isa pang puwesto",maxSongs:"Naabot mo na ang maximum na 10 kanta",repeatOne:"Ulitin ito",repeatAll:"Lahat nang sunod-sunod",del:"Burahin",delQ:"Burahin?",songAdded:"Naidagdag ang kanta!",songErr:"Hindi ma-load ang file na iyon",songBig:"Masyadong malaki ang file (max 30 MB)",listen:"Pakinggan",use:"Gamitin",inUse:"Ginagamit",achievement:"Achievement",t_ach:"Achievement! Bukas na ang {name} pack",trk_0:"Fire Beat",trk_1:"Chill",snd_classic:"Classic",snd_arcade:"Retro Arcade",snd_cartoon:"Cartoon",snd_wood:"Marimba",snd_drums:"Tambol",snd_water:"Tubig",snd_crystal:"Kristal",snd_piano:"Piano",snd_space:"Kalawakan",snd_electro:"Electro",snd_epic:"Epic Fury",a_comboMax:"Gumawa ng x{n} combo",a_clears:"Linisin ang buong board nang {n} beses",h_music_t:"Musika at tunog",h_music:"Sa Musika, mapapakinggan mo ang musika ng laro o makakapag-load ng sarili mong MP3 (hanggang 10). Sa Mga tunog, pipiliin mo ang effects pack: pakinggan muna, tapos buksan gamit ang achievements o coins.",noStorage:"Hindi makapag-save ng kanta ang device na ito"},
+ur:{music:"موسیقی",sounds:"آوازیں",volume:"آواز کی سطح",gameMusic:"کھیل کی موسیقی",yourSongs:"آپ کے گانے",slotsInfo:"{b} میں سے {a} جگہیں استعمال",addSong:"گانا شامل کریں",buySlot:"ایک اور جگہ خریدیں",maxSongs:"آپ 10 گانوں کی حد تک پہنچ گئے",repeatOne:"یہی دہرائیں",repeatAll:"سب ترتیب سے",del:"مٹائیں",delQ:"مٹائیں؟",songAdded:"گانا شامل ہو گیا!",songErr:"یہ فائل نہیں کھل سکی",songBig:"فائل بہت بڑی ہے (زیادہ سے زیادہ 30 MB)",listen:"سنیں",use:"استعمال کریں",inUse:"زیرِ استعمال",achievement:"کامیابی",t_ach:"کامیابی مکمل! {name} پیک کھل گیا",trk_0:"آگ کی دھن",trk_1:"سکون",snd_classic:"کلاسک",snd_arcade:"ریٹرو آرکیڈ",snd_cartoon:"کارٹون",snd_wood:"مرمبا",snd_drums:"ڈھول",snd_water:"پانی",snd_crystal:"کرسٹل",snd_piano:"پیانو",snd_space:"خلا",snd_electro:"الیکٹرو",snd_epic:"عظیم غصہ",a_comboMax:"x{n} کومبو بنائیں",a_clears:"بورڈ {n} بار مکمل صاف کریں",h_music_t:"موسیقی اور آوازیں",h_music:"موسیقی میں آپ کھیل کی موسیقی سن سکتے ہیں یا اپنے MP3 گانے (10 تک) ڈال سکتے ہیں۔ آوازیں میں ایفیکٹ پیک چنیں: پہلے سنیں، پھر کامیابیوں یا سکوں سے کھولیں۔",noStorage:"یہ ڈیوائس گانے محفوظ نہیں کر سکتی"},
+ru:{music:"Музыка",sounds:"Звуки",volume:"Громкость",gameMusic:"Музыка игры",yourSongs:"Твои песни",slotsInfo:"Занято мест: {a} из {b}",addSong:"Добавить песню",buySlot:"Купить ещё место",maxSongs:"Достигнут максимум: 10 песен",repeatOne:"Повторять эту",repeatAll:"Все по порядку",del:"Удалить",delQ:"Удалить?",songAdded:"Песня добавлена!",songErr:"Не удалось загрузить файл",songBig:"Файл слишком большой (максимум 30 МБ)",listen:"Слушать",use:"Выбрать",inUse:"Выбран",achievement:"Достижение",t_ach:"Достижение получено! Набор «{name}» открыт",trk_0:"Огненный ритм",trk_1:"Спокойствие",snd_classic:"Классика",snd_arcade:"Ретро-аркада",snd_cartoon:"Мультик",snd_wood:"Маримба",snd_drums:"Барабаны",snd_water:"Вода",snd_crystal:"Хрусталь",snd_piano:"Пианино",snd_space:"Космос",snd_electro:"Электро",snd_epic:"Эпическая ярость",a_comboMax:"Сделай комбо x{n}",a_clears:"Очисти всё поле (раз: {n})",h_music_t:"Музыка и звуки",h_music:"В разделе «Музыка» можно слушать музыку игры или загрузить свои MP3 (до 10). В разделе «Звуки» выбирай набор эффектов: сначала послушай, потом открой за достижения или монеты.",noStorage:"Это устройство не может сохранять песни"}
+};
+for(const l in I18N_ADD)Object.assign(I18N[l],I18N_ADD[l]);
+
+const detectLang=()=>{const list=(navigator.languages||[navigator.language||'en']).map(x=>String(x).toLowerCase());
+  for(const l of list){const b=l.split('-')[0];if(b==='tl'||b==='fil')return'fil';if(b==='in')return'id';if(I18N[b])return b}return'en'};
+let lang=(()=>{try{const v=JSON.parse(localStorage.getItem('fury.lang'));return I18N[v]?v:detectLang()}catch(e){return detectLang()}})();
+function T_(k,v){let s=(I18N[lang]&&I18N[lang][k])||I18N.en[k]||k;if(v)for(const x in v)s=s.split('{'+x+'}').join(v[x]);return s}
+
+/* ================= CONFIG: PUBLICIDAD =================
+   Estos son IDs de PRUEBA de Google. Antes de publicar, cámbialos por los tuyos de AdMob. */
+const AD_IDS={
+  banner:'ca-app-pub-3940256099942544/9214589741',
+  interstitial:'ca-app-pub-3940256099942544/1033173712',
+  rewarded:'ca-app-pub-3940256099942544/5224354917'
+};
+const AD_TESTING=true;          // poner en false al publicar
+const INTERSTITIAL_EVERY=2;     // anuncio de pantalla completa cada N partidas
+
+/* ================= CONFIG: ECONOMÍA ================= */
+const START_COINS=100;
+const START_TOOLS={hammer:1,shuffle:1,undo:1};
+const TOOL_PRICE={hammer:60,shuffle:50,undo:40};
+const SKIN_PRICE={fury:0,neon:300,candy:300,ocean:500,wood:500,gems:800};
+const POINTS_PER_COIN=20;       // monedas al terminar = puntos / 20
+const FURY_SECONDS=15, X2_SECONDS=20;
+const SPECIAL_CHANCE=.14;       // probabilidad de que una pieza traiga un superpoder
+const GIFTS=[{c:50},{t:'hammer',n:1},{c:100},{t:'shuffle',n:2},{c:150},{t:'undo',n:2},{c:400,t:'hammer',n:2}];
+
+const $=s=>document.querySelector(s), $$=s=>document.querySelectorAll(s);
+const store={get(k,d){try{const v=localStorage.getItem('fury.'+k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem('fury.'+k,JSON.stringify(v))}catch(e){}}};
+const REDUCE=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const COIN='<svg class="coin" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#ffc233" stroke="#b7791f" stroke-width="2"/><circle cx="12" cy="12" r="5.5" fill="none" stroke="#c98a1c" stroke-width="2"/></svg>';
+const ICONS={hammer:$('.tool[data-t=hammer] svg').outerHTML,shuffle:$('.tool[data-t=shuffle] svg').outerHTML,undo:$('.tool[data-t=undo] svg').outerHTML};
+
+const LOCK='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 10V7a5 5 0 0 1 10 0v3h1a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1zm2 0h6V7a3 3 0 0 0-6 0z"/></svg>';
+$$('.coinslot').forEach(e=>e.outerHTML=COIN);
+
+/* ================= COLOR ================= */
+function hex(h){h=h.replace('#','');const n=parseInt(h,16);return[n>>16&255,n>>8&255,n&255]}
+function mix(h,t,a){const p=hex(h),q=hex(t);return'#'+p.map((v,i)=>Math.round(v+(q[i]-v)*a).toString(16).padStart(2,'0')).join('')}
+const L=(h,a)=>mix(h,'#ffffff',a), D=(h,a)=>mix(h,'#000000',a);
+const A=(h,a)=>{const[r,g,b]=hex(h);return`rgba(${r},${g},${b},${a})`};
+function rr(g,x,y,w,h,r){r=Math.min(r,w/2,h/2);g.beginPath();g.moveTo(x+r,y);g.arcTo(x+w,y,x+w,y+h,r);g.arcTo(x+w,y+h,x,y+h,r);g.arcTo(x,y+h,x,y,r);g.arcTo(x,y,x+w,y,r);g.closePath()}
+
+/* ================= TEMAS ================= */
+const SKINS={
+  fury:{style:'gloss',bg:'radial-gradient(120% 70% at 50% -10%,#6b1d0c 0%,#2a0a05 55%,#120403 100%)',
+    colors:['#ff3b2f','#ff7a1a','#ffc233','#e8245e','#ff5fa2','#9b5cff','#2fb4ff'],dead:'#55423d',
+    board:'#1d0906',boardEdge:'#6a2412',glow:'rgba(255,90,20,.45)',cell:'#2d110b',
+    ui:{fg:'#fff3e6',muted:'rgba(255,236,220,.62)',accent:'#ff5a14',accent2:'#ffc233',panel:'rgba(36,11,6,.92)',edge:'rgba(255,120,60,.3)',btnfg:'#2a0802'},
+    particle:'spark',ambient:'ember'},
+  neon:{style:'neon',bg:'radial-gradient(100% 60% at 50% 0%,#1d0b45 0%,#0a0620 60%,#05030f 100%)',
+    colors:['#22e6ff','#ff4fd8','#b6ff3b','#ffe14d','#ff8a3d','#6b8cff','#ff4f6d'],dead:'#3a3a55',
+    board:'#080616',boardEdge:'#3b2a8a',glow:'rgba(120,80,255,.5)',cell:'#110d2a',
+    ui:{fg:'#eef0ff',muted:'rgba(220,225,255,.6)',accent:'#ff4fd8',accent2:'#22e6ff',panel:'rgba(14,9,36,.92)',edge:'rgba(130,110,255,.4)',btnfg:'#09051c'},
+    particle:'spark',ambient:'grid'},
+  candy:{style:'candy',bg:'linear-gradient(170deg,#ffd9ec 0%,#e7dcff 50%,#d4f1ff 100%)',
+    colors:['#ff7fb6','#ffc24d','#6fdc9c','#6fb2ff','#b58cff','#ff9a6b','#4fd6d0'],dead:'#c9bcc6',
+    board:'#fff4fa',boardEdge:'#f2b6d4',glow:'rgba(255,140,190,.35)',cell:'#f6dcea',
+    ui:{fg:'#5b2547',muted:'rgba(91,37,71,.62)',accent:'#ff5fa2',accent2:'#ffb02e',panel:'rgba(255,247,252,.96)',edge:'rgba(220,120,170,.35)',btnfg:'#fff'},
+    particle:'confetti',ambient:'none'},
+  ocean:{style:'bubble',bg:'linear-gradient(180deg,#0a4a6e 0%,#062d47 50%,#021624 100%)',
+    colors:['#3cc8ff','#25e0d0','#7c8cff','#ff7eb6','#ffd25a','#8ef07a','#ff8d5c'],dead:'#3f5a66',
+    board:'#04253a',boardEdge:'#1a6f96',glow:'rgba(60,200,255,.35)',cell:'#073450',
+    ui:{fg:'#e8fbff',muted:'rgba(210,245,255,.62)',accent:'#1fb6ff',accent2:'#5ff2d6',panel:'rgba(4,34,52,.94)',edge:'rgba(80,200,255,.32)',btnfg:'#02202f'},
+    particle:'bubble',ambient:'bubble'},
+  wood:{style:'wood',bg:'linear-gradient(180deg,#4a3322 0%,#2e1f14 100%)',
+    colors:['#d07a3a','#e0b064','#9a5f2c','#b8462f','#7a9a3e','#d1a62a','#5d8798'],dead:'#6b5b4d',
+    board:'#5b3f29',boardEdge:'#8a6240',glow:'rgba(0,0,0,.35)',cell:'#4a321f',
+    ui:{fg:'#fbeedb',muted:'rgba(251,238,219,.62)',accent:'#c8692b',accent2:'#f0c06a',panel:'rgba(52,34,21,.96)',edge:'rgba(240,192,106,.3)',btnfg:'#2b1a0c'},
+    particle:'chip',ambient:'none'},
+  gems:{style:'gem',bg:'radial-gradient(110% 70% at 50% 0%,#3a1060 0%,#1a0830 55%,#0b0416 100%)',
+    colors:['#e3123f','#1f5fe0','#0fb87a','#9b2fe6','#f2a20c','#08b6d6','#ea3c9a'],dead:'#4c4458',
+    board:'#140822',boardEdge:'#6b3fa0',glow:'rgba(190,120,255,.35)',cell:'#1f1032',
+    ui:{fg:'#f6eeff',muted:'rgba(235,220,255,.6)',accent:'#b04bff',accent2:'#ffd166',panel:'rgba(24,10,40,.94)',edge:'rgba(190,140,255,.35)',btnfg:'#1a0630'},
+    particle:'sparkle',ambient:'twinkle'}
+};
+
+/* ================= PROGRESO GUARDADO ================= */
+let coins=store.get('coins',START_COINS);
+const inv=Object.assign({},START_TOOLS,store.get('inv',{}));
+const owned=store.get('owned',['fury']);
+let skin=store.get('skin','fury'); if(!SKINS[skin]||!owned.includes(skin)) skin='fury';
+function saveProg(){store.set('coins',coins);store.set('inv',inv);store.set('owned',owned)}
+
+/* ================= DIBUJO DE BLOQUES ================= */
+function bevel(g,x,y,w,r,b,c,t,l,ri,bo){
+  g.save();rr(g,x,y,w,w,r);g.clip();g.fillStyle=c;g.fillRect(x,y,w,w);
+  const P=(pts,col)=>{g.beginPath();g.moveTo(pts[0],pts[1]);for(let i=2;i<pts.length;i+=2)g.lineTo(pts[i],pts[i+1]);g.closePath();g.fillStyle=col;g.fill()};
+  P([x,y,x+w,y,x+w-b,y+b,x+b,y+b],t);P([x+w,y,x+w,y+w,x+w-b,y+w-b,x+w-b,y+b],ri);
+  P([x,y+w,x+w,y+w,x+w-b,y+w-b,x+b,y+w-b],bo);P([x,y,x,y+w,x+b,y+w-b,x+b,y+b],l);
+  g.restore();
+}
+function star(g,cx,cy,s,a){g.save();g.globalAlpha=a;g.fillStyle='#fff';g.beginPath();g.moveTo(cx,cy-s);g.quadraticCurveTo(cx,cy,cx+s,cy);g.quadraticCurveTo(cx,cy,cx,cy+s);g.quadraticCurveTo(cx,cy,cx-s,cy);g.quadraticCurveTo(cx,cy,cx,cy-s);g.fill();g.restore()}
+function paintBlock(g,s,col,style,seed){
+  let m=s*.045,x=m,y=m,w=s-2*m;
+  switch(style){
+  case 'gloss':{
+    rr(g,x,y,w,w,s*.16);g.fillStyle=D(col,.5);g.fill();
+    x+=s*.02;y+=s*.02;w-=s*.04;
+    bevel(g,x,y,w,s*.14,w*.14,col,L(col,.38),L(col,.16),D(col,.18),D(col,.34));
+    const b=w*.14,gr=g.createLinearGradient(0,y+b,0,y+w-b);gr.addColorStop(0,L(col,.14));gr.addColorStop(1,D(col,.06));
+    g.fillStyle=gr;rr(g,x+b,y+b,w-2*b,w-2*b,s*.05);g.fill();
+    g.fillStyle='rgba(255,255,255,.28)';g.beginPath();g.ellipse(x+w*.42,y+w*.3,w*.26,w*.09,-.35,0,7);g.fill();
+    break;}
+  case 'gem':{
+    rr(g,x,y,w,w,s*.06);g.fillStyle=D(col,.55);g.fill();
+    x+=s*.02;y+=s*.02;w-=s*.04;const b=w*.24;
+    bevel(g,x,y,w,s*.05,b,col,L(col,.5),L(col,.22),D(col,.22),D(col,.45));
+    const gr=g.createLinearGradient(x+b,y+b,x+w-b,y+w-b);gr.addColorStop(0,L(col,.3));gr.addColorStop(.55,col);gr.addColorStop(1,D(col,.15));
+    g.fillStyle=gr;g.fillRect(x+b,y+b,w-2*b,w-2*b);
+    g.strokeStyle='rgba(255,255,255,.25)';g.lineWidth=Math.max(1,s*.015);g.strokeRect(x+b,y+b,w-2*b,w-2*b);
+    star(g,x+b+w*.12,y+b+w*.12,w*.11,.9);
+    break;}
+  case 'neon':{
+    m=s*.14;x=m;y=m;w=s-2*m;
+    g.save();g.shadowColor=col;g.shadowBlur=s*.14;
+    rr(g,x,y,w,w,s*.12);g.fillStyle=A(col,.2);g.fill();
+    g.lineWidth=s*.075;g.strokeStyle=col;g.stroke();g.restore();
+    g.lineWidth=s*.03;g.strokeStyle=L(col,.65);rr(g,x,y,w,w,s*.12);g.stroke();
+    rr(g,x+w*.3,y+w*.3,w*.4,w*.4,s*.05);g.fillStyle=A(L(col,.5),.55);g.fill();
+    break;}
+  case 'candy':{
+    const r=s*.3;rr(g,x,y+s*.04,w,w-s*.04,r);g.fillStyle=D(col,.18);g.fill();
+    const gr=g.createRadialGradient(x+w*.4,y+w*.3,w*.05,x+w*.5,y+w*.45,w*.75);gr.addColorStop(0,L(col,.45));gr.addColorStop(.6,col);gr.addColorStop(1,D(col,.06));
+    rr(g,x,y,w,w-s*.08,r);g.fillStyle=gr;g.fill();
+    rr(g,x+w*.17,y+w*.12,w*.42,w*.14,w*.07);g.fillStyle='rgba(255,255,255,.75)';g.fill();
+    g.beginPath();g.arc(x+w*.72,y+w*.2,w*.05,0,7);g.fill();
+    break;}
+  case 'bubble':{
+    const r=s*.28;const gr=g.createRadialGradient(x+w*.35,y+w*.3,w*.04,x+w*.5,y+w*.5,w*.72);
+    gr.addColorStop(0,L(col,.6));gr.addColorStop(.5,col);gr.addColorStop(1,D(col,.35));
+    rr(g,x,y,w,w,r);g.fillStyle=gr;g.fill();
+    g.lineWidth=s*.03;g.strokeStyle=A(L(col,.6),.7);g.stroke();
+    g.fillStyle='rgba(255,255,255,.8)';g.beginPath();g.ellipse(x+w*.32,y+w*.26,w*.13,w*.08,-.6,0,7);g.fill();
+    g.beginPath();g.arc(x+w*.55,y+w*.2,w*.035,0,7);g.fill();
+    break;}
+  case 'wood':{
+    rr(g,x,y,w,w,s*.1);g.fillStyle=D(col,.45);g.fill();
+    x+=s*.02;y+=s*.02;w-=s*.04;
+    g.save();rr(g,x,y,w,w,s*.09);g.clip();
+    const gr=g.createLinearGradient(0,y,0,y+w);gr.addColorStop(0,L(col,.12));gr.addColorStop(1,D(col,.12));g.fillStyle=gr;g.fillRect(x,y,w,w);
+    g.strokeStyle=A(D(col,.4),.35);g.lineWidth=Math.max(1,s*.018);
+    for(let i=0;i<6;i++){g.beginPath();const yy=y+w*(.1+i*.16);for(let k=0;k<=12;k++){const xx=x+w*k/12;const v=yy+Math.sin(k*.9+seed*1.7+i*2.1)*w*.03;k?g.lineTo(xx,v):g.moveTo(xx,v)}g.stroke()}
+    g.restore();
+    const b=w*.09;
+    g.fillStyle='rgba(255,255,255,.2)';g.fillRect(x+b,y,w-2*b,b*.8);
+    g.fillStyle='rgba(0,0,0,.25)';g.fillRect(x+b,y+w-b*.8,w-2*b,b*.8);
+    break;}
+  }
+}
+const sprites=new Map();
+function sprite(ci,size,sk=skin){
+  const S=SKINS[sk],px=Math.max(4,Math.round(size*DPR)),key=sk+'|'+ci+'|'+px;
+  let c=sprites.get(key);
+  if(!c){if(sprites.size>500)sprites.clear();c=document.createElement('canvas');c.width=c.height=px;
+    paintBlock(c.getContext('2d'),px,ci<0?S.dead:S.colors[ci],S.style,ci+1);sprites.set(key,c)}
+  return c;
+}
+/* Íconos de superpoderes dibujados sobre el bloque */
+
+const POWER_W={bomb:30,bolt:25,rainbow:15,x2:15,ice:15};
+function drawPower(g,type,x,y,s,t){
+  const p=1+.08*Math.sin(t/170);g.save();g.translate(x+s/2,y+s/2);g.scale(p,p);
+  g.beginPath();g.arc(0,0,s*.33,0,7);g.fillStyle='rgba(0,0,0,.38)';g.fill();
+  g.lineWidth=s*.035;g.strokeStyle=`rgba(255,255,255,${.5+.4*Math.sin(t/170)})`;g.stroke();
+  switch(type){
+  case 'bomb':g.fillStyle='#1b1b22';g.beginPath();g.arc(-s*.02,s*.04,s*.19,0,7);g.fill();
+    g.fillStyle='rgba(255,255,255,.55)';g.beginPath();g.arc(-s*.09,-s*.03,s*.045,0,7);g.fill();
+    g.strokeStyle='#e0c08f';g.lineWidth=s*.045;g.beginPath();g.moveTo(s*.09,-s*.11);g.quadraticCurveTo(s*.15,-s*.22,s*.22,-s*.21);g.stroke();
+    star(g,s*.23,-s*.22,s*.09,1);g.fillStyle='#ffb020';g.beginPath();g.arc(s*.23,-s*.22,s*.035,0,7);g.fill();break;
+  case 'bolt':g.fillStyle='#ffe14d';g.strokeStyle='#6b3d00';g.lineWidth=s*.03;g.lineJoin='round';g.beginPath();
+    [[.07,-.27],[-.15,.04],[-.01,.04],[-.07,.27],[.15,-.06],[.01,-.06]].forEach(([a,b],i)=>i?g.lineTo(a*s,b*s):g.moveTo(a*s,b*s));g.closePath();g.fill();g.stroke();break;
+  case 'rainbow':['#ff4d4d','#ffb020','#ffe14d','#4ade80','#38bdf8'].forEach((c,i)=>{g.strokeStyle=c;g.lineWidth=s*.042;g.beginPath();g.arc(0,s*.1,s*(.23-i*.04),Math.PI,0);g.stroke()});break;
+  case 'x2':g.font=`${Math.round(s*.32)}px Bungee, Impact, sans-serif`;g.textAlign='center';g.textBaseline='middle';
+    g.lineWidth=s*.07;g.strokeStyle='#5a2a00';g.lineJoin='round';g.strokeText('x2',0,s*.02);g.fillStyle='#ffe14d';g.fillText('x2',0,s*.02);break;
+  case 'ice':g.strokeStyle='#d6f7ff';g.lineWidth=s*.045;g.lineCap='round';
+    for(let i=0;i<3;i++){g.save();g.rotate(i*Math.PI/3);g.beginPath();g.moveTo(0,-s*.22);g.lineTo(0,s*.22);
+      g.moveTo(-s*.07,-s*.17);g.lineTo(0,-s*.1);g.lineTo(s*.07,-s*.17);g.moveTo(-s*.07,s*.17);g.lineTo(0,s*.1);g.lineTo(s*.07,s*.17);g.stroke();g.restore()}break;
+  }
+  g.restore();
+}
+
+/* ================= PIEZAS ================= */
+const BASE=[
+  [['#'],2],[['##'],3],[['###'],3],[['####'],2],[['#####'],1.4],
+  [['##','##'],4],[['###','###','###'],1.4],[['###','###'],1.6],
+  [['#.','##'],2],[['#.','#.','##'],1.2],[['.#','.#','##'],1.2],[['#..','#..','###'],1],
+  [['###','.#.'],1.3],[['.##','##.'],1.1],[['##.','.##'],1.1],[['#.','.#'],.5],[['#..','.#.','..#'],.25]
+];
+const SHAPES=[];
+(()=>{const seen=new Set();
+  for(const[rows,wt]of BASE){let cells=[];rows.forEach((r,i)=>[...r].forEach((ch,j)=>{if(ch==='#')cells.push([i,j])}));
+    const vars=[];for(let k=0;k<4;k++){const h=Math.max(...cells.map(c=>c[0]))+1;cells=cells.map(([r,c])=>[c,h-1-r]);
+      const key=JSON.stringify(cells.slice().sort((a,b)=>a[0]-b[0]||a[1]-b[1]));if(!seen.has(key)){seen.add(key);vars.push(cells.map(c=>c.slice()))}}
+    vars.forEach(v=>SHAPES.push({cells:v,w:Math.max(...v.map(c=>c[1]))+1,h:Math.max(...v.map(c=>c[0]))+1,wt:wt*4/vars.length}))}
+})();
+const SMALL=SHAPES.filter(s=>s.cells.length<=3);
+function pickW(list,key){let r=Math.random()*list.reduce((a,x)=>a+(key?x[1]:x.wt),0);for(const x of list){r-=key?x[1]:x.wt;if(r<=0)return x}return list[0]}
+function makePiece(avoid,small){const s=pickW(small?SMALL:SHAPES);
+  let ci;do{ci=Math.floor(Math.random()*7)}while(avoid.includes(ci));
+  return{cells:s.cells,w:s.w,h:s.h,ci,placed:false,sp:null}}
+
+/* ================= ESTADO ================= */
+const N=8;
+let grid,spec,tray,score,shown,combo,since,continued,sets,meter,furyT,x2T,iceSets,gameBest,recShown,state='menu',games=store.get('games',0);
+let best=store.get('best',0),earned=0,paid=0,undoSnap=null,hammer=false,lastFury=false,beatAcc=0;
+const pops=[],clearing=[],beams=[],parts=[],texts=[],rings=[];
+let drag=null,ghost=null,shake=0,trayT0=0,dieT0=0;
+const settings={snd:store.get('snd',true),vib:store.get('vib',true)};
+const emptyGrid=v=>Array.from({length:N},()=>Array(N).fill(v));
+
+function canPlace(p,r,c){for(const[dr,dc]of p.cells){const a=r+dr,b=c+dc;if(a<0||b<0||a>=N||b>=N||grid[a][b]>=0)return false}return true}
+function canFit(p){for(let r=0;r<=N-p.h;r++)for(let c=0;c<=N-p.w;c++)if(canPlace(p,r,c))return true;return false}
+function genSet(count=3){const small=iceSets>0;let bestSet=null,bf=-1;
+  for(let a=0;a<40;a++){const set=[];for(let i=0;i<count;i++)set.push(makePiece(set.map(p=>p.ci),small));
+    const f=set.filter(canFit).length;if(f===count||(a>6&&f>=Math.min(2,count))||(a>20&&f>=1)){bestSet=set;break}if(f>bf){bf=f;bestSet=set}}
+  // superpoderes: nunca en la primera tanda; como máximo uno por tanda (dos si vas bien)
+  if(sets>0){let maxSp=score>1500?2:1;for(const p of bestSet){if(maxSp>0&&Math.random()<SPECIAL_CHANCE){p.sp={i:Math.floor(Math.random()*p.cells.length),t:pickW(Object.entries(POWER_W),1)[0]};maxSp--}}}
+  sets++;return bestSet}
+function nextSet(){const s=genSet(3);if(iceSets>0)iceSets--;trayT0=now();return s}
+function newGame(){grid=emptyGrid(-1);spec=emptyGrid(null);score=0;shown=0;combo=0;since=99;continued=false;sets=0;meter=0;furyT=0;x2T=0;iceSets=0;
+  gameBest=best;recShown=false;undoSnap=null;hammer=false;paid=0;
+  clearing.length=parts.length=texts.length=beams.length=rings.length=0;tray=nextSet();state='play';save();updateHud(true);syncTools()}
+function snapshot(){return JSON.stringify({grid,spec,tray,score,combo,since,continued,sets,meter,furyT,x2T,iceSets,gameBest,recShown,paid})}
+function restore(s){const g=JSON.parse(s);grid=g.grid;spec=g.spec||emptyGrid(null);tray=g.tray;score=g.score;combo=g.combo;since=g.since;continued=g.continued;
+  sets=g.sets||1;meter=g.meter||0;furyT=g.furyT||0;x2T=g.x2T||0;iceSets=g.iceSets||0;gameBest=g.gameBest!=null?g.gameBest:best;recShown=!!g.recShown;paid=g.paid||0}
+function save(){store.set('game',state==='play'||state==='stuck'?JSON.parse(snapshot()):null)}
+function load(){const g=store.get('game',null);if(!g||!g.grid)return false;restore(JSON.stringify(g));shown=score;state='play';trayT0=now();updateHud(true);return true}
+
+/* ================= SONIDO / VIBRACIÓN ================= */
+/* ================= MOTOR DE AUDIO ================= */
+const sndSet={musOn:store.get('musOn',true),musVol:store.get('musVol',.5),mode:store.get('musMode','one'),sel:store.get('musSel','b0')};
+const AU={c:null,out:null,echo:null,mus:null,nb:null,
+  init(){if(this.c)return;try{this.c=new(window.AudioContext||window.webkitAudioContext)()}catch(e){return}
+    const c=this.c;this.out=c.createGain();this.out.gain.value=.9;this.out.connect(c.destination);
+    this.echo=c.createDelay(1);this.echo.delayTime.value=.19;const fb=c.createGain();fb.gain.value=.3;const wet=c.createGain();wet.gain.value=.45;
+    this.echo.connect(fb);fb.connect(this.echo);this.echo.connect(wet);wet.connect(this.out);
+    this.mus=c.createGain();this.mus.gain.value=sndSet.musVol*.6;this.mus.connect(c.destination);
+    const n=c.sampleRate;this.nb=c.createBuffer(1,n,n);const d=this.nb.getChannelData(0);for(let i=0;i<n;i++)d[i]=Math.random()*2-1},
+  filt(t,o,d){const c=this.c,ch=[];
+    if(o.hp){const f=c.createBiquadFilter();f.type='highpass';f.frequency.value=o.hp;ch.push(f)}
+    if(o.bp){const f=c.createBiquadFilter();f.type='bandpass';f.frequency.value=o.bp;f.Q.value=o.q||1;ch.push(f)}
+    if(o.lp){const f=c.createBiquadFilter();f.type='lowpass';f.frequency.setValueAtTime(o.lp,t);if(o.lp2)f.frequency.exponentialRampToValueAtTime(o.lp2,t+d);if(!o.bp)f.Q.value=o.q||1;ch.push(f)}
+    for(let i=1;i<ch.length;i++)ch[i-1].connect(ch[i]);return ch},
+  env(g,t,d,o){const v=o.v==null?.15:o.v,a=o.a||.01;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(Math.max(.0002,v),t+a);g.gain.exponentialRampToValueAtTime(.0001,t+Math.max(d,a+.01))},
+  tone(f,d,o={}){const c=this.c;if(!c)return;const t=c.currentTime+Math.max(0,o.dl||0);
+    const osc=c.createOscillator(),g=c.createGain();osc.type=o.type||'sine';osc.frequency.setValueAtTime(f,t);
+    if(o.f2)osc.frequency.exponentialRampToValueAtTime(Math.max(20,o.f2),t+(o.slide||d));
+    if(o.fm){const m=c.createOscillator(),mg=c.createGain();m.frequency.value=f*o.fm[0];mg.gain.setValueAtTime(f*o.fm[1],t);mg.gain.exponentialRampToValueAtTime(1,t+d);m.connect(mg);mg.connect(osc.frequency);m.start(t);m.stop(t+d+.05)}
+    this.env(g,t,d,o);const ch=this.filt(t,o,d);let last=osc;if(ch.length){osc.connect(ch[0]);last=ch[ch.length-1]}
+    last.connect(g);g.connect(o.bus||this.out);if(o.echo)g.connect(this.echo);osc.start(t);osc.stop(t+d+.06)},
+  noise(d,o={}){const c=this.c;if(!c)return;const t=c.currentTime+Math.max(0,o.dl||0);const s=c.createBufferSource();s.buffer=this.nb;s.loop=true;
+    const g=c.createGain();this.env(g,t,d,Object.assign({a:.003},o));const ch=this.filt(t,o,d);let last=s;if(ch.length){s.connect(ch[0]);last=ch[ch.length-1]}
+    last.connect(g);g.connect(o.bus||this.out);if(o.echo)g.connect(this.echo);s.start(t,Math.random()*.5);s.stop(t+d+.05)}
+};
+const m2f=m=>440*Math.pow(2,(m-69)/12);
+const T=(f,d,o)=>AU.tone(f,d,o),Nz=(d,o)=>AU.noise(d,o);
+const arp=(ms,st,d,o)=>ms.forEach((m,i)=>T(m2f(m),d,Object.assign({},o,{dl:(o.dl||0)+i*st})));
+
+/* ================= PACKS DE SONIDO ================= */
+const mar=(m,dl=0,v=.18)=>{T(m2f(m),.45,{v,dl,a:.003});T(m2f(m)*4,.07,{v:v*.35,dl,a:.003})};
+const blk=(dl=0,f=2200)=>{Nz(.03,{bp:f,q:8,v:.35,dl});T(f/2,.04,{v:.08,dl})};
+const kick=(dl=0,v=.35)=>T(150,.28,{f2:45,v,dl}),snare=(dl=0,v=.22)=>{Nz(.16,{bp:1800,q:.8,v,dl});T(190,.08,{type:'triangle',v:.1,dl})};
+const hat=(dl=0)=>Nz(.04,{hp:7500,v:.07,dl}),tom=(f,dl=0)=>T(f,.25,{f2:f*.6,v:.25,dl}),crash=(dl=0)=>Nz(.9,{hp:3500,v:.1,dl});
+const bub=(f,dl=0,v=.12)=>T(f,.09,{f2:f*2.2,slide:.07,v,dl}),drip=(f,dl=0,v=.12)=>T(f,.1,{f2:f*.4,v,dl});
+const bell=(m,dl=0,v=.09,d=1.1)=>T(m2f(m),d,{fm:[3.5,1.6],v,dl,a:.003,echo:true});
+const pn=(m,dl=0,v=.14,d=.9)=>{T(m2f(m),d,{type:'triangle',v,dl,a:.004});T(m2f(m)*2,d*.5,{v:v*.35,dl,a:.004});T(m2f(m)*3,d*.25,{v:v*.12,dl,a:.004})};
+const stab=(ms,dl=0,v=.05)=>ms.forEach(m=>T(m2f(m),.18,{type:'sawtooth',lp:3500,lp2:500,q:6,v,dl}));
+const ekick=(dl=0)=>T(130,.16,{f2:45,v:.3,dl});
+const br=(m,d=.5,dl=0,v=.07)=>{const f=m2f(m);T(f,d,{type:'sawtooth',lp:2200,lp2:700,v,dl,a:.04});T(f*1.006,d,{type:'sawtooth',lp:2200,lp2:700,v:v*.8,dl,a:.04})};
+const timp=(dl=0,v=.3,f=90)=>T(f,.5,{f2:f*.7,v,dl});
+const hit=(ms,dl=0)=>{ms.forEach(m=>br(m,.7,dl,.06));Nz(.6,{lp:1500,v:.2,dl});timp(dl,.35,55)};
+const PACKS={
+classic:{
+  pick:()=>T(620,.06,{v:.07,f2:900}),
+  place:()=>{T(240,.1,{type:'triangle',v:.2,f2:120});T(80,.08,{v:.18,f2:50})},
+  bad:()=>T(150,.12,{type:'sawtooth',v:.04,f2:110}),
+  clear:(n,cb)=>{const b=330*Math.pow(2,Math.min(cb,10)/12);[0,4,7,12,16,19].slice(0,Math.min(n+2,6)).forEach((s,i)=>T(b*Math.pow(2,s/12),.22,{type:'triangle',v:.12,dl:i*.06}));T(900,.25,{v:.04,f2:200})},
+  power:k=>{if(k==='bomb'){T(120,.4,{type:'sawtooth',v:.16,f2:40});T(60,.5,{v:.25,f2:30})}else if(k==='bolt'){T(1800,.25,{type:'sawtooth',v:.07,f2:200});T(900,.2,{type:'square',v:.05,f2:100,dl:.05})}else if(k==='ice'){[1568,2093,2637].forEach((f,i)=>T(f,.3,{v:.07,dl:i*.07}))}else{[523,659,784,1047,1319].forEach((f,i)=>T(f,.18,{type:'triangle',v:.09,dl:i*.05}))}},
+  fury:()=>{T(110,.9,{type:'sawtooth',v:.12,f2:440});[262,330,392,523].forEach((f,i)=>T(f,.5,{type:'square',v:.05,dl:.3+i*.04}))},
+  beat:i=>{T(70,.14,{v:.28,f2:40});if(i%2)T(2200,.04,{type:'square',v:.02})},
+  coin:()=>{T(988,.08,{type:'square',v:.05});T(1319,.18,{type:'square',v:.05,dl:.08})},
+  record:()=>[523,659,784,1047,784,1047].forEach((f,i)=>T(f,.22,{type:'triangle',v:.12,dl:i*.1})),
+  hammer:()=>{T(200,.08,{type:'square',v:.12,f2:80});T(1200,.15,{type:'sawtooth',v:.04,f2:300,dl:.03})},
+  over:()=>[392,330,262,196].forEach((f,i)=>T(f,.3,{type:'triangle',v:.12,dl:i*.15})),
+  tap:()=>T(520,.04,{v:.05})},
+arcade:{
+  pick:()=>T(1046,.05,{type:'square',v:.05,f2:1568}),
+  place:()=>T(196,.09,{type:'square',v:.09,f2:98}),
+  bad:()=>{T(98,.08,{type:'square',v:.07});T(92,.12,{type:'square',v:.07,dl:.08})},
+  clear:(n,cb)=>arp([0,4,7,12,16,19,24].slice(0,n+3).map(x=>x+72+Math.min(cb,8)),.045,.08,{type:'square',v:.06}),
+  power:k=>{if(k==='bomb'){Nz(.5,{v:.3,lp:3000,lp2:100});T(160,.4,{type:'square',v:.1,f2:40})}else if(k==='bolt'){T(2400,.12,{type:'square',v:.06,f2:300});T(2400,.12,{type:'square',v:.06,f2:300,dl:.12})}else if(k==='ice'){arp([96,100,103,108],.04,.1,{type:'square',v:.04})}else{arp([72,76,79,84,88,91],.03,.08,{type:'square',v:.05})}},
+  fury:()=>arp([60,64,67,72,76,79,84,88,91,96],.035,.1,{type:'square',v:.06}),
+  beat:i=>{T(80,.07,{type:'square',v:.1,f2:50});if(i%2)Nz(.03,{hp:6000,v:.05})},
+  coin:()=>{T(988,.07,{type:'square',v:.06});T(1319,.25,{type:'square',v:.06,dl:.07})},
+  record:()=>arp([67,72,76,79,84,79,84,88],.09,.12,{type:'square',v:.07}),
+  hammer:()=>{Nz(.08,{bp:1500,v:.2});T(300,.06,{type:'square',v:.08,f2:100})},
+  over:()=>arp([71,70,69,68,60],.16,.18,{type:'square',v:.07}),
+  tap:()=>T(1320,.03,{type:'square',v:.03})},
+cartoon:{
+  pick:()=>T(400,.07,{v:.1,f2:900}),
+  place:()=>T(520,.16,{type:'triangle',v:.16,f2:160}),
+  bad:()=>T(260,.35,{type:'sawtooth',v:.06,f2:180,lp:700}),
+  clear:(n,cb)=>{T(350,.12*(n+1),{v:.1,f2:350*Math.pow(2,(n+1)/2+cb/12)});for(let i=0;i<n+1;i++)T(900+i*200,.05,{v:.08,f2:300,dl:.08*i+.1})},
+  power:k=>{if(k==='bomb'){T(90,.6,{type:'triangle',v:.25,f2:30});Nz(.4,{lp:900,v:.2})}else if(k==='bolt'){T(3200,.18,{v:.08,f2:300})}else if(k==='ice'){arp([96,103,108,115],.06,.12,{v:.06})}else{T(300,.4,{v:.1,f2:1600,slide:.35})}},
+  fury:()=>{T(200,.8,{v:.1,f2:1800,slide:.7});for(let i=0;i<4;i++)T(500,.12,{type:'triangle',v:.12,f2:150,dl:.8+i*.1})},
+  beat:i=>T(i%2?180:120,.1,{type:'triangle',v:.14,f2:80}),
+  coin:()=>{T(1200,.1,{type:'triangle',v:.1});T(1600,.2,{type:'triangle',v:.1,dl:.1})},
+  record:()=>{T(300,.5,{v:.1,f2:1500,slide:.45});[0,1,2,3].forEach(i=>T(1000+i*250,.06,{v:.08,f2:400,dl:.5+i*.08}))},
+  hammer:()=>{T(220,.1,{type:'square',v:.1,f2:90});T(900,.05,{v:.08,f2:300,dl:.1})},
+  over:()=>[0,1,2].forEach(i=>T(300-i*40,.35,{type:'sawtooth',v:.07,f2:240-i*40,lp:800,dl:i*.38})),
+  tap:()=>T(800,.05,{v:.07,f2:300})},
+wood:{
+  pick:()=>blk(0,2800),
+  place:()=>{mar(55);blk(0,1600)},
+  bad:()=>{mar(47,0,.14);mar(48,0,.14)},
+  clear:(n,cb)=>[0,2,4,7,9,12,14,16].slice(0,n+3).forEach((s,i)=>mar(67+s+Math.min(cb,7),i*.06)),
+  power:k=>{if(k==='bomb'){[36,43,48].forEach(m=>mar(m,0,.25));for(let i=0;i<5;i++)blk(i*.05,1200-i*150)}else if(k==='bolt'){for(let i=0;i<8;i++)mar(96-i*2,i*.025,.1)}else if(k==='ice'){[91,96,98,103].forEach((m,i)=>mar(m,i*.06,.1))}else{[72,76,79,84].forEach((m,i)=>mar(m,i*.05))}},
+  fury:()=>[0,3,7,10,12,15,19,22,24,27,31,34].forEach((s,i)=>mar(60+s,i*.04,.14)),
+  beat:i=>{if(i%2)blk(0,2400);else mar(45,0,.2)},
+  coin:()=>{mar(84,0,.15);mar(88,.07,.15)},
+  record:()=>[72,74,76,79,81,84,88,91].forEach((m,i)=>mar(m,i*.07,.15)),
+  hammer:()=>{blk(0,900);mar(40,0,.2)},
+  over:()=>[67,64,60,55].forEach((m,i)=>mar(m,i*.18)),
+  tap:()=>blk(0,3200)},
+drums:{
+  pick:()=>hat(),
+  place:()=>tom(150),
+  bad:()=>Nz(.2,{lp:300,v:.25}),
+  clear:(n,cb)=>{for(let i=0;i<n+2;i++)tom(260-i*30+cb*6,i*.06);if(n>=2)crash((n+2)*.06)},
+  power:k=>{if(k==='bomb'){kick(0,.45);Nz(.7,{lp:1500,lp2:80,v:.35});crash(.05)}else if(k==='bolt'){snare(0);snare(.04,.15);snare(.08,.1)}else if(k==='ice'){for(let i=0;i<6;i++)Nz(.05,{hp:9000,v:.06,dl:i*.05})}else{for(let i=0;i<6;i++)snare(i*.05,.12)}},
+  fury:()=>{for(let i=0;i<10;i++)snare(i*.05,.08+i*.015);kick(.5);crash(.5)},
+  beat:i=>{if(i%2)snare(0,.14);else kick(0,.3);hat(.21)},
+  coin:()=>{T(560,.12,{type:'square',v:.06,lp:900});T(845,.12,{type:'square',v:.06,lp:1300})},
+  record:()=>{for(let i=0;i<8;i++)snare(i*.04,.1+i*.015);kick(.35);crash(.35)},
+  hammer:()=>{snare(0,.25);kick(0,.25)},
+  over:()=>[200,160,120,90].forEach((f,i)=>tom(f,i*.2)),
+  tap:()=>Nz(.02,{bp:3200,q:4,v:.15})},
+water:{
+  pick:()=>bub(500),
+  place:()=>{T(260,.12,{f2:800,slide:.05,v:.2});Nz(.06,{lp:700,v:.1})},
+  bad:()=>T(180,.25,{f2:90,v:.15,type:'triangle'}),
+  clear:(n,cb)=>{for(let i=0;i<(n+1)*3;i++)bub(300+Math.random()*700+cb*40,i*.035,.08);Nz(.35,{lp:2200,v:.1})},
+  power:k=>{if(k==='bomb'){Nz(.8,{lp:1800,lp2:200,v:.35});T(70,.5,{f2:35,v:.25})}else if(k==='bolt'){for(let i=0;i<8;i++)drip(2000-i*150,i*.03,.08)}else if(k==='ice'){[2093,2637,3136].forEach((f,i)=>T(f,.4,{v:.06,dl:i*.08,echo:true}))}else{for(let i=0;i<6;i++)bub(400+i*150,i*.05)}},
+  fury:()=>{for(let i=0;i<20;i++)bub(200+i*60,i*.03,.08);Nz(.6,{lp:3000,v:.12,dl:.4})},
+  beat:i=>{if(i%2)drip(1200,0,.08);else T(90,.15,{f2:60,v:.22})},
+  coin:()=>{drip(1800);drip(2400,.08)},
+  record:()=>{for(let i=0;i<10;i++)bub(300+i*120,i*.05,.1)},
+  hammer:()=>{Nz(.25,{lp:1500,v:.3});T(140,.15,{f2:70,v:.2})},
+  over:()=>[400,330,260,200].forEach((f,i)=>T(f,.3,{f2:f*.6,v:.12,type:'triangle',dl:i*.2})),
+  tap:()=>drip(1400,0,.08)},
+crystal:{
+  pick:()=>bell(96,0,.05,.4),
+  place:()=>bell(72,0,.1,.7),
+  bad:()=>T(220,.25,{f2:200,v:.08}),
+  clear:(n,cb)=>[0,2,4,7,9,12,14,16].slice(0,n+3).forEach((s,i)=>bell(79+s+Math.min(cb,8),i*.07,.07)),
+  power:k=>{if(k==='bomb'){[48,55,60].forEach(m=>bell(m,0,.12,1.6));Nz(.6,{lp:1200,v:.15})}else if(k==='bolt'){for(let i=0;i<10;i++)bell(100-i*2,i*.02,.04,.4)}else if(k==='ice'){[103,108,110,115].forEach((m,i)=>bell(m,i*.06,.05,.8))}else{[84,88,91,96].forEach((m,i)=>bell(m,i*.06,.07))}},
+  fury:()=>[60,64,67,72,76,79,84].forEach((m,i)=>bell(m,i*.03,.06,1.6)),
+  beat:i=>bell(i%2?96:84,0,.03,.3),
+  coin:()=>{bell(91,0,.07,.6);bell(96,.08,.07,.8)},
+  record:()=>[72,76,79,84,88,91,96].forEach((m,i)=>bell(m,i*.09,.07,1)),
+  hammer:()=>{Nz(.12,{hp:4000,v:.15});bell(98,0,.06,.4)},
+  over:()=>[84,79,76,72,67].forEach((m,i)=>bell(m,i*.18,.07,1)),
+  tap:()=>bell(103,0,.04,.25)},
+piano:{
+  pick:()=>pn(84,0,.06,.3),
+  place:()=>{pn(48,0,.12,.6);pn(55,0,.08,.6)},
+  bad:()=>{pn(42,0,.1,.4);pn(43,0,.1,.4)},
+  clear:(n,cb)=>[0,4,7,12,16,19,24].slice(0,n+3).forEach((s,i)=>pn(60+s+Math.min(cb,9),i*.07,.11)),
+  power:k=>{if(k==='bomb'){[24,31,36,43].forEach(m=>pn(m,0,.16,1.4))}else if(k==='bolt'){for(let i=0;i<14;i++)pn(96-i*2,i*.02,.06,.3)}else if(k==='ice'){[96,100,103,108].forEach((m,i)=>pn(m,i*.07,.06,.6))}else{[60,64,67,72].forEach(m=>pn(m,0,.08,1))}},
+  fury:()=>[48,51,55,60,63,67,72].forEach((m,i)=>pn(m,i*.02,.1,1.4)),
+  beat:i=>pn(i%2?43:36,0,.1,.3),
+  coin:()=>{pn(88,0,.07,.4);pn(91,.07,.07,.5)},
+  record:()=>[60,64,67,72,67,72,76,79].forEach((m,i)=>pn(m,i*.1,.11,.6)),
+  hammer:()=>[36,37,38].forEach(m=>pn(m,0,.1,.4)),
+  over:()=>[67,63,60,55].forEach((m,i)=>pn(m,i*.22,.11,.8)),
+  tap:()=>pn(79,0,.05,.2)},
+space:{
+  pick:()=>T(1200,.08,{f2:2400,v:.05,echo:true}),
+  place:()=>T(320,.22,{type:'sawtooth',f2:80,lp:900,v:.1,echo:true}),
+  bad:()=>T(120,.3,{type:'sawtooth',lp:500,v:.08,f2:90}),
+  clear:(n,cb)=>{for(let i=0;i<n+1;i++)T(300+i*150,.35,{type:'sawtooth',f2:2400+cb*200,lp:3000,v:.05,dl:i*.08,echo:true});T(4000,.5,{v:.03,f2:6000,echo:true})},
+  power:k=>{if(k==='bomb'){Nz(1.2,{lp:4000,lp2:60,v:.35});T(80,1,{f2:25,v:.25})}else if(k==='bolt'){for(let i=0;i<3;i++)T(2600,.15,{type:'sawtooth',f2:180,lp:4000,v:.06,dl:i*.09,echo:true})}else if(k==='ice'){[2500,3300,4100].forEach((f,i)=>T(f,.5,{v:.04,dl:i*.07,echo:true}))}else{T(200,.6,{type:'sawtooth',f2:3000,lp:3500,v:.06,echo:true})}},
+  fury:()=>T(60,1.2,{type:'sawtooth',f2:960,lp:400,lp2:5000,q:6,v:.12,echo:true}),
+  beat:i=>{T(55,.2,{f2:40,v:.3});if(i%2)T(3000,.03,{v:.02,echo:true})},
+  coin:()=>T(1760,.25,{v:.07,f2:2640,echo:true}),
+  record:()=>arp([72,79,84,91,96],.09,.4,{type:'sawtooth',lp:3000,v:.05,echo:true}),
+  hammer:()=>T(1500,.2,{type:'sawtooth',f2:100,lp:3000,v:.08}),
+  over:()=>T(800,1.4,{type:'sawtooth',f2:40,lp:1500,v:.1,echo:true}),
+  tap:()=>T(2000,.04,{v:.03,echo:true})},
+electro:{
+  pick:()=>T(m2f(84),.08,{type:'sawtooth',lp:4000,lp2:600,q:8,v:.05}),
+  place:()=>{ekick();stab([48],0,.05)},
+  bad:()=>{T(98,.2,{type:'square',v:.05});T(103,.2,{type:'square',v:.05})},
+  clear:(n,cb)=>{const r=60+Math.min(cb,7)*2;for(let i=0;i<n+1;i++)stab([r,r+3,r+7].map(x=>x+i*5),i*.09,.04);ekick()},
+  power:k=>{if(k==='bomb'){T(110,.9,{f2:28,v:.35});Nz(.7,{hp:500,lp:6000,lp2:200,v:.2})}else if(k==='bolt'){T(3000,.2,{type:'square',f2:200,v:.05});Nz(.15,{hp:3000,v:.12})}else if(k==='ice'){arp([96,99,103,108],.05,.15,{type:'square',v:.03,echo:true})}else{stab([60,64,67,72],0,.04);stab([64,67,72,76],.12,.04)}},
+  fury:()=>{Nz(.9,{hp:400,lp:800,lp2:9000,v:.12});stab([57,60,64,69],.9,.06);ekick(.9)},
+  beat:i=>{ekick();if(i%2)Nz(.05,{hp:8000,v:.06,dl:.2})},
+  coin:()=>{T(1046,.06,{type:'square',v:.05});T(1568,.12,{type:'square',v:.05,dl:.06})},
+  record:()=>arp([69,72,76,81,84,88],.08,.2,{type:'sawtooth',lp:4000,lp2:1500,v:.05}),
+  hammer:()=>{Nz(.12,{bp:1200,v:.25});ekick()},
+  over:()=>T(220,1,{type:'sawtooth',lp:3000,lp2:100,q:6,v:.1,f2:110}),
+  tap:()=>T(2000,.025,{type:'square',v:.03})},
+epic:{
+  pick:()=>T(m2f(76),.1,{type:'triangle',v:.06}),
+  place:()=>timp(0,.28),
+  bad:()=>br(40,.3,0,.06),
+  clear:(n,cb)=>{const r=55+Math.min(cb,8);for(let i=0;i<n+1;i++)br(r+[0,4,7,12,16][i%5]+12,.35,i*.08,.06);timp(0,.3)},
+  power:k=>{if(k==='bomb'){hit([36,43,48,55])}else if(k==='bolt'){Nz(.5,{hp:4000,v:.15});br(67,.3,0,.07);br(74,.4,.1,.07)}else if(k==='ice'){[84,88,91,96].forEach((m,i)=>T(m2f(m),.6,{v:.05,dl:i*.07,echo:true}))}else{[60,64,67].forEach((m,i)=>br(m+12,.4,i*.08))}},
+  fury:()=>{hit([45,52,57,60,64]);[57,60,64,69].forEach((m,i)=>br(m+12,.5,.5+i*.1,.06))},
+  beat:i=>timp(0,.25,i%2?110:80),
+  coin:()=>{br(79,.15,0,.05);br(84,.25,.12,.05)},
+  record:()=>{[67,72,76,79].forEach((m,i)=>br(m,.35,i*.15,.07));hit([48,55,60,64],.6)},
+  hammer:()=>hit([40,47]),
+  over:()=>[57,55,53,52].forEach((m,i)=>br(m,.5,i*.3,.07)),
+  tap:()=>T(m2f(81),.05,{type:'triangle',v:.04})}
+};
+const PACK_ORDER=['classic','arcade','cartoon','wood','drums','water','crystal','piano','space','electro','epic'];
+// Logro que abre cada pack: [estadística, cantidad]
+const PACK_ACH={arcade:['lines',50],cartoon:['games',10],wood:['comboMax',4],drums:['pieces',500],water:['power',25],crystal:['score',3000],piano:['multi',10],space:['fury',10],electro:['clears',3],epic:['lines',1000]};
+const PACK_PRICE=id=>250+(PACK_ORDER.indexOf(id)-1)*100; // 250, 350, ... 1150 monedas
+const ACH_KEY={lines:'m_lines',games:'m_games',comboMax:'a_comboMax',pieces:'m_pieces',power:'m_power',score:'m_score',multi:'m_multi',fury:'m_fury',clears:'a_clears'};
+let sndPack=store.get('sndPack','classic');const sndOwned=store.get('sndOwned',['classic']);if(!sndOwned.includes(sndPack))sndPack='classic';
+const Snd={unlock(){AU.init();try{AU.c&&AU.c.resume()}catch(e){}Music.kick()},
+  play(ev,a,pack,force){if(!AU.c||(!force&&!settings.snd))return;const P=PACKS[pack||sndPack]||PACKS.classic;try{(P[ev]||PACKS.classic[ev])(...a)}catch(e){}}};
+['pick','place','bad','clear','power','fury','beat','coin','record','hammer','over','tap'].forEach(ev=>Snd[ev]=(...a)=>Snd.play(ev,a));
+let pvT=[];function preview(id){Snd.unlock();pvT.forEach(clearTimeout);pvT=[];
+  [['place',[]],['clear',[1,1]],['clear',[3,3]],['power',['bomb']],['power',['bolt']],['coin',[]]].forEach(([e,a],i)=>pvT.push(setTimeout(()=>Snd.play(e,a,id,true),i*420)))}
+
+/* ================= ESTADÍSTICAS Y LOGROS ================= */
+const stats=Object.assign({lines:0,games:0,comboMax:0,pieces:0,power:0,score:0,multi:0,fury:0,clears:0},store.get('stats',{}));
+function stat(k,v,max){if(!(k in stats))return;const b=stats[k];stats[k]=max?Math.max(stats[k],v):stats[k]+v;if(stats[k]===b)return;store.set('stats',stats);
+  for(const id in PACK_ACH){const[a,n]=PACK_ACH[id];if(a===k&&!sndOwned.includes(id)&&stats[k]>=n){sndOwned.push(id);store.set('sndOwned',sndOwned);
+    toast(T_('t_ach',{name:T_('snd_'+id)}));setTimeout(()=>preview(id),400)}}}
+
+/* ================= MÚSICA ================= */
+const TRACKS=[
+  {bpm:112,style:'beat',prog:[[57,60,64],[53,57,60],[48,52,55],[55,59,62]]},
+  {bpm:78,style:'chill',prog:[[53,57,60,64],[52,55,59,62],[50,53,57,60],[48,52,55,59]]}];
+const DB={db:null,open(){return new Promise((res,rej)=>{if(this.db)return res(this.db);try{const r=indexedDB.open('fury',1);
+    r.onupgradeneeded=()=>r.result.createObjectStore('songs',{keyPath:'id'});r.onsuccess=()=>{this.db=r.result;res(this.db)};r.onerror=()=>rej(r.error)}catch(e){rej(e)}})},
+  async tx(mode,fn){const db=await this.open();return new Promise((res,rej)=>{const t=db.transaction('songs',mode);const q=fn(t.objectStore('songs'));t.oncomplete=()=>res(q&&q.result);t.onerror=()=>rej(t.error);t.onabort=()=>rej(t.error)})},
+  all(){return this.tx('readonly',s=>s.getAll())},put(o){return this.tx('readwrite',s=>s.put(o))},del(id){return this.tx('readwrite',s=>s.delete(id))}};
+let songs=[];
+const Music={el:null,iv:null,step:0,next:0,cur:-1,url:null,started:false,paused:false,
+  kick(){if(this.started||!AU.c)return;this.started=true;this.apply()},
+  stopAll(){clearInterval(this.iv);this.iv=null;this.cur=-1;if(this.el){this.el.pause();this.el.removeAttribute('src');try{this.el.load()}catch(e){}}if(this.url){URL.revokeObjectURL(this.url);this.url=null}},
+  apply(){this.stopAll();if(!this.started||!sndSet.musOn||this.paused)return;const s=sndSet.sel;
+    if(s[0]==='b'){this.cur=+s.slice(1)||0;this.step=0;this.next=AU.c.currentTime+.1;this.iv=setInterval(()=>this.tick(),40)}
+    else{const so=songs.find(x=>x.id===s.slice(2));if(!so){sndSet.sel='b0';return this.apply()}
+      if(!this.el){this.el=new Audio();this.el.addEventListener('ended',()=>this.ended());this.el.addEventListener('error',()=>{if(this.el.getAttribute('src'))toast(T_('songErr'))})}
+      this.url=URL.createObjectURL(so.blob);this.el.src=this.url;this.el.loop=sndSet.mode==='one';this.el.volume=sndSet.musVol;this.el.play().catch(()=>{})}},
+  ended(){if(sndSet.mode!=='all')return;const list=['b0','b1'].concat(songs.map(x=>'u:'+x.id));const i=list.indexOf(sndSet.sel);sndSet.sel=list[(i+1)%list.length];store.set('musSel',sndSet.sel);this.apply();if(!$('#ovMusic').hidden)renderMusic()},
+  setVol(v){sndSet.musVol=v;store.set('musVol',v);if(AU.mus)AU.mus.gain.value=v*.6;if(this.el)this.el.volume=v},
+  pause(){this.paused=true;clearInterval(this.iv);this.iv=null;if(this.el&&this.url)this.el.pause()},
+  resume(){if(!this.paused)return;this.paused=false;if(!this.started||!sndSet.musOn)return;if(this.url&&this.el)this.el.play().catch(()=>{});else if(this.cur>=0){this.next=AU.c.currentTime+.1;this.iv=setInterval(()=>this.tick(),40)}else this.apply()},
+  tick(){const c=AU.c,tr=TRACKS[this.cur];if(!tr)return;const sp=60/tr.bpm/4;let bar=0;
+    if(sndSet.mode==='all'&&this.step===0&&this.loops>=8){this.loops=0;return this.ended()}
+    while(this.next<c.currentTime+.15){this.note(tr,this.step,this.next-c.currentTime,sp);this.step=(this.step+1)%64;if(this.step===0)this.loops=(this.loops||0)+1;this.next+=sp}},
+  note(tr,s,dl,sp){const B=AU.mus,st=s&15,ch=tr.prog[s>>4];
+    if(tr.style==='beat'){
+      if(st%4===0)T(130,.2,{f2:45,v:.5,dl,bus:B});
+      if(st%4===2)Nz(.04,{hp:7000,v:.12,dl,bus:B});
+      if(st===4||st===12)Nz(.12,{bp:1800,v:.22,dl,bus:B});
+      if(st%2===0)T(m2f(ch[0]-12),sp*1.8,{type:'sawtooth',lp:600,v:.12,dl,bus:B});
+      T(m2f(ch[st%3]+12+(st>7?12:0)),sp*.9,{type:'triangle',v:.06,dl,bus:B,a:.005});
+    }else{
+      if(st===0)ch.forEach(m=>{T(m2f(m),sp*16*.95,{type:'triangle',v:.05,dl,bus:B,a:.4});T(m2f(m-12),sp*16*.95,{v:.04,dl,bus:B,a:.4})});
+      if([0,3,6,10,13].includes(st))T(m2f(ch[(s*7)%ch.length]+12),.6,{v:.07,dl,bus:B,a:.005});
+      if(st===0||st===8)T(110,.25,{f2:45,v:.25,dl,bus:B});
+      if(st%4===2)Nz(.03,{hp:8000,v:.05,dl,bus:B});
+    }}
+};
+document.addEventListener('visibilitychange',()=>{if(document.hidden)Music.pause();else Music.resume()});
+async function loadSongs(){try{songs=(await DB.all())||[];songs.sort((a,b)=>a.id.localeCompare(b.id))}catch(e){songs=[]}}
+let musSlots=store.get('musSlots',1);
+const SLOT_PRICE=()=>100+musSlots*100; // 2.º lugar 200, 3.º 300 ... 10.º 1000
+let delPending=null;
+function renderMusic(){const el=$('#musBody');el.innerHTML='';
+  const row=(html,cls='trk')=>{const d=document.createElement('div');d.className=cls;d.innerHTML=html;el.append(d);return d};
+  const tg=document.createElement('button');tg.className='tog';tg.innerHTML=`<span>${T_('music')}</span> <b>${sndSet.musOn?T_('yes'):T_('no')}</b>`;
+  tg.onclick=()=>{sndSet.musOn=!sndSet.musOn;store.set('musOn',sndSet.musOn);Snd.unlock();Music.apply();renderMusic()};el.append(tg);
+  const vr=row(`<span>${T_('volume')}</span><input type="range" id="musVol" min="0" max="1" step="0.05" value="${sndSet.musVol}">`,'vol');
+  vr.querySelector('input').oninput=e=>Music.setVol(+e.target.value);
+  const md=document.createElement('div');md.className='seg';
+  [['one','repeatOne'],['all','repeatAll']].forEach(([k,lab])=>{const b=document.createElement('button');b.textContent=T_(lab);b.setAttribute('aria-pressed',sndSet.mode===k);
+    b.onclick=()=>{sndSet.mode=k;store.set('musMode',k);if(Music.el)Music.el.loop=k==='one';renderMusic()};md.append(b)});el.append(md);
+  const h1=document.createElement('h3');h1.textContent=T_('gameMusic');el.append(h1);
+  const item=(id,name,del)=>{const on=sndSet.sel===id,d=document.createElement('div');d.className='trk'+(on?' on':'');
+    const b=document.createElement('button');b.className='tname';b.innerHTML=`<i>${on&&sndSet.musOn?'♪':'▶'}</i><span></span>`;b.querySelector('span').textContent=name;
+    b.onclick=()=>{sndSet.sel=id;store.set('musSel',id);if(!sndSet.musOn){sndSet.musOn=true;store.set('musOn',true)}Snd.unlock();Music.apply();renderMusic()};d.append(b);
+    if(del){const x=document.createElement('button');x.className='tdel';x.textContent=delPending===id?T_('delQ'):'✕';x.setAttribute('aria-label',T_('del'));
+      x.onclick=async()=>{if(delPending!==id){delPending=id;renderMusic();return}delPending=null;try{await DB.del(id.slice(2))}catch(e){}await loadSongs();if(sndSet.sel===id){sndSet.sel='b0';store.set('musSel','b0');Music.apply()}renderMusic()};d.append(x)}
+    el.append(d)};
+  TRACKS.forEach((_,i)=>item('b'+i,T_('trk_'+i),false));
+  const h2=document.createElement('h3');h2.innerHTML=`${T_('yourSongs')} <small>${T_('slotsInfo',{a:songs.length,b:musSlots})}</small>`;el.append(h2);
+  songs.forEach(s=>item('u:'+s.id,s.name,true));
+  if(songs.length<musSlots){const b=document.createElement('button');b.className='btn ghost';b.textContent='+ '+T_('addSong');b.onclick=()=>{Snd.unlock();$('#songFile').click()};el.append(b)}
+  else if(musSlots<10){const b=document.createElement('button');b.className='btn';b.innerHTML=`${T_('buySlot')} · ${SLOT_PRICE()} ${COIN}`;
+    b.onclick=()=>{const p=SLOT_PRICE();if(coins<p){toast(T_('t_needCoins',{n:p-coins}));return}coins-=p;musSlots++;store.set('musSlots',musSlots);saveProg();syncCoins();Snd.coin();renderMusic()};el.append(b)}
+  else{const p=document.createElement('p');p.textContent=T_('maxSongs');el.append(p)}}
+$('#songFile').onchange=async e=>{const f=e.target.files&&e.target.files[0];e.target.value='';if(!f)return;
+  if(f.size>30*1024*1024){toast(T_('songBig'));return}
+  if(f.type&&!/^audio\//.test(f.type)&&!/\.(mp3|m4a|aac|ogg|wav|opus|flac)$/i.test(f.name)){toast(T_('songErr'));return}
+  if(songs.length>=musSlots)return;
+  const id=String(Date.now());try{await DB.put({id,name:f.name.replace(/\.[^.]+$/,'').slice(0,60),blob:f})}catch(err){toast(T_('noStorage'));return}
+  await loadSongs();sndSet.sel='u:'+id;store.set('musSel',sndSet.sel);sndSet.musOn=true;store.set('musOn',true);Music.apply();toast(T_('songAdded'));renderMusic()};
+
+/* ================= PANTALLA DE PACKS DE SONIDO ================= */
+function renderSnd(){const el=$('#sndList');el.innerHTML='';
+  for(const id of PACK_ORDER){const own=sndOwned.includes(id),d=document.createElement('div');d.className='snd'+(id===sndPack?' on':'')+(own?'':' locked');
+    const top=document.createElement('div');top.className='sndtop';
+    const nm=document.createElement('b');nm.textContent=(own?'':'🔒 ')+T_('snd_'+id);
+    const pv=document.createElement('button');pv.className='btn ghost pv';pv.innerHTML=`▶ ${T_('listen')}`;pv.onclick=()=>preview(id);
+    top.append(nm,pv);d.append(top);
+    if(own){const u=document.createElement('button');u.className='btn'+(id===sndPack?' ghost':'');u.textContent=id===sndPack?T_('inUse'):T_('use');u.disabled=id===sndPack;
+      u.onclick=()=>{sndPack=id;store.set('sndPack',id);Snd.unlock();Snd.coin();renderSnd()};d.append(u)}
+    else{const[k,n]=PACK_ACH[id],cur=Math.min(n,stats[k]);
+      const a=document.createElement('div');a.className='ach';a.innerHTML=`<span>🏆 ${T_('achievement')}: ${T_(ACH_KEY[k],{n})}</span><div class="bar"><i style="width:${cur/n*100}%"></i></div><small>${cur} / ${n}</small>`;d.append(a);
+      const b=document.createElement('button');b.className='btn';b.innerHTML=`${T_('buyFor',{n:PACK_PRICE(id)})} ${COIN}`;
+      b.onclick=()=>{const p=PACK_PRICE(id);if(coins<p){toast(T_('t_needCoins',{n:p-coins}));return}coins-=p;sndOwned.push(id);store.set('sndOwned',sndOwned);saveProg();syncCoins();sndPack=id;store.set('sndPack',id);preview(id);renderSnd()};d.append(b)}
+    el.append(d)}}
+
+const vib=ms=>{if(settings.vib&&navigator.vibrate)try{navigator.vibrate(ms)}catch(e){}};
+
+/* ================= PUBLICIDAD (AdMob en la app / simulada en web) ================= */
+const Ads={A:null,
+  async init(){const C=window.Capacitor;if(!(C&&C.isNativePlatform&&C.isNativePlatform()))return;
+    this.A=(C.Plugins&&C.Plugins.AdMob)||(C.registerPlugin&&C.registerPlugin('AdMob'));if(!this.A)return;
+    const bn=$('#banner');bn.textContent='';bn.classList.add('native');
+    try{await this.A.initialize({initializeForTesting:AD_TESTING});
+      try{const ci=await this.A.requestConsentInfo();if(ci&&ci.isConsentFormAvailable&&ci.status==='REQUIRED')await this.A.showConsentForm()}catch(e){}
+      try{this.A.addListener('bannerAdSizeChanged',s=>{if(s&&s.height)bn.style.height=s.height+'px'})}catch(e){}
+      await this.A.showBanner({adId:AD_IDS.banner,adSize:'ADAPTIVE_BANNER',position:'BOTTOM_CENTER',margin:0,isTesting:AD_TESTING});
+    }catch(e){}
+    this.prepI();this.prepR()},
+  prepI(){this.A&&this.A.prepareInterstitial({adId:AD_IDS.interstitial,isTesting:AD_TESTING}).catch(()=>{})},
+  prepR(){this.A&&this.A.prepareRewardVideoAd({adId:AD_IDS.rewarded,isTesting:AD_TESTING}).catch(()=>{})},
+  async interstitial(){Music.pause();if(this.A){try{await this.A.showInterstitial()}catch(e){}this.prepI();Music.resume();return}
+    await sim(T_('adTitle'),T_('adText'),3);Music.resume()},
+  async rewarded(){Music.pause();try{if(this.A){try{const r=await this.A.showRewardVideoAd();this.prepR();return!!r}catch(e){this.prepR();toast(T_('t_noVideo'));return false}}
+    return await sim(T_('adRewardTitle'),T_('adRewardText'),4)}finally{Music.resume()}}
+};
+function sim(title,text,secs){return new Promise(res=>{const o=$('#adsim'),b=$('#adClose'),p=$('#adProg');
+  $('#adTitle').textContent=title;$('#adText').textContent=text;o.hidden=false;b.disabled=true;p.style.width='0';
+  let tt=0;b.textContent=T_('wait',{n:secs});const iv=setInterval(()=>{tt+=.2;p.style.width=Math.min(100,tt/secs*100)+'%';b.textContent=tt<secs?T_('wait',{n:Math.ceil(secs-tt)}):T_('close');
+    if(tt>=secs){clearInterval(iv);b.disabled=false}},200);
+  b.onclick=()=>{o.hidden=true;res(true)}})}
+
+/* ================= LAYOUT ================= */
+const cv=$('#cv'),ctx=cv.getContext('2d'),stage=$('#stage');
+let DPR=1,W=0,H=0,cell=40,bx=0,by=0,pad=6,ty=0,trayH=0,slotW=0,tc=20,barY=0,barH=10;
+function resize(){DPR=Math.min(window.devicePixelRatio||1,3);W=stage.clientWidth;H=stage.clientHeight;
+  cv.width=Math.round(W*DPR);cv.height=Math.round(H*DPR);
+  cell=Math.floor(Math.min((W-40)/N,(H-16)/(N+3.2+1.1),70));pad=Math.round(cell*.16);
+  const bs=cell*N,top=cell*1.1,total=top+bs+pad*2+cell*3.2;
+  const off=Math.max(4,(H-total)*.35);
+  barH=Math.max(10,Math.round(cell*.3));barY=Math.round(off+cell*.55);
+  bx=Math.round((W-bs)/2);by=Math.round(off+top+pad);
+  ty=by+bs+pad+cell*.3;trayH=cell*2.9;slotW=(bs+pad*2)/3;tc=Math.min(cell*.56,slotW*.9/5);
+  sprites.clear();buildAmbient()}
+window.addEventListener('resize',resize);
+const now=()=>performance.now();
+const ease=t=>1-Math.pow(1-Math.min(1,Math.max(0,t)),3);
+const slotC=i=>({x:bx-pad+slotW*(i+.5),y:ty+trayH/2});
+const overlayOpen=()=>!!document.querySelector('.overlay:not([hidden])');
+
+/* ================= AMBIENTE / PARTÍCULAS ================= */
+let amb=[];
+function buildAmbient(){amb=[];const k=SKINS[skin].ambient;if(REDUCE||k==='none'||k==='grid')return;
+  for(let i=0;i<18;i++)amb.push({x:Math.random()*W,y:Math.random()*H,v:8+Math.random()*22,s:1+Math.random()*3,p:Math.random()*7})}
+function spawn(x,y,col,n,kind){const k=kind||SKINS[skin].particle;
+  for(let i=0;i<n;i++){const a=Math.random()*Math.PI*2,sp=(k==='bubble'?40:120)+Math.random()*220;
+    parts.push({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-(k==='bubble'?60:120),life:0,max:.6+Math.random()*.5,col,k,
+      s:k==='confetti'?4+Math.random()*5:k==='bubble'?3+Math.random()*6:2+Math.random()*3.5,rot:Math.random()*6,vr:(Math.random()-.5)*14})}}
+function floatText(txt,x,y,col,size){texts.push({txt,x:Math.max(size*2.4,Math.min(W-size*2.4,x)),y,col,size,t0:now()})}
+let toastT=0;function toast(msg){const t=$('#toast');t.textContent=msg;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>t.hidden=true,2200)}
+
+/* ================= MISIONES ================= */
+const MPOOL=[
+  {id:'lines',n:[15,25,40],r:[60,90,140]},
+  {id:'combo',n:[3,6,10],r:[60,100,150]},
+  {id:'multi',n:[1,2,4],r:[70,110,170]},
+  {id:'power',n:[2,4,7],r:[60,100,150]},
+  {id:'fury',n:[1,2,3],r:[80,130,200]},
+  {id:'score',n:[800,1500,2500],r:[60,100,160],max:1},
+  {id:'games',n:[2,3,5],r:[40,60,90]},
+  {id:'pieces',n:[40,80,150],r:[40,70,110]}];
+const dayKey=(d=new Date())=>d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();
+function daily(){let d=store.get('missions',null);
+  if(!d||d.date!==dayKey()){const pool=MPOOL.slice().sort(()=>Math.random()-.5).slice(0,3);
+    d={date:dayKey(),list:pool.map(m=>{const lv=Math.floor(Math.random()*3);return{id:m.id,n:m.n[lv],r:m.r[lv],p:0,c:false}})};store.set('missions',d)}
+  return d}
+let MIS=daily();
+function mission(id,v,max){stat(id,v,max);if(MIS.date!==dayKey())MIS=daily();let ch=false;
+  for(const m of MIS.list){if(m.id!==id||m.c)continue;const before=m.p;m.p=Math.min(m.n,max?Math.max(m.p,v):m.p+v);
+    if(m.p!==before){ch=true;if(m.p>=m.n&&before<m.n){toast(T_('t_mission'));Snd.coin()}}}
+  if(ch){store.set('missions',MIS);syncDots()}}
+function syncDots(){const n=MIS.list.filter(m=>m.p>=m.n&&!m.c).length;$$('.misdot').forEach(d=>d.hidden=!n)}
+function renderMis(){const el=$('#misList');el.innerHTML='';
+  for(const m of MIS.list){const done=m.p>=m.n,d=document.createElement('div');d.className='mis'+(m.c?' claimed':'');
+    d.innerHTML=`<div class="t">${T_('m_'+m.id,{n:m.n})}</div><div class="bar"><i style="width:${m.p/m.n*100}%"></i></div><div class="n">${m.p} / ${m.n}</div><div class="rw"></div>`;
+    const rw=d.querySelector('.rw');
+    if(m.c)rw.innerHTML=`<span class="pill">${T_('misDone')}</span>`;
+    else if(done){const b=document.createElement('button');b.className='btn';b.innerHTML=`+${m.r} ${COIN}`;b.onclick=()=>{m.c=true;addCoins(m.r);store.set('missions',MIS);renderMis();syncDots()};rw.append(b)}
+    else rw.innerHTML=`<span class="pill">${m.r} ${COIN}</span>`;
+    el.append(d)}}
+
+/* ================= MONEDAS / HERRAMIENTAS ================= */
+function addCoins(n){coins+=n;saveProg();syncCoins();Snd.coin();vib(15)}
+function syncCoins(){$$('.coinval').forEach(e=>e.textContent=coins)}
+function syncTools(){$$('.tool').forEach(b=>{const k=b.dataset.t,c=b.querySelector('.cnt');c.textContent=inv[k]>0?inv[k]:'+';c.classList.toggle('zero',inv[k]<=0);
+  b.classList.toggle('on',k==='hammer'&&hammer)})}
+let toolOpen=null;
+function openToolShop(k){toolOpen=k;$('#toolIcon').innerHTML=ICONS[k];$('#toolName').textContent=T_(k);$('#toolDesc').textContent=T_(k+'D');
+  $('#toolHave').textContent=inv[k];const b=$('#btnToolBuy');b.innerHTML=`${T_('buyFor',{n:TOOL_PRICE[k]})} ${COIN}`;b.disabled=coins<TOOL_PRICE[k];$('#ovTool').hidden=false}
+$('#btnToolBuy').onclick=()=>{const k=toolOpen;if(coins<TOOL_PRICE[k])return;coins-=TOOL_PRICE[k];inv[k]++;saveProg();syncCoins();syncTools();Snd.coin();openToolShop(k)};
+$('#btnToolVideo').onclick=async()=>{const k=toolOpen;$('#ovTool').hidden=true;if(await Ads.rewarded()){inv[k]++;saveProg();syncTools();Snd.coin();toast(T_('t_plusOne',{tool:T_(k)}))}openToolShop(k)};
+$('#btnToolClose').onclick=()=>{$('#ovTool').hidden=true};
+function useTool(k){Snd.unlock();
+  if(state!=='play'&&state!=='stuck'){openToolShop(k);return}
+  if(inv[k]<=0){openToolShop(k);return}
+  if(k==='hammer'){hammer=!hammer;syncTools();if(hammer)toast(T_('t_tapBlock'));Snd.tap();return}
+  if(k==='undo'){if(!undoSnap){toast(T_('t_noUndo'));return}restore(undoSnap);undoSnap=null;clearing.length=0;trayT0=now();toast(T_('t_undone'))}
+  if(k==='shuffle'){let any=false;tray.forEach((p,i)=>{if(!p.placed){any=true}});if(!any)return;
+    const fresh=genSet(tray.filter(p=>!p.placed).length);let j=0;tray=tray.map(p=>p.placed?p:fresh[j++]);trayT0=now();undoSnap=null;Snd.pick()}
+  inv[k]--;saveProg();syncTools();vib(15);unstick();save();updateHud();checkOver()}
+$$('.tool').forEach(b=>b.onclick=()=>useTool(b.dataset.t));
+function unstick(){if(state==='stuck'){state='play';$('#stuck').hidden=true}}
+
+/* ================= JUGADA ================= */
+const mult=()=>(furyT>0?3:1)*(x2T>0?2:1);
+function addScore(v){score+=v;mission('score',score,true);
+  if(!recShown&&gameBest>0&&score>gameBest){recShown=true;floatText(T_('newRecord').toUpperCase(),W/2,by+cell*1.6,SKINS[skin].ui.accent2,cell*.62);
+    for(let i=0;i<5;i++)spawn(bx+Math.random()*cell*N,by+Math.random()*cell*3,SKINS[skin].colors[i],10,'confetti');Snd.record();vib([30,40,30,40,60])}}
+function place(p,r,c){
+  undoSnap=snapshot();const t=now();
+  p.cells.forEach(([dr,dc],k)=>{grid[r+dr][c+dc]=p.ci;spec[r+dr][c+dc]=p.sp&&p.sp.i===k?p.sp.t:null;pops.push({r:r+dr,c:c+dc,t0:t})});
+  p.placed=true;addScore(p.cells.length*mult());Snd.place();vib(12);mission('pieces',1);
+  const rows=[],cols=[];
+  for(let i=0;i<N;i++){if(grid[i].every(v=>v>=0))rows.push(i);if(grid.every(row=>row[i]>=0))cols.push(i)}
+  const n=rows.length+cols.length,set=new Set();
+  rows.forEach(i=>{for(let j=0;j<N;j++)set.add(i*N+j);beams.push({rc:'r',i,t0:t,ci:p.ci})});
+  cols.forEach(j=>{for(let i=0;i<N;i++)set.add(i*N+j);beams.push({rc:'c',i:j,t0:t,ci:p.ci})});
+  if(n){combo=since<3?combo+1:1;since=0}else{since++;if(since>=3)combo=0}
+  if(set.size)blast(set,n,r+p.h/2,c+p.w/2);
+  if(tray.every(q=>q.placed))tray=nextSet();
+  updateHud();save();checkOver();
+}
+/* Rompe celdas, encadena superpoderes, suma puntos y llena la barra de furia */
+function blast(set,n,cr,cc){
+  const t=now(),S=SKINS[skin],base=set.size,q=[],done=new Set();let powers=0;
+  set.forEach(k=>{if(spec[k/N|0][k%N])q.push(k)});
+  const add=(a,b)=>{if(a<0||b<0||a>=N||b>=N||grid[a][b]<0)return;const kk=a*N+b;if(!set.has(kk)){set.add(kk);if(spec[a][b])q.push(kk)}};
+  while(q.length){const k=q.shift();if(done.has(k))continue;done.add(k);const i=k/N|0,j=k%N,type=spec[i][j];if(!type)continue;
+    powers++;const x=bx+(j+.5)*cell,y=by+(i+.5)*cell,ci=grid[i][j];
+    floatText(T_('p_'+type),x,y-cell*.7,'#ffffff',cell*.5);Snd.power(type);vib([20,20,40]);mission('power',1);
+    if(type==='bomb'){for(let a=i-1;a<=i+1;a++)for(let b=j-1;b<=j+1;b++)add(a,b);rings.push({x,y,t0:t,col:'#ffb020',r:cell*2.2});shake=Math.max(shake,12)}
+    else if(type==='bolt'){for(let m=0;m<N;m++){add(i,m);add(m,j)}beams.push({rc:'r',i,t0:t,ci:3},{rc:'c',i:j,t0:t,ci:3});shake=Math.max(shake,8)}
+    else if(type==='rainbow'){for(let a=0;a<N;a++)for(let b=0;b<N;b++)if(grid[a][b]===ci)add(a,b);rings.push({x,y,t0:t,col:S.colors[ci],r:cell*6})}
+    else if(type==='x2'){x2T=X2_SECONDS;rings.push({x,y,t0:t,col:'#ffe14d',r:cell*3})}
+    else if(type==='ice'){iceSets=Math.max(iceSets,1);tray=tray.map(p=>p.placed?p:Object.assign(makePiece([],true),{ci:p.ci}));trayT0=now();rings.push({x,y,t0:t,col:'#bff4ff',r:cell*3})}
+  }
+  set.forEach(k=>{const i=k/N|0,j=k%N,d=Math.hypot(i+.5-cr,j+.5-cc);
+    clearing.push({r:i,c:j,ci:grid[i][j],sp:spec[i][j],t0:t+d*26});grid[i][j]=-1;spec[i][j]=null});
+  let gain=n?10*n*(n+1)/2*Math.max(1,combo):0;gain+=(set.size-base+(n?0:base))*5;gain=Math.round(gain*mult());addScore(gain);
+  const px=bx+cc*cell,py=by+cr*cell;
+  if(n){const praise=n>=5?T_('pr5'):n===4?T_('pr4'):n===3?T_('pr3'):n===2?T_('pr2'):'';
+    if(praise)floatText(praise,W/2,by+cell*2.6,S.ui.accent2,cell*.75);
+    stat('comboMax',combo,true);if(combo>=2){floatText(T_('combo',{n:combo}),W/2,by+cell*(praise?3.6:3),S.ui.fg,cell*.55);mission('combo',1)}
+    mission('lines',n);if(n>=3)mission('multi',1);Snd.clear(n,combo)}
+  if(gain)floatText('+'+gain,px,py,'#ffffff',cell*.5);
+  if(grid.every(row=>row.every(v=>v<0))){stat('clears',1);addScore(300*mult());floatText(T_('boardClear'),W/2,by+cell*4.6,S.ui.accent2,cell*.55)}
+  vib(n>1?[20,30,40]:25);if(!REDUCE)shake=Math.max(shake,Math.min(14,4+n*3+combo));
+  if(furyT<=0){meter=Math.min(100,meter+n*11+(combo>1?(combo-1)*9:0)+powers*8);if(meter>=100)startFury()}
+}
+function startFury(){furyT=FURY_SECONDS;meter=100;lastFury=true;floatText(T_('furyMode'),W/2,by+cell*3.2,'#ff6a1a',cell*.8);floatText(T_('x3'),W/2,by+cell*4.2,'#ffe14d',cell*.5);
+  Snd.fury();vib([40,30,40,30,80]);if(!REDUCE)shake=16;mission('fury',1);
+  for(let i=0;i<40;i++)spawn(bx+Math.random()*cell*N,by+cell*N,'#ff7a1a',1,'ember')}
+function checkOver(){if(state!=='play')return;const rest=tray.filter(q=>!q.placed);
+  if(rest.length&&!rest.some(canFit)){
+    if(inv.hammer+inv.shuffle+inv.undo>0){state='stuck';$('#stuck').hidden=false;Snd.bad();vib([30,60,30]);save();return}
+    die()}}
+function die(){$('#stuck').hidden=true;hammer=false;syncTools();state='dying';dieT0=now()+300;setTimeout(()=>Snd.over(),300);store.set('game',null);setTimeout(showOver,300+N*70+700)}
+$('#btnGiveUp').onclick=()=>{if(state==='stuck')die()};
+function showOver(){state='over';games++;store.set('games',games);mission('games',1);
+  earned=Math.max(0,Math.floor(score/POINTS_PER_COIN)-paid);paid+=earned;coins+=earned;saveProg();syncCoins();
+  const rec=score>gameBest&&score>0;
+  $('#overScore').textContent=score;$('#overBest').textContent=best;$('#overRecord').hidden=!rec;
+  $('#overEarn').innerHTML=`+${earned} ${COIN}`;$('#btnDouble').hidden=earned<=0;$('#btnDouble').disabled=false;
+  $('#btnContinue').hidden=continued;$('#ovOver').hidden=false;if(rec){Snd.record()}}
+$('#btnDouble').onclick=async()=>{const b=$('#btnDouble');b.disabled=true;$('#ovOver').hidden=true;const ok=await Ads.rewarded();$('#ovOver').hidden=false;
+  if(ok){addCoins(earned);$('#overEarn').innerHTML=`+${earned*2} ${COIN}`;b.hidden=true}else b.disabled=false};
+async function doContinue(){$('#ovOver').hidden=true;const ok=await Ads.rewarded();
+  if(!ok){$('#ovOver').hidden=false;return}
+  games--;continued=true;state='play';const set=new Set();
+  for(let i=0;i<N;i++)for(let j=0;j<N;j++)if(((i>=3&&i<=4)||(j>=3&&j<=4))&&grid[i][j]>=0)set.add(i*N+j);
+  beams.push({rc:'r',i:3,t0:now(),ci:0},{rc:'r',i:4,t0:now(),ci:0},{rc:'c',i:3,t0:now(),ci:0},{rc:'c',i:4,t0:now(),ci:0});
+  if(set.size)blast(set,0,4,4);tray=nextSet();save();checkOver()}
+async function again(){$('#ovOver').hidden=true;
+  if(games>1&&games%INTERSTITIAL_EVERY===0)await Ads.interstitial();newGame()}
+
+/* ================= HUD ================= */
+let lastShown=-1;
+function updateHud(force){if(score>best){best=score;store.set('best',best)}$('#best').textContent=best;$('#startBest').textContent=best;if(force){shown=score;lastShown=-1}
+  const tb=$('#tobest');
+  if(state!=='play'&&state!=='stuck'){tb.textContent='';tb.className='tobest'}
+  else if(recShown){tb.textContent=T_('newRecord').toUpperCase();tb.className='tobest rec'}
+  else if(gameBest>0&&score>=gameBest*.6){tb.textContent=T_('toBest',{n:gameBest-score+1});tb.className='tobest'}
+  else{tb.textContent='';tb.className='tobest'}}
+function tickHud(){shown+=(score-shown)*.18;if(Math.abs(score-shown)<.5)shown=score;const v=Math.round(shown);
+  if(v!==lastShown){const el=$('#score');el.textContent=v;if(v>lastShown&&lastShown>=0&&score-v<2){el.classList.remove('bump');void el.offsetWidth;el.classList.add('bump')}lastShown=v}}
+
+/* ================= ENTRADA (ARRASTRAR / MARTILLO) ================= */
+function pt(e){const b=cv.getBoundingClientRect();return{x:e.clientX-b.left,y:e.clientY-b.top}}
+function dragGeom(){const p=tray[drag.i],g=ease((now()-drag.t0)/120),s=tc+(cell-tc)*g,w=p.w*s,h=p.h*s;
+  const lift=drag.mouse?h/2:h+cell*.85*g;return{x:drag.x-w/2,y:drag.y-lift,s}}
+cv.addEventListener('pointerdown',e=>{const p=pt(e);
+  if(hammer&&(state==='play'||state==='stuck')){const c=Math.floor((p.x-bx)/cell),r=Math.floor((p.y-by)/cell);
+    if(r>=0&&c>=0&&r<N&&c<N&&grid[r][c]>=0){undoSnap=null;inv.hammer--;hammer=false;saveProg();syncTools();Snd.hammer();
+      blast(new Set([r*N+c]),0,r+.5,c+.5);rings.push({x:bx+(c+.5)*cell,y:by+(r+.5)*cell,t0:now(),col:'#ffffff',r:cell*1.2});
+      unstick();updateHud();save();checkOver()}
+    else{hammer=false;syncTools()}return}
+  if(state!=='play'||drag)return;
+  for(let i=0;i<3;i++){const q=tray[i];if(!q||q.placed)continue;const c=slotC(i);
+    if(Math.abs(p.x-c.x)<slotW/2&&p.y>ty-cell*.4&&p.y<ty+trayH+cell){
+      drag={i,x:p.x,y:p.y,t0:now(),mouse:e.pointerType==='mouse'};q.ret=null;try{cv.setPointerCapture(e.pointerId)}catch(_){}Snd.pick();vib(6);updGhost();break}}});
+cv.addEventListener('pointermove',e=>{if(!drag)return;const p=pt(e);drag.x=p.x;drag.y=p.y;updGhost()});
+function endDrag(){if(!drag)return;const q=tray[drag.i];
+  if(ghost&&ghost.ok){place(q,ghost.r,ghost.c)}else{const g=dragGeom();q.ret={x:g.x,y:g.y,s:g.s,t0:now()};if(ghost)Snd.bad()}
+  drag=null;ghost=null}
+cv.addEventListener('pointerup',endDrag);cv.addEventListener('pointercancel',endDrag);
+function updGhost(){const q=tray[drag.i],g=dragGeom();
+  const c=Math.round((g.x-bx)/cell),r=Math.round((g.y-by)/cell);
+  const inside=g.x+q.w*cell>bx-cell*.5&&g.x<bx+N*cell+cell*.5&&g.y+q.h*cell>by-cell*.5&&g.y<by+N*cell+cell*.5;
+  if(!inside){ghost=null;return}
+  if(!canPlace(q,r,c)){ghost={ok:false};return}
+  const occ=grid.map(row=>row.slice());q.cells.forEach(([dr,dc])=>occ[r+dr][c+dc]=q.ci);
+  const lines=new Set();for(let i=0;i<N;i++){if(occ[i].every(v=>v>=0))for(let j=0;j<N;j++)lines.add(i*N+j);if(occ.every(row=>row[i]>=0))for(let j=0;j<N;j++)lines.add(j*N+i)}
+  ghost={ok:true,r,c,ci:q.ci,lines}}
+
+/* ================= RENDER ================= */
+let last=now(),beatN=0;
+function frame(){const t=now(),dt=Math.min(.05,(t-last)/1000);last=t;const S=SKINS[skin];
+  // relojes de poderes (solo corren mientras juegas)
+  if((state==='play'||state==='stuck')&&!overlayOpen()){
+    if(furyT>0){furyT-=dt;beatAcc+=dt;if(beatAcc>=.42){beatAcc=0;Snd.beat(beatN++)}if(furyT<=0){furyT=0;meter=0;toast(T_('t_furyEnd'));save()}}
+    if(x2T>0){x2T-=dt;if(x2T<=0)x2T=0}}
+  const fury=furyT>0;
+  ctx.setTransform(DPR,0,0,DPR,0,0);ctx.clearRect(0,0,W,H);
+  // ambiente
+  for(const a of amb){a.y-=a.v*dt*(fury?3:1);a.p+=dt;if(a.y<-10){a.y=H+10;a.x=Math.random()*W}
+    const al=.25+.25*Math.sin(a.p*2);
+    if(S.ambient==='ember'){ctx.fillStyle=`rgba(255,${120+Math.round(80*Math.sin(a.p))},40,${al})`;ctx.beginPath();ctx.arc(a.x+Math.sin(a.p)*6,a.y,a.s,0,7);ctx.fill()}
+    else if(S.ambient==='bubble'){ctx.strokeStyle=`rgba(180,240,255,${al})`;ctx.lineWidth=1;ctx.beginPath();ctx.arc(a.x+Math.sin(a.p)*8,a.y,a.s*1.6,0,7);ctx.stroke()}
+    else if(S.ambient==='twinkle'){star(ctx,a.x,(a.y+H)%H,a.s*1.5,Math.max(0,Math.sin(a.p*1.5))*.6)}}
+  let sx=0,sy=0;if(shake>.2){sx=(Math.random()-.5)*shake;sy=(Math.random()-.5)*shake;shake*=Math.pow(.02,dt)}else shake=0;
+  ctx.save();ctx.translate(sx,sy);
+  const bs=cell*N;
+  // barra de furia
+  if(grid){const x0=bx-pad,w0=bs+pad*2,fill=fury?furyT/FURY_SECONDS:meter/100;
+    ctx.font=`${Math.round(cell*.32)}px Bungee, Impact, sans-serif`;ctx.textBaseline='alphabetic';ctx.textAlign='left';
+    ctx.fillStyle=fury?(Math.sin(t/90)>0?'#ffe14d':'#ff6a1a'):S.ui.muted;ctx.fillText(fury?T_('c_furyOn',{n:Math.ceil(furyT)}):T_('c_fury'),x0,barY-6);
+    if(x2T>0){ctx.textAlign='right';ctx.fillStyle='#ffe14d';ctx.fillText(T_('c_x2',{n:Math.ceil(x2T)}),x0+w0,barY-6)}
+    else if(iceSets>0){ctx.textAlign='right';ctx.fillStyle='#bff4ff';ctx.fillText(T_('c_ice'),x0+w0,barY-6)}
+    rr(ctx,x0,barY,w0,barH,barH/2);ctx.fillStyle='rgba(0,0,0,.35)';ctx.fill();
+    if(fill>0){const gr=ctx.createLinearGradient(x0,0,x0+w0,0);gr.addColorStop(0,'#ffc233');gr.addColorStop(.6,'#ff6a1a');gr.addColorStop(1,'#ff2d55');
+      ctx.save();if(fury||fill>.85){ctx.shadowColor='#ff6a1a';ctx.shadowBlur=12+6*Math.sin(t/100)}rr(ctx,x0,barY,Math.max(barH,w0*fill),barH,barH/2);ctx.fillStyle=gr;ctx.fill();ctx.restore()}
+  }
+  // tablero (en Modo Furia se prende fuego)
+  if(fury){const gr=ctx.createRadialGradient(W/2,by+bs/2,bs*.2,W/2,by+bs/2,bs*.95);gr.addColorStop(0,'rgba(255,80,0,0)');gr.addColorStop(1,`rgba(255,80,0,${.28+.12*Math.sin(t/110)})`);ctx.fillStyle=gr;ctx.fillRect(0,by-pad*3,W,bs+pad*6);
+    if(!REDUCE&&Math.random()<.6)spawn(bx+Math.random()*bs,by+bs+pad,Math.random()<.5?'#ffc233':'#ff5a14',1,'ember')}
+  ctx.save();ctx.shadowColor=fury?'#ff5a14':S.glow;ctx.shadowBlur=fury?cell*(1+.4*Math.sin(t/100)):cell*.7;rr(ctx,bx-pad,by-pad,bs+pad*2,bs+pad*2,cell*.3);ctx.fillStyle=S.board;ctx.fill();ctx.restore();
+  ctx.lineWidth=fury?3:2;ctx.strokeStyle=fury?'#ff7a1a':S.boardEdge;rr(ctx,bx-pad,by-pad,bs+pad*2,bs+pad*2,cell*.3);ctx.stroke();
+  if(S.ambient==='grid'){ctx.strokeStyle='rgba(120,90,255,.18)';ctx.lineWidth=1;for(let i=1;i<N;i++){ctx.beginPath();ctx.moveTo(bx+i*cell,by);ctx.lineTo(bx+i*cell,by+bs);ctx.moveTo(bx,by+i*cell);ctx.lineTo(bx+bs,by+i*cell);ctx.stroke()}}
+  ctx.fillStyle=S.cell;for(let i=0;i<N;i++)for(let j=0;j<N;j++){rr(ctx,bx+j*cell+cell*.06,by+i*cell+cell*.06,cell*.88,cell*.88,cell*.16);ctx.fill()}
+  if(grid){
+    const gl=ghost&&ghost.ok?ghost.lines:null;
+    for(let i=0;i<N;i++)for(let j=0;j<N;j++){let ci=grid[i][j];if(ci<0)continue;
+      if(state==='dying'&&t>dieT0+i*70)ci=-1;else if(gl&&gl.has(i*N+j))ci=ghost.ci;
+      let sc=1;for(let k=pops.length-1;k>=0;k--){const p=pops[k];if(p.r===i&&p.c===j){const u=(t-p.t0)/220;if(u<1)sc=1+.18*Math.sin(u*Math.PI);break}}
+      const x=bx+j*cell,y=by+i*cell;ctx.drawImage(sprite(ci,cell),x+cell*(1-sc)/2,y+cell*(1-sc)/2,cell*sc,cell*sc);
+      if(spec&&spec[i][j]&&ci>=0)drawPower(ctx,spec[i][j],x,y,cell,t);
+      if(gl&&gl.has(i*N+j)){ctx.fillStyle=`rgba(255,255,255,${.12+.1*Math.sin(t/90)})`;rr(ctx,x+cell*.05,y+cell*.05,cell*.9,cell*.9,cell*.15);ctx.fill()}
+      if(hammer){ctx.strokeStyle=`rgba(255,255,255,${.35+.3*Math.sin(t/120)})`;ctx.lineWidth=2;rr(ctx,x+cell*.08,y+cell*.08,cell*.84,cell*.84,cell*.15);ctx.stroke()}}
+    while(pops.length&&t-pops[0].t0>400)pops.shift();
+    // fantasma
+    if(ghost&&ghost.ok){ctx.globalAlpha=.42;const q=tray[drag.i];q.cells.forEach(([dr,dc],k)=>{const x=bx+(ghost.c+dc)*cell,y=by+(ghost.r+dr)*cell;ctx.drawImage(sprite(q.ci,cell),x,y,cell,cell);if(q.sp&&q.sp.i===k)drawPower(ctx,q.sp.t,x,y,cell,t)});ctx.globalAlpha=1}
+    // haces de luz y ondas
+    for(let k=beams.length-1;k>=0;k--){const b=beams[k],u=(t-b.t0)/420;if(u>1){beams.splice(k,1);continue}if(u<0)continue;
+      const col=S.colors[b.ci]||'#fff';ctx.fillStyle=A(L(col,.6),.55*(1-u));
+      if(b.rc==='r')rr(ctx,bx-pad,by+b.i*cell-cell*.15*u,bs+pad*2,cell*(1+.3*u),cell*.2);else rr(ctx,bx+b.i*cell-cell*.15*u,by-pad,cell*(1+.3*u),bs+pad*2,cell*.2);ctx.fill()}
+    for(let k=rings.length-1;k>=0;k--){const g=rings[k],u=(t-g.t0)/500;if(u>1){rings.splice(k,1);continue}
+      ctx.strokeStyle=g.col;ctx.globalAlpha=1-u;ctx.lineWidth=cell*.25*(1-u)+1;ctx.beginPath();ctx.arc(g.x,g.y,g.r*ease(u),0,7);ctx.stroke();ctx.globalAlpha=1}
+    // bloques explotando
+    for(let k=clearing.length-1;k>=0;k--){const c=clearing[k],u=(t-c.t0)/360;
+      if(u>=1){clearing.splice(k,1);continue}
+      const x=bx+c.c*cell,y=by+c.r*cell;
+      if(u<0){ctx.drawImage(sprite(c.ci,cell),x,y,cell,cell);if(c.sp)drawPower(ctx,c.sp,x,y,cell,t);continue}
+      if(!c.boom){c.boom=1;spawn(x+cell/2,y+cell/2,S.colors[c.ci]||'#fff',REDUCE?2:6)}
+      const sc=1-ease(u);ctx.globalAlpha=1-u*.3;ctx.drawImage(sprite(c.ci,cell),x+cell*(1-sc)/2,y+cell*(1-sc)/2,cell*sc,cell*sc);
+      ctx.globalAlpha=Math.max(0,1-u*2.2);ctx.fillStyle='#fff';rr(ctx,x+cell*(1-sc)/2,y+cell*(1-sc)/2,cell*sc,cell*sc,cell*.15);ctx.fill();ctx.globalAlpha=1}
+    // bandeja
+    for(let i=0;i<3;i++){const q=tray[i];if(!q||q.placed||(drag&&drag.i===i))continue;const c=slotC(i);
+      const u=ease((t-trayT0-i*70)/320);let s=tc,x=c.x-q.w*tc/2+(1-u)*W*.6,y=c.y-q.h*tc/2;
+      if(q.ret){const v=ease((t-q.ret.t0)/180);x=q.ret.x+(x-q.ret.x)*v;y=q.ret.y+(y-q.ret.y)*v;s=q.ret.s+(tc-q.ret.s)*v;if(v>=1)q.ret=null}
+      const fits=state==='menu'||canFit(q);ctx.globalAlpha=(fits?1:.35)*Math.max(0,u);
+      q.cells.forEach(([dr,dc],k)=>{ctx.drawImage(sprite(q.ci,s),x+dc*s,y+dr*s,s,s);if(q.sp&&q.sp.i===k)drawPower(ctx,q.sp.t,x+dc*s,y+dr*s,s,t)});ctx.globalAlpha=1}
+  }
+  ctx.restore();
+  // pieza arrastrada
+  if(drag){const q=tray[drag.i],g=dragGeom();ctx.save();ctx.shadowColor='rgba(0,0,0,.45)';ctx.shadowBlur=cell*.4;ctx.shadowOffsetY=cell*.15;
+    q.cells.forEach(([dr,dc])=>ctx.drawImage(sprite(q.ci,g.s),g.x+dc*g.s,g.y+dr*g.s,g.s,g.s));ctx.restore();
+    if(q.sp){const[dr,dc]=q.cells[q.sp.i];drawPower(ctx,q.sp.t,g.x+dc*g.s,g.y+dr*g.s,g.s,t)}}
+  // partículas
+  for(let k=parts.length-1;k>=0;k--){const p=parts[k];p.life+=dt;if(p.life>p.max){parts.splice(k,1);continue}
+    const grav=p.k==='bubble'?-160:p.k==='ember'?-260:p.k==='confetti'?380:600;p.vy+=grav*dt;p.vx*=.98;p.x+=p.vx*dt;p.y+=p.vy*dt;p.rot+=p.vr*dt;
+    const al=1-p.life/p.max;ctx.globalAlpha=al;
+    if(p.k==='bubble'){ctx.strokeStyle=L(p.col,.5);ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(p.x,p.y,p.s,0,7);ctx.stroke()}
+    else if(p.k==='confetti'||p.k==='chip'){ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.rot);ctx.fillStyle=p.k==='chip'?D(p.col,.15):p.col;ctx.fillRect(-p.s/2,-p.s/4,p.s,p.s/2);ctx.restore()}
+    else if(p.k==='sparkle'){star(ctx,p.x,p.y,p.s*1.6,al)}
+    else{ctx.fillStyle=L(p.col,.35);ctx.beginPath();ctx.arc(p.x,p.y,p.s*al+.5,0,7);ctx.fill()}
+    ctx.globalAlpha=1}
+  // textos flotantes
+  for(let k=texts.length-1;k>=0;k--){const f=texts[k],u=(t-f.t0)/1100;if(u>1){texts.splice(k,1);continue}
+    const sc=u<.15?.5+u/.15*.6:u<.25?1.1-(u-.15):1;ctx.save();ctx.globalAlpha=u>.7?(1-u)/.3:1;ctx.translate(f.x,f.y-u*cell*1.2);ctx.scale(sc,sc);
+    ctx.font=`${Math.round(f.size)}px Bungee, Impact, "Arial Black", sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.lineWidth=f.size*.18;ctx.strokeStyle='rgba(0,0,0,.55)';ctx.lineJoin='round';ctx.strokeText(f.txt,0,0);ctx.fillStyle=f.col;ctx.fillText(f.txt,0,0);ctx.restore()}
+  tickHud();
+  if(fury!==lastFury&&!fury)lastFury=false;
+  requestAnimationFrame(frame)}
+
+/* ================= TEMAS: APLICAR, COMPRAR Y ELEGIR ================= */
+function applySkin(k){skin=k;store.set('skin',k);const S=SKINS[k],app=$('#app');app.style.background=S.bg;
+  const u=S.ui;for(const p of['fg','muted','accent','accent2','panel','edge','btnfg'])app.style.setProperty('--'+p,u[p]);
+  document.body.style.background=S.board;sprites.clear();buildAmbient()}
+let pendingBuy=null;
+function buildSkinList(){const list=$('#skinList');list.innerHTML='';
+  for(const k in SKINS){const S=SKINS[k],own=owned.includes(k),b=document.createElement('button');
+    b.className='skin'+(own?'':' locked')+(pendingBuy===k?' confirm':'');b.dataset.k=k;b.style.background=S.bg;b.setAttribute('aria-pressed',k===skin);
+    const c=document.createElement('canvas');c.width=240;c.height=132;const g=c.getContext('2d');const s=56;
+    [0,1,2,3].forEach(i=>{const tmp=document.createElement('canvas');tmp.width=tmp.height=s;paintBlock(tmp.getContext('2d'),s,S.colors[i],S.style,i);g.drawImage(tmp,12+i*s,i%2?66:24)});
+    const sp=document.createElement('span');
+    const nm=T_('skin_'+k);sp.innerHTML=pendingBuy===k?`${T_('buyQ')} <em>${SKIN_PRICE[k]} ${COIN}</em>`:own?nm:`${nm} <em>${SKIN_PRICE[k]} ${COIN}</em>`;
+    b.append(c,sp);if(!own){const l=document.createElement('i');l.className='lock';l.innerHTML=LOCK;b.append(l)}
+    b.onclick=()=>{Snd.tap();
+      if(own){pendingBuy=null;applySkin(k);buildSkinList();return}
+      if(coins<SKIN_PRICE[k]){pendingBuy=null;toast(T_('t_needCoins',{n:SKIN_PRICE[k]-coins}));buildSkinList();return}
+      if(pendingBuy!==k){pendingBuy=k;buildSkinList();return}
+      coins-=SKIN_PRICE[k];owned.push(k);saveProg();syncCoins();pendingBuy=null;applySkin(k);Snd.record();toast(T_('t_unlocked',{name:T_('skin_'+k)}));buildSkinList()};
+    list.append(b)}}
+$('#btnCoinVideo').onclick=async()=>{$('#ovSkin').hidden=true;if(await Ads.rewarded())addCoins(50);$('#ovSkin').hidden=false;buildSkinList()};
+
+/* ================= REGALO DIARIO ================= */
+function giftState(){const g=store.get('gift',{last:null,day:0});const today=dayKey(),yest=dayKey(new Date(Date.now()-864e5));
+  const avail=g.last!==today;const day=avail?(g.last===yest?g.day%7+1:1):g.day;return{g,avail,day}}
+function giftLabel(r){let s='';if(r.c)s+=`<b>${r.c} ${COIN}</b>`;if(r.t)s+=`<b>${r.n}× ${ICONS[r.t]}</b>`;return s}
+function openGift(){const{avail,day}=giftState();if(!avail)return;const el=$('#giftGrid');el.innerHTML='';
+  GIFTS.forEach((r,i)=>{const d=document.createElement('div');d.className='gday'+(i+1<day?' done':'')+(i+1===day?' today':'')+(i===6?' d7':'');d.innerHTML=`${T_('day',{n:i+1})}${giftLabel(r)}`;el.append(d)});
+  $('#giftText').textContent=day>1?T_('giftStreak',{n:day}):T_('giftText');
+  $('#ovGift').hidden=false}
+function claimGift(x){const{day}=giftState();const r=GIFTS[day-1];store.set('gift',{last:dayKey(),day});
+  if(r.c)coins+=r.c*x;if(r.t)inv[r.t]+=r.n*x;saveProg();syncCoins();syncTools();Snd.record();vib([20,30,60]);
+  $('#ovGift').hidden=true;$('#btnStartGift').hidden=true;toast(x>1?T_('t_double'):T_('t_claimed'))}
+$('#btnGiftClaim').onclick=()=>claimGift(1);
+$('#btnGiftDouble').onclick=async()=>{$('#ovGift').hidden=true;if(await Ads.rewarded())claimGift(2);else $('#ovGift').hidden=false};
+
+/* ================= BOTONES ================= */
+let back=null;
+function openOv(id,from){back=from;if(from)$(from).hidden=true;$(id).hidden=false}
+function closeOv(id){$(id).hidden=true;if(back)$(back).hidden=false;back=null}
+function startPlay(){if(state==='play'||state==='stuck'){updateHud();return}if(!load())newGame();else{syncTools();if(state==='play')checkOver()}}
+$('#btnPlay').onclick=()=>{Snd.unlock();Snd.tap();$('#ovStart').hidden=true;if(!store.get('seenHelp',false)){helpThenPlay=true;buildHelp();$('#ovHelp').hidden=false;return}startPlay()};
+$('#btnStartSkin').onclick=()=>{Snd.unlock();pendingBuy=null;buildSkinList();openOv('#ovSkin','#ovStart')};
+$('#btnStartMis').onclick=()=>{Snd.unlock();renderMis();openOv('#ovMis','#ovStart')};
+$('#btnStartGift').onclick=()=>{Snd.unlock();openGift()};
+$('#btnSkin').onclick=()=>{Snd.unlock();if(overlayOpen())return;pendingBuy=null;buildSkinList();openOv('#ovSkin',null)};
+$('#btnSkinDone').onclick=()=>{pendingBuy=null;closeOv('#ovSkin');Snd.tap()};
+$('#btnMisDone').onclick=()=>{closeOv('#ovMis');Snd.tap()};
+$('#btnPause').onclick=()=>{if(state!=='play'&&state!=='stuck')return;Snd.unlock();$('#ovPause').hidden=false};
+$('#btnResume').onclick=()=>{$('#ovPause').hidden=true};
+$('#btnRestart').onclick=()=>{$('#ovPause').hidden=true;$('#stuck').hidden=true;newGame()};
+$('#btnPauseSkin').onclick=()=>{pendingBuy=null;buildSkinList();openOv('#ovSkin','#ovPause')};
+$('#btnPauseMis').onclick=()=>{renderMis();openOv('#ovMis','#ovPause')};
+$('#btnContinue').onclick=doContinue;$('#btnAgain').onclick=again;
+function syncTog(){$('#togSound b').textContent=settings.snd?T_('yes'):T_('no');$('#togVib b').textContent=settings.vib?T_('yes'):T_('no')}
+$('#togSound').onclick=()=>{settings.snd=!settings.snd;store.set('snd',settings.snd);syncTog();Snd.tap()};
+$('#togVib').onclick=()=>{settings.vib=!settings.vib;store.set('vib',settings.vib);syncTog();vib(20)};
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&(state==='play'||state==='stuck'))save()});
+
+/* ================= IDIOMA: APLICAR Y ELEGIR ================= */
+function applyLang(){document.documentElement.lang=lang;$('#app').dir=lang==='ur'?'rtl':'ltr';
+  $$('[data-i]').forEach(e=>e.textContent=T_(e.dataset.i));$$('[data-ta]').forEach(e=>e.setAttribute('aria-label',T_(e.dataset.ta)));
+  const L=LANGS.find(x=>x.c===lang);$$('.langname').forEach(e=>e.textContent=L.n);
+  syncTog();updateHud();if(!$('#ovSkin').hidden)buildSkinList();if(!$('#ovMis').hidden)renderMis();if(!$('#ovHelp').hidden)buildHelp();if(!$('#ovMusic').hidden)renderMusic();if(!$('#ovSnd').hidden)renderSnd()}
+function buildLangs(){const el=$('#langList');el.innerHTML='';
+  for(const L of LANGS){const b=document.createElement('button');b.className='lang';b.setAttribute('aria-pressed',L.c===lang);b.innerHTML=`<b>${L.f}</b><span>${L.n}</span>`;
+    b.onclick=()=>{lang=L.c;store.set('lang',lang);Snd.tap();applyLang();buildLangs()};el.append(b)}}
+$('#btnStartLang').onclick=()=>{Snd.unlock();buildLangs();openOv('#ovLang','#ovStart')};
+$('#btnPauseLang').onclick=()=>{buildLangs();openOv('#ovLang','#ovPause')};
+$('#btnLangDone').onclick=()=>{closeOv('#ovLang');Snd.tap()};
+
+/* ================= MANUAL: CÓMO JUGAR ================= */
+function powerIcon(type){const s=72,c=document.createElement('canvas');c.width=c.height=s;const g=c.getContext('2d');
+  paintBlock(g,s,SKINS[skin].colors[{bomb:1,bolt:5,rainbow:6,x2:0,ice:6}[type]],SKINS[skin].style,1);drawPower(g,type,0,0,s,0);return c}
+function buildHelp(){const el=$('#helpBody');el.innerHTML='';
+  const sec=(tk,pk)=>{const d=document.createElement('section');d.innerHTML=`<h3>${T_(tk)}</h3><p>${T_(pk)}</p>`;el.append(d);return d};
+  sec('h_goal_t','h_goal');sec('h_combo_t','h_combo');sec('h_fury_t','h_fury');
+  const pw=sec('h_pow_t','h_pow'),ul=document.createElement('ul');
+  for(const k of['bomb','bolt','rainbow','x2','ice']){const li=document.createElement('li');li.append(powerIcon(k));const sp=document.createElement('span');sp.textContent=T_('h_'+k);li.append(sp);ul.append(li)}pw.append(ul);
+  const tl=sec('h_tools_t','h_tools'),ul2=document.createElement('ul');
+  for(const k of['hammer','shuffle','undo']){const li=document.createElement('li');li.innerHTML=`<i class="hi">${ICONS[k]}</i><span><b>${T_(k)}:</b> ${T_(k+'D')}</span>`;ul2.append(li)}tl.append(ul2);
+  sec('h_coins_t','h_coins');sec('h_music_t','h_music');el.scrollTop=0}
+let helpThenPlay=false;
+function openHelp(from){buildHelp();openOv('#ovHelp',from)}
+$('#btnStartHelp').onclick=()=>{Snd.unlock();openHelp('#ovStart')};
+$('#btnPauseHelp').onclick=()=>openHelp('#ovPause');
+$('#btnHelpDone').onclick=()=>{store.set('seenHelp',true);if(helpThenPlay){helpThenPlay=false;back=null;$('#ovHelp').hidden=true;startPlay();return}closeOv('#ovHelp');Snd.tap()};
+
+/* ================= SALIR ================= */
+const NATIVE=!!(window.Capacitor&&window.Capacitor.isNativePlatform&&window.Capacitor.isNativePlatform());
+const AppP=NATIVE?((window.Capacitor.Plugins&&window.Capacitor.Plugins.App)||(window.Capacitor.registerPlugin&&window.Capacitor.registerPlugin('App'))):null;
+function exitApp(){save();try{AppP&&AppP.exitApp()}catch(e){}}
+$('#btnStartExit').hidden=!NATIVE;$('#btnExitApp').hidden=!NATIVE;
+$('#btnStartExit').onclick=exitApp;
+$('#btnPauseExit').onclick=()=>{openOv('#ovExit','#ovPause')};
+$('#btnExitCancel').onclick=()=>{closeOv('#ovExit')};
+$('#btnExitApp').onclick=exitApp;
+$('#btnExitMenu').onclick=()=>{back=null;$('#ovExit').hidden=true;$('#stuck').hidden=true;hammer=false;syncTools();save();state='menu';updateHud();$('#ovStart').hidden=false};
+// Botón "atrás" de Android
+if(AppP&&AppP.addListener){try{AppP.addListener('backButton',()=>{
+  if(!$('#adsim').hidden)return;
+  const open=[...$$('.overlay')].filter(o=>!o.hidden);const top=open[open.length-1];
+  if(!top){if(state==='play'||state==='stuck')$('#ovPause').hidden=false;return}
+  const close={ovMusic:'#btnMusDone',ovSnd:'#btnSndDone',ovSkin:'#btnSkinDone',ovMis:'#btnMisDone',ovTool:'#btnToolClose',ovHelp:'#btnHelpDone',ovLang:'#btnLangDone',ovExit:'#btnExitCancel'}[top.id];
+  if(close){$(close).click();return}
+  if(top.id==='ovPause'){top.hidden=true;return}
+  if(top.id==='ovGift'){top.hidden=true;return}
+  if(top.id==='ovStart'){exitApp();return}
+})}catch(e){}}
+
+/* ================= BOTONES: MÚSICA Y SONIDOS ================= */
+async function openMusic(from){Snd.unlock();await loadSongs();delPending=null;renderMusic();openOv('#ovMusic',from)}
+function openSnd(from){Snd.unlock();renderSnd();openOv('#ovSnd',from)}
+$('#btnStartMusic').onclick=()=>openMusic('#ovStart');$('#btnPauseMusic').onclick=()=>openMusic('#ovPause');
+$('#btnStartSnd').onclick=()=>openSnd('#ovStart');$('#btnPauseSnd').onclick=()=>openSnd('#ovPause');
+$('#btnMusDone').onclick=()=>{closeOv('#ovMusic');Snd.tap()};$('#btnSndDone').onclick=()=>{pvT.forEach(clearTimeout);closeOv('#ovSnd');Snd.tap()};
+
+/* ================= INICIO ================= */
+grid=emptyGrid(-1);spec=emptyGrid(null);sets=0;meter=35;furyT=0;x2T=0;iceSets=0;score=0;gameBest=best;
+// tablero de muestra detrás del menú
+[[7,0,0],[7,1,0],[7,2,1],[7,3,1],[7,5,2],[7,6,2],[7,7,3],[6,0,4],[6,1,4],[6,6,5],[6,7,5],[5,0,6],[5,7,2],[4,7,0]].forEach(([r,c,ci])=>grid[r][c]=ci);
+spec[7][3]='bomb';spec[6][6]='bolt';
+tray=[makePiece([]),makePiece([]),makePiece([])];tray[1].sp={i:0,t:'rainbow'};
+applySkin(skin);applyLang();loadSongs();document.addEventListener('pointerdown',()=>Snd.unlock(),{once:true});syncCoins();syncTools();syncDots();resize();updateHud(true);requestAnimationFrame(frame);Ads.init();
+if(giftState().avail){$('#btnStartGift').hidden=false;openGift()}
+if(document.fonts&&document.fonts.load)document.fonts.load('20px Bungee').catch(()=>{});
+})();
+</script>
+</body></html>

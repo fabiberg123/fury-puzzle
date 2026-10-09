@@ -1,0 +1,6 @@
+{
+  "appId": "com.furypuzzle.game",
+  "appName": "Fury Puzzle",
+  "webDir": "www",
+  "android": { "backgroundColor": "#120403" }
+}
