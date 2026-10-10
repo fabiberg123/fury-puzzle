@@ -49,14 +49,6 @@ jobs:
           name: FuryPuzzle-APK
           path: FuryPuzzle.apk
 
-      - name: Publicar APK para descargar desde el celular
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: v${{ github.run_number }}
-          name: Fury Puzzle (versión ${{ github.run_number }})
-          files: FuryPuzzle.apk
-          make_latest: true
-
       - name: Construir AAB firmado (para Google Play)
         if: env.HAS_KEY == 'true'
         env:
@@ -69,9 +61,22 @@ jobs:
           cd android && ./gradlew bundleRelease --no-daemon
           jarsigner -keystore ../upload.jks -storepass "$KEYSTORE_PASSWORD" -keypass "$KEY_PASSWORD" \
             app/build/outputs/bundle/release/app-release.aab "$KEY_ALIAS"
+          jarsigner -verify app/build/outputs/bundle/release/app-release.aab
+          cp app/build/outputs/bundle/release/app-release.aab ../FuryPuzzle.aab
 
       - uses: actions/upload-artifact@v4
         if: env.HAS_KEY == 'true'
         with:
           name: FuryPuzzle-GooglePlay-AAB
           path: android/app/build/outputs/bundle/release/app-release.aab
+
+      - name: Publicar APK para descargar desde el celular
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ github.run_number }}
+          name: Fury Puzzle (versión ${{ github.run_number }})
+          files: |
+            FuryPuzzle.apk
+            FuryPuzzle.aab
+          make_latest: true
+
