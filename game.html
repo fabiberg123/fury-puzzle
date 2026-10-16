@@ -596,13 +596,13 @@ let lang=(()=>{try{const v=JSON.parse(localStorage.getItem('fury.lang'));return 
 function T_(k,v){let s=(I18N[lang]&&I18N[lang][k])||I18N.en[k]||k;if(v)for(const x in v)s=s.split('{'+x+'}').join(v[x]);return s}
 
 /* ================= CONFIG: PUBLICIDAD =================
-   Estos son IDs de PRUEBA de Google. Antes de publicar, cámbialos por los tuyos de AdMob. */
+   IDs reales de la cuenta AdMob de Fury Puzzle. */
 const AD_IDS={
-  banner:'ca-app-pub-3940256099942544/9214589741',
-  interstitial:'ca-app-pub-3940256099942544/1033173712',
-  rewarded:'ca-app-pub-3940256099942544/5224354917'
+  banner:'ca-app-pub-1805774931480831/2624428715',
+  interstitial:'ca-app-pub-1805774931480831/7685183709',
+  rewarded:'ca-app-pub-1805774931480831/1119775354'
 };
-const AD_TESTING=true;          // poner en false al publicar
+const AD_TESTING=false;         // true = anuncios de prueba
 const INTERSTITIAL_EVERY=2;     // anuncio de pantalla completa cada N partidas
 
 /* ================= CONFIG: ECONOMÍA ================= */
