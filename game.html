@@ -65,6 +65,7 @@ svg.coin{width:17px;height:17px;flex:none}
 .btn svg{width:20px;height:20px;flex:none}
 .btn small{font-family:var(--body);font-weight:800;font-size:12px;opacity:.8}
 .row{display:flex;gap:10px}.row>*{flex:1}
+.fbsec{text-align:center;border-top:1px solid var(--edge);padding-top:12px;margin-top:6px}.fbsec .btn{margin:8px auto 0;width:auto;padding:10px 18px}
 .pill{align-self:center;display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:99px;border:1px solid var(--edge);font-weight:800;font-variant-numeric:tabular-nums}
 
 .logo{font-family:var(--display);line-height:.9;margin:2px 0 4px}
@@ -189,6 +190,7 @@ svg.coin{width:17px;height:17px;flex:none}
         <button class="btn ghost" id="btnStartHelp" data-i="howto"></button>
         <button class="btn ghost langbtn" id="btnStartLang"><svg class="gl" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z"/></svg><span class="langname"></span></button>
       </div>
+      <button class="btn ghost" id="btnStartFb"><svg class="gl" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M4 7l8 6 8-6"/></svg><span data-i="fb"></span><i class="dot fbdot" hidden></i></button>
       <button class="btn ghost" id="btnStartGift" hidden><span data-i="gift"></span><i class="dot"></i></button>
       <button class="btn ghost" id="btnStartExit" data-i="exit" hidden></button>
       <div class="label"><span data-i="best"></span>: <span id="startBest">0</span></div>
@@ -589,6 +591,19 @@ ur:{music:"موسیقی",sounds:"آوازیں",volume:"آواز کی سطح",gam
 ru:{music:"Музыка",sounds:"Звуки",volume:"Громкость",gameMusic:"Музыка игры",yourSongs:"Твои песни",slotsInfo:"Занято мест: {a} из {b}",addSong:"Добавить песню",buySlot:"Купить ещё место",maxSongs:"Достигнут максимум: 10 песен",repeatOne:"Повторять эту",repeatAll:"Все по порядку",del:"Удалить",delQ:"Удалить?",songAdded:"Песня добавлена!",songErr:"Не удалось загрузить файл",songBig:"Файл слишком большой (максимум 30 МБ)",listen:"Слушать",use:"Выбрать",inUse:"Выбран",achievement:"Достижение",t_ach:"Достижение получено! Набор «{name}» открыт",trk_0:"Огненный ритм",trk_1:"Спокойствие",snd_classic:"Классика",snd_arcade:"Ретро-аркада",snd_cartoon:"Мультик",snd_wood:"Маримба",snd_drums:"Барабаны",snd_water:"Вода",snd_crystal:"Хрусталь",snd_piano:"Пианино",snd_space:"Космос",snd_electro:"Электро",snd_epic:"Эпическая ярость",a_comboMax:"Сделай комбо x{n}",a_clears:"Очисти всё поле (раз: {n})",h_music_t:"Музыка и звуки",h_music:"В разделе «Музыка» можно слушать музыку игры или загрузить свои MP3 (до 10). В разделе «Звуки» выбирай набор эффектов: сначала послушай, потом открой за достижения или монеты.",noStorage:"Это устройство не может сохранять песни"}
 };
 for(const l in I18N_ADD)Object.assign(I18N[l],I18N_ADD[l]);
+const I18N_FB={
+"es":{"fb": "Sugerencias", "fbQ": "¿Tienes una idea o encontraste un error?", "fbWrite": "Escríbenos", "fbSubj": "Fury Puzzle – Sugerencia", "fbBody": "Escribe aquí tu idea o el error que encontraste:", "fbThanks": "¡Gracias por ayudarnos! +{n} monedas", "fbThanks2": "¡Gracias por escribirnos!"},
+"en":{"fb": "Feedback", "fbQ": "Have an idea or found a bug?", "fbWrite": "Write to us", "fbSubj": "Fury Puzzle – Feedback", "fbBody": "Write your idea or the bug you found here:", "fbThanks": "Thanks for helping us! +{n} coins", "fbThanks2": "Thanks for writing to us!"},
+"pt":{"fb": "Sugestões", "fbQ": "Tem uma ideia ou encontrou um erro?", "fbWrite": "Escreva para nós", "fbSubj": "Fury Puzzle – Sugestão", "fbBody": "Escreva aqui sua ideia ou o erro que encontrou:", "fbThanks": "Obrigado por ajudar! +{n} moedas", "fbThanks2": "Obrigado por escrever!"},
+"id":{"fb": "Saran", "fbQ": "Punya ide atau menemukan bug?", "fbWrite": "Tulis ke kami", "fbSubj": "Fury Puzzle – Saran", "fbBody": "Tulis idemu atau bug yang kamu temukan di sini:", "fbThanks": "Terima kasih sudah membantu! +{n} koin", "fbThanks2": "Terima kasih sudah menulis!"},
+"vi":{"fb": "Góp ý", "fbQ": "Bạn có ý tưởng hoặc gặp lỗi?", "fbWrite": "Viết cho chúng tôi", "fbSubj": "Fury Puzzle – Góp ý", "fbBody": "Hãy viết ý tưởng hoặc lỗi bạn gặp ở đây:", "fbThanks": "Cảm ơn bạn đã giúp đỡ! +{n} xu", "fbThanks2": "Cảm ơn bạn đã viết cho chúng tôi!"},
+"hi":{"fb": "सुझाव", "fbQ": "कोई आइडिया है या कोई गड़बड़ी मिली?", "fbWrite": "हमें लिखें", "fbSubj": "Fury Puzzle – सुझाव", "fbBody": "अपना आइडिया या मिली गड़बड़ी यहाँ लिखें:", "fbThanks": "मदद के लिए धन्यवाद! +{n} सिक्के", "fbThanks2": "लिखने के लिए धन्यवाद!"},
+"tr":{"fb": "Öneri", "fbQ": "Bir fikrin mi var ya da hata mı buldun?", "fbWrite": "Bize yaz", "fbSubj": "Fury Puzzle – Öneri", "fbBody": "Fikrini ya da bulduğun hatayı buraya yaz:", "fbThanks": "Yardımın için teşekkürler! +{n} altın", "fbThanks2": "Yazdığın için teşekkürler!"},
+"fil":{"fb": "Mungkahi", "fbQ": "May ideya ka o may nakitang bug?", "fbWrite": "Sumulat sa amin", "fbSubj": "Fury Puzzle – Mungkahi", "fbBody": "Isulat dito ang ideya mo o ang bug na nakita mo:", "fbThanks": "Salamat sa pagtulong! +{n} coins", "fbThanks2": "Salamat sa pagsulat!"},
+"ur":{"fb": "تجاویز", "fbQ": "کوئی خیال ہے یا کوئی خرابی ملی؟", "fbWrite": "ہمیں لکھیں", "fbSubj": "Fury Puzzle – تجویز", "fbBody": "اپنا خیال یا ملی ہوئی خرابی یہاں لکھیں:", "fbThanks": "مدد کا شکریہ! +{n} سکے", "fbThanks2": "لکھنے کا شکریہ!"},
+"ru":{"fb": "Отзыв", "fbQ": "Есть идея или нашёл ошибку?", "fbWrite": "Напиши нам", "fbSubj": "Fury Puzzle – Отзыв", "fbBody": "Напиши здесь свою идею или найденную ошибку:", "fbThanks": "Спасибо за помощь! +{n} монет", "fbThanks2": "Спасибо, что написал!"},
+};
+for(const l in I18N_FB)Object.assign(I18N[l],I18N_FB[l]);
 
 const detectLang=()=>{const list=(navigator.languages||[navigator.language||'en']).map(x=>String(x).toLowerCase());
   for(const l of list){const b=l.split('-')[0];if(b==='tl'||b==='fil')return'fil';if(b==='in')return'id';if(I18N[b])return b}return'en'};
@@ -1500,7 +1515,18 @@ function buildHelp(){const el=$('#helpBody');el.innerHTML='';
   for(const k of['bomb','bolt','rainbow','x2','ice']){const li=document.createElement('li');li.append(powerIcon(k));const sp=document.createElement('span');sp.textContent=T_('h_'+k);li.append(sp);ul.append(li)}pw.append(ul);
   const tl=sec('h_tools_t','h_tools'),ul2=document.createElement('ul');
   for(const k of['hammer','shuffle','undo']){const li=document.createElement('li');li.innerHTML=`<i class="hi">${ICONS[k]}</i><span><b>${T_(k)}:</b> ${T_(k+'D')}</span>`;ul2.append(li)}tl.append(ul2);
-  sec('h_coins_t','h_coins');sec('h_music_t','h_music');el.scrollTop=0}
+  sec('h_coins_t','h_coins');sec('h_music_t','h_music');
+  const fbs=document.createElement('section');fbs.className='fbsec';fbs.innerHTML=`<p>${T_('fbQ')}</p>`;const fbb=document.createElement('button');fbb.className='btn ghost';fbb.innerHTML=`✉️ <span>${T_('fbWrite')}</span>`;fbb.onclick=sendFeedback;fbs.append(fbb);el.append(fbs);el.scrollTop=0}
+const FB_MAIL='fabiberg123@gmail.com',FB_REWARD=50,APP_VER='1.1';
+function devModel(){const ua=navigator.userAgent||'';const m=ua.match(/Android\s([\d.]+);\s*([^;)]+?)(?:\sBuild|\)|;)/);return m?('Android '+m[1]+' · '+m[2].trim()):ua.slice(0,80)}
+function syncFbDot(){const d=$('.fbdot');if(d)d.hidden=!!store.get('fbDone',false)}
+function sendFeedback(){Snd.unlock();Snd.tap();
+  const info=['Fury Puzzle '+APP_VER,'Idioma/Lang: '+lang,devModel()].join('\n');
+  const body=T_('fbBody')+'\n\n\n\n---\n'+info;
+  const url='mailto:'+FB_MAIL+'?subject='+encodeURIComponent(T_('fbSubj'))+'&body='+encodeURIComponent(body);
+  const a=document.createElement('a');a.href=url;a.rel='noopener';document.body.append(a);a.click();a.remove();
+  setTimeout(()=>{if(!store.get('fbDone',false)){store.set('fbDone',true);addCoins(FB_REWARD);toast(T_('fbThanks',{n:FB_REWARD}))}else toast(T_('fbThanks2'));syncFbDot()},900)}
+$('#btnStartFb').onclick=sendFeedback;syncFbDot();
 let helpThenPlay=false;
 function openHelp(from){buildHelp();openOv('#ovHelp',from)}
 $('#btnStartHelp').onclick=()=>{Snd.unlock();openHelp('#ovStart')};
