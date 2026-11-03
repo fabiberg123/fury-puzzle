@@ -1,0 +1,16 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="../../www/fonts/fonts.css">
+<style>
+html,body{margin:0;width:1080px;height:1920px;overflow:hidden}
+body{background:radial-gradient(900px 700px at 50% 18%,var(--glow) 0%,transparent 70%),linear-gradient(#2a0b06,#100403);font-family:"Baloo 2",sans-serif;color:#fff3e6;position:relative}
+.h{position:absolute;top:70px;left:50px;right:50px;text-align:center;font-family:Bungee,sans-serif;font-size:86px;line-height:1.02;background:linear-gradient(#ffe68a,#ffb52e 55%,#ff6a1a);-webkit-background-clip:text;color:transparent;filter:drop-shadow(0 6px 0 #4a1205) drop-shadow(0 12px 22px rgba(0,0,0,.55))}
+.s{position:absolute;top:var(--st);left:60px;right:60px;text-align:center;font-weight:800;font-size:46px;color:#fff3e6;text-shadow:0 4px 14px rgba(0,0,0,.6)}
+.ph{position:absolute;left:50%;transform:translateX(-50%);top:var(--pt);width:840px;border-radius:46px;overflow:hidden;border:5px solid rgba(255,190,90,.55);box-shadow:0 30px 80px rgba(0,0,0,.7),0 0 60px var(--glow)}
+.ph img{display:block;width:100%}
+.spark{position:absolute;border-radius:50%;background:#ffd36b;filter:blur(1px);opacity:.7}
+</style></head><body><div class="h" id="h"></div><div class="s" id="s"></div><div class="ph"><img id="img"></div>
+<script>const q=new URLSearchParams(location.search);
+document.getElementById('h').textContent=q.get('h');document.getElementById('s').textContent=q.get('s');
+document.getElementById('img').src='../capturas/'+q.get('img');
+document.body.style.setProperty('--glow',q.get('g')||'rgba(255,106,26,.45)');
+for(let i=0;i<26;i++){const d=document.createElement('div');d.className='spark';const r=3+Math.random()*7;Object.assign(d.style,{width:r+'px',height:r+'px',left:Math.random()*1080+'px',top:Math.random()*1920+'px'});document.body.append(d)}
+</script></body></html>
