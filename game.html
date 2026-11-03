@@ -65,6 +65,22 @@ svg.coin{width:17px;height:17px;flex:none}
 .btn svg{width:20px;height:20px;flex:none}
 .btn small{font-family:var(--body);font-weight:800;font-size:12px;opacity:.8}
 .row{display:flex;gap:10px}.row>*{flex:1}
+#tut{position:absolute;inset:0;z-index:3;pointer-events:none}
+#tut .tb{position:absolute;left:50%;transform:translateX(-50%);width:min(340px,calc(100% - 24px));background:var(--panel);border:2px solid var(--accent2);border-radius:18px;padding:12px 14px;text-align:center;font-weight:800;font-size:16px;line-height:1.3;box-shadow:0 10px 30px rgba(0,0,0,.5);pointer-events:auto;animation:tutIn .3s ease-out}
+#tut .tb .tbb{display:flex;gap:8px;justify-content:center;margin-top:10px}
+#tut .tb button{font:inherit;font-size:14px;border-radius:99px;padding:8px 16px;cursor:pointer}
+#tut .tb .go{background:linear-gradient(var(--accent2),var(--accent));color:var(--btnfg);border:0}
+#tut .tb .sk{background:transparent;color:var(--muted);border:1px solid var(--edge)}
+#tut .tb.up::before,#tut .tb.down::after{content:"";position:absolute;left:50%;margin-left:-9px;border:9px solid transparent}
+#tut .tb.up::before{top:-20px;border-bottom-color:var(--accent2)}
+#tut .tb.down::after{bottom:-20px;border-top-color:var(--accent2)}
+#tut .hl{position:absolute;border:3px dashed #fff;border-radius:8px;box-shadow:0 0 18px #ffe14d,inset 0 0 14px rgba(255,225,77,.5);animation:tutPulse 1s ease-in-out infinite alternate}
+#tut .hand{position:absolute;left:0;top:0;width:54px;height:54px;margin:-6px 0 0 -14px;filter:drop-shadow(0 4px 6px rgba(0,0,0,.6))}
+#tut .gp{position:absolute;left:0;top:0;opacity:.7}
+#tut .gp i{position:absolute;top:0;border-radius:6px;background:linear-gradient(#ffd36b,#ff8a2a);border:2px solid #fff}
+@keyframes tutPulse{from{opacity:.55}to{opacity:1}}
+@keyframes tutIn{from{opacity:0;transform:translate(-50%,8px)}}
+
 .fbsec{text-align:center;border-top:1px solid var(--edge);padding-top:12px;margin-top:6px}.fbsec .btn{margin:8px auto 0;width:auto;padding:10px 18px}
 .pill{align-self:center;display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:99px;border:1px solid var(--edge);font-weight:800;font-variant-numeric:tabular-nums}
 
@@ -163,6 +179,7 @@ svg.coin{width:17px;height:17px;flex:none}
   </header>
   <div id="stage">
     <canvas id="cv"></canvas>
+    <div id="tut" hidden></div>
     <div id="toast" hidden></div>
     <div id="stuck" hidden><p data-i="stuck"></p><button class="btn ghost" id="btnGiveUp" data-i="giveUp"></button></div>
   </div>
@@ -207,6 +224,7 @@ svg.coin{width:17px;height:17px;flex:none}
       <div class="earn" id="overEarn"></div>
       <button class="btn video" id="btnDouble"><span data-i="doubleCoins"></span><small data-i="video"></small></button>
       <button class="btn" id="btnContinue"><span><span data-i="keepPlaying"></span><br><small data-i="watchVideo"></small></span></button>
+      <button class="btn ghost" id="btnShare"><svg class="gl" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg><span data-i="share"></span></button>
       <button class="btn ghost" id="btnAgain" data-i="playAgain"></button>
     </div>
   </div>
@@ -604,6 +622,19 @@ const I18N_FB={
 "ru":{"fb": "Отзыв", "fbQ": "Есть идея или нашёл ошибку?", "fbWrite": "Напиши нам", "fbSubj": "Fury Puzzle – Отзыв", "fbBody": "Напиши здесь свою идею или найденную ошибку:", "fbThanks": "Спасибо за помощь! +{n} монет", "fbThanks2": "Спасибо, что написал!"},
 };
 for(const l in I18N_FB)Object.assign(I18N[l],I18N_FB[l]);
+const I18N_V8={
+"es":{"tut1": "Arrastra esta pieza al hueco que brilla", "tut2": "¡Fila completa! Explota y ganas puntos. Rompe líneas seguidas para hacer COMBO 🔥", "tut3": "Cada línea llena la barra de FURIA. Cuando se llena: ¡15 segundos de puntos x3!", "tut4": "¿Te quedas sin lugar? Usa el martillo, piezas nuevas o deshacer para salvarte", "tutNext": "Siguiente", "tutGo": "¡A jugar!", "tutSkip": "Saltar", "share": "Compartir récord", "shareMsg": "¡Hice {n} puntos en Fury Puzzle! 🔥 ¿Me ganas?", "shareCopied": "Mensaje copiado: pégalo donde quieras"},
+"en":{"tut1": "Drag this piece into the glowing gap", "tut2": "Row complete! It blasts and you score. Break lines in a row to make a COMBO 🔥", "tut3": "Every line fills the FURY bar. When it's full: 15 seconds of x3 points!", "tut4": "Out of space? Use the hammer, new pieces or undo to save yourself", "tutNext": "Next", "tutGo": "Let's play!", "tutSkip": "Skip", "share": "Share score", "shareMsg": "I scored {n} points in Fury Puzzle! 🔥 Can you beat me?", "shareCopied": "Message copied: paste it anywhere"},
+"pt":{"tut1": "Arraste esta peça para o espaço brilhante", "tut2": "Linha completa! Ela explode e você ganha pontos. Quebre linhas seguidas para fazer COMBO 🔥", "tut3": "Cada linha enche a barra de FÚRIA. Quando enche: 15 segundos de pontos x3!", "tut4": "Sem espaço? Use o martelo, peças novas ou desfazer para se salvar", "tutNext": "Próximo", "tutGo": "Vamos jogar!", "tutSkip": "Pular", "share": "Compartilhar recorde", "shareMsg": "Fiz {n} pontos no Fury Puzzle! 🔥 Consegue me vencer?", "shareCopied": "Mensagem copiada: cole onde quiser"},
+"id":{"tut1": "Seret potongan ini ke celah yang bersinar", "tut2": "Baris penuh! Meledak dan kamu dapat poin. Hancurkan garis berturut-turut untuk KOMBO 🔥", "tut3": "Setiap garis mengisi bar AMARAH. Saat penuh: 15 detik poin x3!", "tut4": "Kehabisan tempat? Pakai palu, potongan baru, atau batalkan untuk menyelamatkan diri", "tutNext": "Lanjut", "tutGo": "Ayo main!", "tutSkip": "Lewati", "share": "Bagikan skor", "shareMsg": "Aku dapat {n} poin di Fury Puzzle! 🔥 Bisa kalahkan aku?", "shareCopied": "Pesan disalin: tempel di mana saja"},
+"vi":{"tut1": "Kéo khối này vào ô trống đang sáng", "tut2": "Đầy hàng! Hàng nổ tung và bạn được điểm. Phá hàng liên tiếp để tạo COMBO 🔥", "tut3": "Mỗi hàng làm đầy thanh CUỒNG NỘ. Khi đầy: 15 giây điểm x3!", "tut4": "Hết chỗ? Dùng búa, khối mới hoặc hoàn tác để tự cứu", "tutNext": "Tiếp", "tutGo": "Chơi thôi!", "tutSkip": "Bỏ qua", "share": "Chia sẻ điểm", "shareMsg": "Mình được {n} điểm trong Fury Puzzle! 🔥 Bạn vượt được không?", "shareCopied": "Đã sao chép: dán vào bất cứ đâu"},
+"hi":{"tut1": "इस टुकड़े को चमकती खाली जगह में खींचें", "tut2": "पंक्ति पूरी! वह फटती है और आपको अंक मिलते हैं। लगातार लाइनें तोड़कर COMBO बनाएँ 🔥", "tut3": "हर लाइन रोष की पट्टी भरती है। पूरी भरने पर: 15 सेकंड तक x3 अंक!", "tut4": "जगह नहीं बची? बचने के लिए हथौड़ा, नए टुकड़े या वापस लें इस्तेमाल करें", "tutNext": "आगे", "tutGo": "चलो खेलें!", "tutSkip": "छोड़ें", "share": "स्कोर शेयर करें", "shareMsg": "मैंने Fury Puzzle में {n} अंक बनाए! 🔥 क्या आप मुझे हरा सकते हैं?", "shareCopied": "संदेश कॉपी हुआ: कहीं भी पेस्ट करें"},
+"tr":{"tut1": "Bu parçayı parlayan boşluğa sürükle", "tut2": "Satır tamam! Patlar ve puan kazanırsın. Art arda çizgi kırarak KOMBO yap 🔥", "tut3": "Her çizgi ÖFKE çubuğunu doldurur. Dolunca: 15 saniye x3 puan!", "tut4": "Yer kalmadı mı? Kurtulmak için çekiç, yeni parçalar ya da geri al'ı kullan", "tutNext": "İleri", "tutGo": "Hadi oyna!", "tutSkip": "Geç", "share": "Skoru paylaş", "shareMsg": "Fury Puzzle'da {n} puan yaptım! 🔥 Beni geçebilir misin?", "shareCopied": "Mesaj kopyalandı: istediğin yere yapıştır"},
+"fil":{"tut1": "I-drag ang pirasong ito sa kumikinang na puwang", "tut2": "Buo ang hanay! Sasabog ito at may puntos ka. Sunud-sunod na linya = COMBO 🔥", "tut3": "Bawat linya ay pumupuno sa FURY bar. Kapag puno: 15 segundong x3 puntos!", "tut4": "Wala nang puwang? Gamitin ang martilyo, bagong piraso o undo para makaligtas", "tutNext": "Susunod", "tutGo": "Laro na!", "tutSkip": "Laktawan", "share": "I-share ang score", "shareMsg": "Naka-{n} puntos ako sa Fury Puzzle! 🔥 Kaya mo ba akong talunin?", "shareCopied": "Nakopya ang mensahe: i-paste kahit saan"},
+"ur":{"tut1": "اس ٹکڑے کو چمکتی خالی جگہ پر گھسیٹیں", "tut2": "قطار مکمل! یہ پھٹتی ہے اور آپ کو پوائنٹس ملتے ہیں۔ لگاتار لائنیں توڑ کر کومبو بنائیں 🔥", "tut3": "ہر لائن غصے کی پٹی بھرتی ہے۔ بھر جائے تو: 15 سیکنڈ تک x3 پوائنٹس!", "tut4": "جگہ ختم؟ بچنے کے لیے ہتھوڑا، نئے ٹکڑے یا واپس لیں استعمال کریں", "tutNext": "اگلا", "tutGo": "چلو کھیلیں!", "tutSkip": "چھوڑیں", "share": "اسکور شیئر کریں", "shareMsg": "میں نے Fury Puzzle میں {n} پوائنٹس بنائے! 🔥 کیا آپ مجھے ہرا سکتے ہیں؟", "shareCopied": "پیغام کاپی ہو گیا: کہیں بھی پیسٹ کریں"},
+"ru":{"tut1": "Перетащи эту фигуру в светящееся место", "tut2": "Ряд заполнен! Он взрывается, и ты получаешь очки. Ломай линии подряд — будет КОМБО 🔥", "tut3": "Каждая линия заполняет шкалу ЯРОСТИ. Когда она полная — 15 секунд очков x3!", "tut4": "Нет места? Используй молот, новые фигуры или отмену, чтобы спастись", "tutNext": "Дальше", "tutGo": "Играем!", "tutSkip": "Пропустить", "share": "Поделиться счётом", "shareMsg": "Я набрал {n} очков в Fury Puzzle! 🔥 Сможешь побить?", "shareCopied": "Сообщение скопировано: вставь куда угодно"},
+};
+for(const l in I18N_V8)Object.assign(I18N[l],I18N_V8[l]);
 
 const detectLang=()=>{const list=(navigator.languages||[navigator.language||'en']).map(x=>String(x).toLowerCase());
   for(const l of list){const b=l.split('-')[0];if(b==='tl'||b==='fil')return'fil';if(b==='in')return'id';if(I18N[b])return b}return'en'};
@@ -1326,8 +1357,8 @@ cv.addEventListener('pointerdown',e=>{const p=pt(e);
       blast(new Set([r*N+c]),0,r+.5,c+.5);rings.push({x:bx+(c+.5)*cell,y:by+(r+.5)*cell,t0:now(),col:'#ffffff',r:cell*1.2});
       unstick();updateHud();save();checkOver()}
     else{hammer=false;syncTools()}return}
-  if(state!=='play'||drag)return;
-  for(let i=0;i<3;i++){const q=tray[i];if(!q||q.placed)continue;const c=slotC(i);
+  if(state!=='play'||drag||(TUT&&TUT.step>1))return;
+  for(let i=0;i<3;i++){const q=tray[i];if(!q||q.placed)continue;if(TUT&&i!==0)continue;const c=slotC(i);
     if(Math.abs(p.x-c.x)<slotW/2&&p.y>ty-cell*.4&&p.y<ty+trayH+cell){
       drag={i,x:p.x,y:p.y,t0:now(),mouse:e.pointerType==='mouse'};q.ret=null;try{cv.setPointerCapture(e.pointerId)}catch(_){}Snd.pick();vib(6);updGhost();break}}});
 cv.addEventListener('pointermove',e=>{if(!drag)return;const p=pt(e);drag.x=p.x;drag.y=p.y;updGhost()});
@@ -1339,7 +1370,7 @@ function updGhost(){const q=tray[drag.i],g=dragGeom();
   const c=Math.round((g.x-bx)/cell),r=Math.round((g.y-by)/cell);
   const inside=g.x+q.w*cell>bx-cell*.5&&g.x<bx+N*cell+cell*.5&&g.y+q.h*cell>by-cell*.5&&g.y<by+N*cell+cell*.5;
   if(!inside){ghost=null;return}
-  if(!canPlace(q,r,c)){ghost={ok:false};return}
+  if(!canPlace(q,r,c)||(TUT&&(r!==TUT_R||c!==TUT_C))){ghost={ok:false};return}
   const occ=grid.map(row=>row.slice());q.cells.forEach(([dr,dc])=>occ[r+dr][c+dc]=q.ci);
   const lines=new Set();for(let i=0;i<N;i++){if(occ[i].every(v=>v>=0))for(let j=0;j<N;j++)lines.add(i*N+j);if(occ.every(row=>row[i]>=0))for(let j=0;j<N;j++)lines.add(j*N+i)}
   ghost={ok:true,r,c,ci:q.ci,lines}}
@@ -1475,7 +1506,7 @@ let back=null;
 function openOv(id,from){back=from;if(from)$(from).hidden=true;$(id).hidden=false}
 function closeOv(id){$(id).hidden=true;if(back)$(back).hidden=false;back=null}
 function startPlay(){if(state==='play'||state==='stuck'){updateHud();return}if(!load())newGame();else{syncTools();if(state==='play')checkOver()}}
-$('#btnPlay').onclick=()=>{Snd.unlock();Snd.tap();$('#ovStart').hidden=true;if(!store.get('seenHelp',false)){helpThenPlay=true;buildHelp();$('#ovHelp').hidden=false;return}startPlay()};
+$('#btnPlay').onclick=()=>{Snd.unlock();Snd.tap();$('#ovStart').hidden=true;if(!store.get('seenHelp',false)&&!store.get('tutDone',false)&&!store.get('game',null)){store.set('seenHelp',true);startTutorial();return}startPlay()};
 $('#btnStartSkin').onclick=()=>{Snd.unlock();pendingBuy=null;buildSkinList();openOv('#ovSkin','#ovStart')};
 $('#btnStartMis').onclick=()=>{Snd.unlock();renderMis();openOv('#ovMis','#ovStart')};
 $('#btnStartGift').onclick=()=>{Snd.unlock();openGift()};
@@ -1497,7 +1528,7 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden&&(state==='
 function applyLang(){document.documentElement.lang=lang;$('#app').dir=lang==='ur'?'rtl':'ltr';
   $$('[data-i]').forEach(e=>e.textContent=T_(e.dataset.i));$$('[data-ta]').forEach(e=>e.setAttribute('aria-label',T_(e.dataset.ta)));
   const L=LANGS.find(x=>x.c===lang);$$('.langname').forEach(e=>e.textContent=L.n);
-  syncTog();updateHud();if(!$('#ovSkin').hidden)buildSkinList();if(!$('#ovMis').hidden)renderMis();if(!$('#ovHelp').hidden)buildHelp();if(!$('#ovMusic').hidden)renderMusic();if(!$('#ovSnd').hidden)renderSnd()}
+  syncTog();updateHud();if(!$('#ovSkin').hidden)buildSkinList();if(!$('#ovMis').hidden)renderMis();if(!$('#ovHelp').hidden)buildHelp();if(!$('#ovMusic').hidden)renderMusic();if(!$('#ovSnd').hidden)renderSnd();if(TUT)tutShow()}
 function buildLangs(){const el=$('#langList');el.innerHTML='';
   for(const L of LANGS){const b=document.createElement('button');b.className='lang';b.setAttribute('aria-pressed',L.c===lang);b.innerHTML=`<b>${L.f}</b><span>${L.n}</span>`;
     b.onclick=()=>{lang=L.c;store.set('lang',lang);Snd.tap();applyLang();buildLangs()};el.append(b)}}
@@ -1517,7 +1548,7 @@ function buildHelp(){const el=$('#helpBody');el.innerHTML='';
   for(const k of['hammer','shuffle','undo']){const li=document.createElement('li');li.innerHTML=`<i class="hi">${ICONS[k]}</i><span><b>${T_(k)}:</b> ${T_(k+'D')}</span>`;ul2.append(li)}tl.append(ul2);
   sec('h_coins_t','h_coins');sec('h_music_t','h_music');
   const fbs=document.createElement('section');fbs.className='fbsec';fbs.innerHTML=`<p>${T_('fbQ')}</p>`;const fbb=document.createElement('button');fbb.className='btn ghost';fbb.innerHTML=`✉️ <span>${T_('fbWrite')}</span>`;fbb.onclick=sendFeedback;fbs.append(fbb);el.append(fbs);el.scrollTop=0}
-const FB_MAIL='fabiberg123@gmail.com',FB_REWARD=50,APP_VER='1.1';
+const FB_MAIL='fabiberg123@gmail.com',FB_REWARD=50,APP_VER='1.2';
 function devModel(){const ua=navigator.userAgent||'';const m=ua.match(/Android\s([\d.]+);\s*([^;)]+?)(?:\sBuild|\)|;)/);return m?('Android '+m[1]+' · '+m[2].trim()):ua.slice(0,80)}
 function syncFbDot(){const d=$('.fbdot');if(d)d.hidden=!!store.get('fbDone',false)}
 function sendFeedback(){Snd.unlock();Snd.tap();
@@ -1528,6 +1559,48 @@ function sendFeedback(){Snd.unlock();Snd.tap();
   setTimeout(()=>{if(!store.get('fbDone',false)){store.set('fbDone',true);addCoins(FB_REWARD);toast(T_('fbThanks',{n:FB_REWARD}))}else toast(T_('fbThanks2'));syncFbDot()},900)}
 $('#btnStartFb').onclick=sendFeedback;syncFbDot();
 let helpThenPlay=false;
+/* ================= TUTORIAL (primera partida) ================= */
+let TUT=null;const TUT_R=6,TUT_C=3;
+const HAND_SVG='<svg class="hand" viewBox="0 0 64 64"><path d="M22 30V10a5 5 0 0 1 10 0v16l2-1a5 5 0 0 1 7 3l1-1a5 5 0 0 1 7 3l1 0a5 5 0 0 1 6 5v9c0 9-6 16-15 16h-6c-6 0-10-3-13-8l-9-14a5 5 0 0 1 8-6z" fill="#fff" stroke="#1a0703" stroke-width="3" stroke-linejoin="round"/></svg>';
+function startTutorial(){newGame();
+  for(let c=0;c<N;c++)if(c!==TUT_C&&c!==TUT_C+1)grid[TUT_R][c]=(c*3)%7;
+  [[7,0],[7,1],[7,6],[7,7],[5,0],[5,7]].forEach(([r,c],k)=>grid[r][c]=(k*2+1)%7);
+  tray[0]={cells:[[0,0],[0,1]],w:2,h:1,ci:2,placed:false,sp:null};
+  TUT={step:1};save();tutShow()}
+function tutEnd(){TUT=null;store.set('tutDone',true);const el=$('#tut');el.hidden=true;el.innerHTML='';Snd.tap()}
+function tutBubble(text,where,btn){const el=$('#tut');const b=document.createElement('div');b.className='tb'+(where==='bar'?' up':where==='tools'?' down':'');
+  b.innerHTML=`<div>${text}</div><div class="tbb"></div>`;const bb=b.querySelector('.tbb');
+  if(btn){const g=document.createElement('button');g.className='go';g.textContent=btn;g.onclick=()=>{Snd.tap();TUT.step<4?(TUT.step++,tutShow()):tutEnd()};bb.append(g)}
+  if(!TUT||TUT.step<4){const k=document.createElement('button');k.className='sk';k.textContent=T_('tutSkip');k.onclick=tutEnd;bb.append(k)}
+  if(where==='bar')b.style.top=(barY+barH+18)+'px';else if(where==='tools')b.style.bottom='14px';else b.style.top=Math.max(8,by+cell*.4)+'px';
+  el.append(b)}
+function tutShow(){if(!TUT)return;const el=$('#tut');el.hidden=false;el.innerHTML='';const st=TUT.step;
+  if(st===1){const hl=document.createElement('div');hl.className='hl';Object.assign(hl.style,{left:(bx+TUT_C*cell-3)+'px',top:(by+TUT_R*cell-3)+'px',width:(cell*2+6)+'px',height:(cell+6)+'px'});el.append(hl);
+    const a=slotC(0),bxx=bx+(TUT_C+1)*cell,byy=by+(TUT_R+1)*cell+cell*.85;
+    const gp=document.createElement('div');gp.className='gp';gp.innerHTML=`<i style="left:0;width:${cell-4}px;height:${cell-4}px"></i><i style="left:${cell}px;width:${cell-4}px;height:${cell-4}px"></i>`;
+    el.insertAdjacentHTML('beforeend',HAND_SVG);el.append(gp);const hand=el.querySelector('.hand');
+    const kf=(x,y,o)=>({transform:`translate(${x}px,${y}px)`,opacity:o});
+    const opt={duration:2200,iterations:Infinity,easing:'ease-in-out'};
+    hand.animate([kf(a.x,a.y,0),kf(a.x,a.y,1),kf(a.x,a.y,1),kf(bxx,byy,1),kf(bxx,byy,1),kf(bxx,byy,0)],Object.assign({offsets:[0,.1,.2,.75,.9,1]},opt));
+    const gx=x=>x-cell,gy=y=>y-cell-cell*.85;
+    gp.animate([kf(gx(a.x),gy(a.y),0),kf(gx(a.x),gy(a.y),0),kf(gx(a.x),gy(a.y),.75),kf(gx(bxx),gy(byy),.75),kf(gx(bxx),gy(byy),.75),kf(gx(bxx),gy(byy),0)],Object.assign({offsets:[0,.15,.2,.75,.9,1]},opt));
+    tutBubble(T_('tut1'),'board')}
+  else if(st===2)tutBubble(T_('tut2'),'board',T_('tutNext'));
+  else if(st===3)tutBubble(T_('tut3'),'bar',T_('tutNext'));
+  else tutBubble(T_('tut4'),'tools',T_('tutGo'))}
+const _placeOrig=place;
+place=function(p,r,c){_placeOrig(p,r,c);if(TUT&&TUT.step===1){TUT.step=2;$('#tut').innerHTML='';setTimeout(tutShow,900)}};
+window.addEventListener('resize',()=>{if(TUT)setTimeout(tutShow,60)});
+
+/* ================= COMPARTIR RÉCORD ================= */
+const STORE_URL='https://play.google.com/store/apps/details?id=com.furypuzzle.game';
+$('#btnShare').onclick=async()=>{Snd.tap();const text=T_('shareMsg',{n:score});
+  try{const SP=NATIVE&&((window.Capacitor.Plugins&&window.Capacitor.Plugins.Share)||(window.Capacitor.registerPlugin&&window.Capacitor.registerPlugin('Share')));
+    if(SP){await SP.share({title:'Fury Puzzle',text,url:STORE_URL,dialogTitle:T_('share')});return}
+    if(navigator.share){await navigator.share({title:'Fury Puzzle',text,url:STORE_URL});return}}
+  catch(e){if(e&&/cancel/i.test(String(e.message||e)))return}
+  try{await navigator.clipboard.writeText(text+' '+STORE_URL);toast(T_('shareCopied'))}catch(_){toast(text)}};
+
 function openHelp(from){buildHelp();openOv('#ovHelp',from)}
 $('#btnStartHelp').onclick=()=>{Snd.unlock();openHelp('#ovStart')};
 $('#btnPauseHelp').onclick=()=>openHelp('#ovPause');
