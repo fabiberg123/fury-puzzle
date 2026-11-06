@@ -170,6 +170,48 @@ svg.coin{width:17px;height:17px;flex:none}
 #adsim{background:#000;backdrop-filter:none;z-index:9}
 #adsim .card{background:#111;border-color:#333;color:#eee}
 .adbar{height:6px;border-radius:9px;background:#333;overflow:hidden}.adbar i{display:block;height:100%;width:0;background:#4ade80;transition:width .2s linear}
+/* ===== Navidad ===== */
+.btn.xmas{background:linear-gradient(180deg,#ff5468,#c4122f);color:#fff;box-shadow:0 5px 0 #6e0717,0 10px 24px rgba(220,30,60,.35);flex-direction:column;gap:2px;padding-top:15px}
+.btn.xmas::before{content:"";position:absolute;left:0;right:0;top:0;height:8px;border-radius:16px 16px 0 0;background:radial-gradient(circle at 7px 0,#fff 6.5px,transparent 7px) 0 0/14px 8px repeat-x}
+.btn.xmas .xl{display:flex;align-items:center;gap:8px}
+.btn.xmas small{font-family:var(--body);font-weight:800;font-size:12.5px;opacity:.95}
+.btn.xmas.soon{filter:saturate(.55) brightness(.9)}
+.flakes{display:inline-flex;align-items:center;gap:4px;color:#bfe9ff}
+.flakes.bump{animation:bump .25s ease-out}
+.xsim{display:flex;align-items:center;justify-content:center;gap:5px;font-size:12.5px;font-weight:800;color:#fff;background:#2b7bff;border-radius:12px;padding:5px 6px;flex-wrap:wrap}
+.xsim button{border:0;border-radius:8px;background:rgba(255,255,255,.22);color:#fff;font:800 13px var(--body);padding:4px 9px;cursor:pointer}
+.xsim b{min-width:9em}
+.xtabs{display:flex;gap:6px}.xtabs button{position:relative;flex:1;padding:9px 6px;border-radius:12px;border:1px solid var(--edge);background:none;color:var(--fg);font-weight:800;font-size:15px;cursor:pointer}
+.xtabs button[aria-pressed="true"]{background:var(--accent2);color:var(--btnfg);border-color:transparent}
+#xCount{font-weight:800;color:var(--fg);font-size:15px}
+.xcal{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
+.xw{position:relative;aspect-ratio:1;border-radius:12px;border:1px solid var(--edge);background:linear-gradient(160deg,rgba(255,80,100,.28),rgba(30,160,90,.22));color:var(--fg);font-family:var(--display);font-size:16px;display:grid;place-items:center;cursor:pointer;padding:0;overflow:hidden}
+.xw.sp{grid-column:span 2;aspect-ratio:auto;height:48px;font-size:13px}
+.xw i{position:absolute;bottom:2px;left:0;right:0;font-style:normal;font-size:10px;font-family:var(--body);font-weight:800;opacity:.85}
+.xw.lock{background:rgba(255,255,255,.06);color:var(--muted)}
+.xw.lock::after{content:"";position:absolute;left:0;right:0;top:0;height:7px;background:radial-gradient(circle at 5px 0,rgba(255,255,255,.75) 4.5px,transparent 5px) 0 0/10px 7px repeat-x}
+.xw.open{background:rgba(255,255,255,.04);color:var(--muted)}
+.xw.open::before{content:"✓";position:absolute;top:1px;right:4px;font-size:11px;color:#6ee7a0}
+.xw.miss{border:1px dashed var(--accent)}
+.xw.today{border:2px solid var(--accent2);box-shadow:0 0 14px rgba(255,211,77,.55);animation:wob 1.4s infinite}
+.xw.sel{outline:3px solid #fff;outline-offset:1px}
+.xw.pop{animation:xpop .7s cubic-bezier(.2,1.6,.4,1)}
+@keyframes xpop{0%{transform:scale(1) rotateY(0)}40%{transform:scale(1.35) rotateY(180deg)}100%{transform:scale(1) rotateY(360deg)}}
+.xdet{border:1px solid var(--edge);border-radius:16px;padding:12px;display:flex;flex-direction:column;gap:8px;text-align:center}
+.xdet h3{margin:0;font-family:var(--display);font-weight:400;font-size:17px;color:var(--accent2)}
+.xdet .xr{font-family:var(--display);font-size:18px;display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap}
+.xdet .xr b{font-weight:400;display:inline-flex;align-items:center;gap:4px}
+.xdet .xr svg{width:20px;height:20px}
+.xdet p{font-size:14px}
+.xdet .btn{font-size:15px;padding:11px 12px}
+#xTreeCv{width:min(280px,100%);height:auto;align-self:center;aspect-ratio:1}
+.xbar{height:10px;border-radius:9px;background:rgba(127,127,127,.25);overflow:hidden}.xbar i{display:block;height:100%;background:linear-gradient(90deg,#bfe9ff,#3db8ff)}
+.ystats{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ystats div{border:1px solid var(--edge);border-radius:14px;padding:8px 6px;display:flex;flex-direction:column;gap:2px}
+.ystats b{font-family:var(--display);font-weight:400;font-size:24px;color:var(--accent2);font-variant-numeric:tabular-nums}
+.ystats span{font-size:12px;font-weight:800;color:var(--muted)}
+.skin .free{position:absolute;top:6px;left:6px;padding:2px 8px;border-radius:99px;background:#e8283c;color:#fff;font-size:11px;font-weight:800}
+#xIntroCv{width:100%;max-width:300px;height:auto;align-self:center;aspect-ratio:300/110}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 
@@ -180,6 +222,7 @@ svg.coin{width:17px;height:17px;flex:none}
       <div class="toprow">
         <span class="best"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 7l4.5 4L12 4l4.5 7L21 7l-2 12H5z"/></svg><span id="best">0</span></span>
         <span class="coins"><i class="coinslot"></i><span class="coinval">0</span></span>
+        <span class="flakes" id="flakes" hidden>❄ <span id="flakeval">0</span></span>
       </div>
       <div class="score" id="score">0</div>
       <div class="tobest" id="tobest"></div>
@@ -202,8 +245,10 @@ svg.coin{width:17px;height:17px;flex:none}
   <div class="overlay" id="ovStart">
     <div class="card">
       <div class="logo"><span class="l1">FURY</span><span class="l2">PUZZLE</span></div>
+      <div class="xsim" id="xSim" hidden>🧪 <button data-s="-1" aria-label="Día anterior">◀</button><b id="xSimD"></b><button data-s="1" aria-label="Día siguiente">▶</button><button data-s="p">⏩</button><button data-s="0">Hoy</button><button data-s="r" aria-label="Reiniciar evento">♻</button></div>
       <span class="pill"><i class="coinslot"></i><span class="coinval">0</span></span>
       <button class="btn" id="btnPlay"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l13-7.5z"/></svg><span data-i="play"></span></button>
+      <button class="btn xmas" id="btnStartXmas" hidden><span class="xl">🎄 <span data-i="xName"></span></span><small id="xSub"></small><i class="dot xdot" hidden></i></button>
       <button class="btn daily" id="btnStartDaily"><svg class="gl" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/><path d="M9 15l2 2 4-4" stroke-linecap="round"/></svg><span data-i="daily"></span><i class="dot dlydot" hidden></i></button>
       <div class="row">
         <button class="btn ghost" id="btnStartMis"><span data-i="missions"></span><i class="dot misdot" hidden></i></button>
@@ -348,6 +393,38 @@ svg.coin{width:17px;height:17px;flex:none}
       <button class="btn" id="btnExitMenu" data-i="toMenu"></button>
       <button class="btn ghost" id="btnExitApp" data-i="closeGame" hidden></button>
       <button class="btn ghost" id="btnExitCancel" data-i="cancel"></button>
+    </div>
+  </div>
+
+  <div class="overlay" id="ovXIntro" hidden>
+    <div class="card">
+      <canvas id="xIntroCv" width="600" height="220"></canvas>
+      <h2 data-i="xIntroT"></h2>
+      <p data-i="xIntro"></p>
+      <button class="btn xmas" id="btnXAll"><span class="xl" data-i="xAll"></span></button>
+      <button class="btn ghost" id="btnXLater" data-i="xLater"></button>
+    </div>
+  </div>
+
+  <div class="overlay" id="ovXmas" hidden>
+    <div class="card">
+      <h2>🎄 <span data-i="xName"></span></h2>
+      <p id="xCount"></p>
+      <span class="pill"><i class="coinslot"></i><span class="coinval">0</span> &nbsp;❄ <span class="flakeval2">0</span></span>
+      <div class="xtabs"><button id="xTabCal">📅 <span data-i="xCal"></span><i class="dot xcaldot" hidden></i></button><button id="xTabTree">🎄 <span data-i="xTree"></span><i class="dot xtreedot" hidden></i></button></div>
+      <div id="xBody"></div>
+      <button class="btn ghost" id="btnXYear" hidden></button>
+      <button class="btn ghost" id="btnXTheme" hidden></button>
+      <button class="btn" id="btnXDone" data-i="done"></button>
+    </div>
+  </div>
+
+  <div class="overlay" id="ovXYear" hidden>
+    <div class="card">
+      <h2 id="xYearT"></h2>
+      <div class="ystats" id="xYearStats"></div>
+      <button class="btn" id="btnXShare"><span data-i="xShareY"></span></button>
+      <button class="btn ghost" id="btnXYearDone" data-i="done"></button>
     </div>
   </div>
 
@@ -673,6 +750,20 @@ const I18N_V9={
 "ru":{"daily": "Испытание дня", "dGoalScore": "Набери {n} очков на сегодняшнем поле", "dGoalLines": "Сломай {n} линий на сегодняшнем поле", "dPlay": "Играть испытание", "dPlayAgain": "Сыграть ещё", "dDoneToday": "✅ Сегодня выполнено! Возвращайся завтра, чтобы продолжить серию.", "dTodo": "Выполни сегодня, чтобы продлить серию.", "dStreak": "Серия: {n} из 7 дней", "dNew": "Новая тема или звук!", "dShort": "Испытание", "dWin": "Испытание пройдено!", "dMiss": "Не хватило {n}. Попробуй ещё!", "dTry": "Ещё раз", "dRemind": "Ежедневное напоминание (19:00)", "dBack": "Назад", "dNotifOff": "Включи уведомления Fury Puzzle в настройках телефона", "dUnlock": "Приз 7-го дня: {name}!", "dCoins": "+{n} монет", "nStreak": "🔥 Не потеряй серию из {n} дней! Сегодняшнее испытание ждёт", "nDaily": "🎯 Сегодня новое испытание. Справишься?", "nGift": "🎁 Ежедневный подарок готов", "nBack": "🧩 Блоки скучают по тебе. Сыграй быстрый раунд!", "testApp": "ТЕСТ"},
 };
 for(const l in I18N_V9)Object.assign(I18N[l],I18N_V9[l]);
+/* Navidad (v11). En tr/ru/id/ur el evento se presenta como Año Nuevo / invierno (xNY:"1"). */
+const I18N_V11={
+"es":{"xName":"Navidad Furiosa","xSoon":"Empieza en {n} días","xSoon1":"¡Empieza mañana!","xSoonT":"Empieza el 1 de diciembre 🎄","xWinReady":"🎁 ¡Tu regalo {n} está listo!","xToXmas":"Faltan {n} días para Navidad","xToXmas1":"¡Mañana es Navidad!","xMerry":"¡Feliz Navidad!","xToNY":"Faltan {n} días para {y}","xToNYt":"⏳ {t} para {y}","xHappyNY":"¡Feliz {y}!","xEnds":"El evento termina en {n} días","xLast":"¡Último día del evento!","xIntroT":"¡Llegó la Navidad Furiosa!","xIntro":"Un regalo cada día en el calendario, bloques regalo sorpresa y un árbol para decorar con copos ❄. El tema Navidad es gratis hasta el 6 de enero.","xAll":"🎄 Ponerle Navidad a todo","xLater":"Ahora no","xCal":"Calendario","xTree":"Árbol","xYearB":"🎆 Tu {y} en Fury Puzzle","xOpen":"🎁 ¡Abrir regalo!","xLocked":"🔒 Se abre el {d}","xMissed":"Te perdiste este día, pero todavía puedes abrirlo.","xRecVideo":"Abrir con video","xRecCoins":"Abrir por {n}","xDbl":"Duplicar con video","xGot":"Tu regalo","xBoard":"🎄 Tablero navideño: rompe {n} líneas","xBoardRw":"Premio:","xBoardPlay":"Jugar tablero","xBoardDone":"✅ ¡Tablero completado!","xBoardWin":"¡Tablero navideño completado!","xDay25":"Navidad","xDay31":"Fin de año","xDayR":"Reyes","xTreeInfo":"Rompe líneas en cualquier partida para juntar copos ❄ (el doble en Modo Furia). Con los copos cuelgas adornos y cada uno trae un premio.","xNext":"Próximo adorno: {a} / {b} ❄","xNextRw":"Premio del próximo adorno:","xHang":"Colgar adorno","xTreeDone":"¡Árbol completo! El tema Navidad es tuyo para siempre.","xStar":"⭐ Tema Navidad para siempre","t_xOrn":"¡Adorno nuevo! Cuélgalo en el árbol 🎄","t_xHung":"¡Adorno colgado!","skin_xmas":"Navidad","xFree":"Gratis","xUseTheme":"🎄 Usar tema Navidad","snd_bells":"Cascabeles","xPackEvt":"🎄 Regalo de Navidad del calendario","p_gift":"¡REGALO!","h_gift":"Regalo: se abre y trae monedas, una herramienta o un superpoder sorpresa (solo en Navidad).","trk_2":"Villancicos","xFury":"¡FURIA NAVIDEÑA!","xYearT":"Tu {y} en Fury Puzzle","y_lines":"Líneas rotas","y_games":"Partidas","y_best":"Récord","y_combo":"Mejor combo","y_pieces":"Piezas colocadas","y_power":"Superpoderes","y_fury":"Modos Furia","y_flakes":"Copos de nieve","xShareY":"Compartir mi año","xYearMsg":"Mi {y} en Fury Puzzle: {l} líneas rotas, récord de {b} puntos y combo x{c} 🔥 ¿Me ganas?","nXsoon":"🎄 ¡Mañana empieza la Navidad Furiosa! Un regalo cada día.","nXwin":"🎁 El regalo {n} de tu calendario te espera","nX24":"🎄 ¡Nochebuena! Abre tu regalo de hoy","nX25":"🎅 ¡Feliz Navidad! Tu gran regalo está listo","nX31":"🎆 ¡Último regalo del año! Ábrelo antes de medianoche","nXR":"👑 ¡Llegó el regalo de Reyes! Último día del evento","nXtree":"❄ Junta copos y termina de decorar tu árbol"},
+"en":{"xName":"Fury Christmas","xSoon":"Starts in {n} days","xSoon1":"Starts tomorrow!","xSoonT":"Starts on December 1 🎄","xWinReady":"🎁 Gift {n} is ready!","xToXmas":"{n} days until Christmas","xToXmas1":"Christmas is tomorrow!","xMerry":"Merry Christmas!","xToNY":"{n} days until {y}","xToNYt":"⏳ {t} until {y}","xHappyNY":"Happy {y}!","xEnds":"The event ends in {n} days","xLast":"Last day of the event!","xIntroT":"Fury Christmas is here!","xIntro":"A gift every day in the calendar, surprise gift blocks and a tree to decorate with snowflakes ❄. The Christmas theme is free until January 6.","xAll":"🎄 Make everything Christmas","xLater":"Not now","xCal":"Calendar","xTree":"Tree","xYearB":"🎆 Your {y} in Fury Puzzle","xOpen":"🎁 Open gift!","xLocked":"🔒 Opens on {d}","xMissed":"You missed this day, but you can still open it.","xRecVideo":"Open with a video","xRecCoins":"Open for {n}","xDbl":"Double it with a video","xGot":"Your gift","xBoard":"🎄 Christmas board: break {n} lines","xBoardRw":"Prize:","xBoardPlay":"Play board","xBoardDone":"✅ Board complete!","xBoardWin":"Christmas board complete!","xDay25":"Christmas","xDay31":"New Year's Eve","xDayR":"Grand finale","xTreeInfo":"Break lines in any game to collect snowflakes ❄ (double in Fury Mode). Use them to hang ornaments, and each one brings a prize.","xNext":"Next ornament: {a} / {b} ❄","xNextRw":"Next ornament prize:","xHang":"Hang ornament","xTreeDone":"Tree complete! The Christmas theme is yours forever.","xStar":"⭐ Christmas theme forever","t_xOrn":"New ornament! Hang it on the tree 🎄","t_xHung":"Ornament hung!","skin_xmas":"Christmas","xFree":"Free","xUseTheme":"🎄 Use Christmas theme","snd_bells":"Sleigh Bells","xPackEvt":"🎄 Christmas gift from the calendar","p_gift":"GIFT!","h_gift":"Gift: opens into coins, a tool or a surprise power (Christmas only).","trk_2":"Christmas Carols","xFury":"CHRISTMAS FURY!","xYearT":"Your {y} in Fury Puzzle","y_lines":"Lines broken","y_games":"Games","y_best":"Best score","y_combo":"Best combo","y_pieces":"Pieces placed","y_power":"Power-ups","y_fury":"Fury Modes","y_flakes":"Snowflakes","xShareY":"Share my year","xYearMsg":"My {y} in Fury Puzzle: {l} lines broken, a best of {b} points and a x{c} combo 🔥 Can you beat me?","nXsoon":"🎄 Fury Christmas starts tomorrow! A gift every day.","nXwin":"🎁 Gift {n} in your calendar is waiting","nX24":"🎄 It's Christmas Eve! Open today's gift","nX25":"🎅 Merry Christmas! Your big gift is ready","nX31":"🎆 Last gift of the year! Open it before midnight","nXR":"👑 The grand finale gift is here! Last day of the event","nXtree":"❄ Collect snowflakes and finish decorating your tree"},
+"pt":{"xName":"Natal Furioso","xSoon":"Começa em {n} dias","xSoon1":"Começa amanhã!","xSoonT":"Começa em 1º de dezembro 🎄","xWinReady":"🎁 Seu presente {n} está pronto!","xToXmas":"Faltam {n} dias para o Natal","xToXmas1":"Amanhã é Natal!","xMerry":"Feliz Natal!","xToNY":"Faltam {n} dias para {y}","xToNYt":"⏳ {t} para {y}","xHappyNY":"Feliz {y}!","xEnds":"O evento termina em {n} dias","xLast":"Último dia do evento!","xIntroT":"Chegou o Natal Furioso!","xIntro":"Um presente por dia no calendário, blocos de presente surpresa e uma árvore para decorar com flocos de neve ❄. O tema Natal é grátis até 6 de janeiro.","xAll":"🎄 Deixar tudo com cara de Natal","xLater":"Agora não","xCal":"Calendário","xTree":"Árvore","xYearB":"🎆 Seu {y} no Fury Puzzle","xOpen":"🎁 Abrir presente!","xLocked":"🔒 Abre em {d}","xMissed":"Você perdeu este dia, mas ainda pode abrir.","xRecVideo":"Abrir com vídeo","xRecCoins":"Abrir por {n}","xDbl":"Dobrar com vídeo","xGot":"Seu presente","xBoard":"🎄 Tabuleiro de Natal: quebre {n} linhas","xBoardRw":"Prêmio:","xBoardPlay":"Jogar tabuleiro","xBoardDone":"✅ Tabuleiro concluído!","xBoardWin":"Tabuleiro de Natal concluído!","xDay25":"Natal","xDay31":"Réveillon","xDayR":"Reis","xTreeInfo":"Quebre linhas em qualquer partida para juntar flocos ❄ (o dobro no Modo Fúria). Com eles você pendura enfeites, e cada um traz um prêmio.","xNext":"Próximo enfeite: {a} / {b} ❄","xNextRw":"Prêmio do próximo enfeite:","xHang":"Pendurar enfeite","xTreeDone":"Árvore completa! O tema Natal é seu para sempre.","xStar":"⭐ Tema Natal para sempre","t_xOrn":"Enfeite novo! Pendure na árvore 🎄","t_xHung":"Enfeite pendurado!","skin_xmas":"Natal","xFree":"Grátis","xUseTheme":"🎄 Usar tema Natal","snd_bells":"Sininhos","xPackEvt":"🎄 Presente de Natal do calendário","p_gift":"PRESENTE!","h_gift":"Presente: abre e dá moedas, uma ferramenta ou um superpoder surpresa (só no Natal).","trk_2":"Músicas de Natal","xFury":"FÚRIA DE NATAL!","xYearT":"Seu {y} no Fury Puzzle","y_lines":"Linhas quebradas","y_games":"Partidas","y_best":"Recorde","y_combo":"Melhor combo","y_pieces":"Peças colocadas","y_power":"Superpoderes","y_fury":"Modos Fúria","y_flakes":"Flocos de neve","xShareY":"Compartilhar meu ano","xYearMsg":"Meu {y} no Fury Puzzle: {l} linhas quebradas, recorde de {b} pontos e combo x{c} 🔥 Consegue me vencer?","nXsoon":"🎄 Amanhã começa o Natal Furioso! Um presente por dia.","nXwin":"🎁 O presente {n} do seu calendário está esperando","nX24":"🎄 É véspera de Natal! Abra o presente de hoje","nX25":"🎅 Feliz Natal! Seu grande presente está pronto","nX31":"🎆 Último presente do ano! Abra antes da meia-noite","nXR":"👑 Chegou o presente de Reis! Último dia do evento","nXtree":"❄ Junte flocos e termine de decorar sua árvore"},
+"fil":{"xName":"Fury Pasko","xSoon":"Magsisimula sa {n} araw","xSoon1":"Magsisimula bukas!","xSoonT":"Magsisimula sa Disyembre 1 🎄","xWinReady":"🎁 Handa na ang regalo {n}!","xToXmas":"{n} araw na lang bago mag-Pasko","xToXmas1":"Pasko na bukas!","xMerry":"Maligayang Pasko!","xToNY":"{n} araw na lang bago ang {y}","xToNYt":"⏳ {t} bago ang {y}","xHappyNY":"Manigong {y}!","xEnds":"Matatapos ang event sa {n} araw","xLast":"Huling araw ng event!","xIntroT":"Nandito na ang Fury Pasko!","xIntro":"May regalo araw-araw sa kalendaryo, sorpresang gift blocks at puno na dedekorasyunan gamit ang snowflakes ❄. Libre ang Pasko na tema hanggang Enero 6.","xAll":"🎄 Gawing Pasko ang lahat","xLater":"Mamaya na","xCal":"Kalendaryo","xTree":"Puno","xYearB":"🎆 Ang {y} mo sa Fury Puzzle","xOpen":"🎁 Buksan ang regalo!","xLocked":"🔒 Bubukas sa {d}","xMissed":"Na-miss mo ang araw na ito, pero puwede mo pa itong buksan.","xRecVideo":"Buksan gamit ang video","xRecCoins":"Buksan sa halagang {n}","xDbl":"I-doble gamit ang video","xGot":"Regalo mo","xBoard":"🎄 Pamaskong board: bumasag ng {n} linya","xBoardRw":"Premyo:","xBoardPlay":"Laruin ang board","xBoardDone":"✅ Tapos ang board!","xBoardWin":"Natapos ang pamaskong board!","xDay25":"Pasko","xDay31":"Bagong Taon","xDayR":"Tatlong Hari","xTreeInfo":"Bumasag ng linya sa kahit anong laro para mangolekta ng snowflakes ❄ (doble sa Fury Mode). Gamitin ito para magsabit ng palamuti, at may premyo ang bawat isa.","xNext":"Susunod na palamuti: {a} / {b} ❄","xNextRw":"Premyo ng susunod na palamuti:","xHang":"Isabit ang palamuti","xTreeDone":"Kumpleto ang puno! Sa iyo na ang Pasko na tema magpakailanman.","xStar":"⭐ Pasko na tema magpakailanman","t_xOrn":"Bagong palamuti! Isabit ito sa puno 🎄","t_xHung":"Naisabit ang palamuti!","skin_xmas":"Pasko","xFree":"Libre","xUseTheme":"🎄 Gamitin ang Pasko na tema","snd_bells":"Kampanilya","xPackEvt":"🎄 Pamaskong regalo mula sa kalendaryo","p_gift":"REGALO!","h_gift":"Regalo: bubukas at may coins, isang tool o sorpresang power (tuwing Pasko lang).","trk_2":"Mga Awiting Pamasko","xFury":"PAMASKONG FURY!","xYearT":"Ang {y} mo sa Fury Puzzle","y_lines":"Linyang nabasag","y_games":"Mga laro","y_best":"Record","y_combo":"Pinakamagandang combo","y_pieces":"Pirasong nailagay","y_power":"Mga power","y_fury":"Fury Mode","y_flakes":"Snowflakes","xShareY":"I-share ang taon ko","xYearMsg":"Ang {y} ko sa Fury Puzzle: {l} linyang nabasag, record na {b} puntos at combo x{c} 🔥 Kaya mo ba akong talunin?","nXsoon":"🎄 Bukas magsisimula ang Fury Pasko! May regalo araw-araw.","nXwin":"🎁 Naghihintay ang regalo {n} sa kalendaryo mo","nX24":"🎄 Noche Buena na! Buksan ang regalo mo ngayon","nX25":"🎅 Maligayang Pasko! Handa na ang malaking regalo mo","nX31":"🎆 Huling regalo ng taon! Buksan bago maghatinggabi","nXR":"👑 Nandito na ang regalo ng Tatlong Hari! Huling araw ng event","nXtree":"❄ Mangolekta ng snowflakes at tapusin ang puno mo"},
+"vi":{"xName":"Giáng sinh Cuồng nộ","xSoon":"Bắt đầu sau {n} ngày","xSoon1":"Bắt đầu vào ngày mai!","xSoonT":"Bắt đầu từ ngày 1 tháng 12 🎄","xWinReady":"🎁 Quà số {n} đã sẵn sàng!","xToXmas":"Còn {n} ngày nữa là Giáng sinh","xToXmas1":"Ngày mai là Giáng sinh!","xMerry":"Giáng sinh vui vẻ!","xToNY":"Còn {n} ngày nữa là {y}","xToNYt":"⏳ Còn {t} nữa là {y}","xHappyNY":"Chúc mừng năm {y}!","xEnds":"Sự kiện kết thúc sau {n} ngày","xLast":"Ngày cuối cùng của sự kiện!","xIntroT":"Giáng sinh Cuồng nộ đã đến!","xIntro":"Mỗi ngày một món quà trong lịch, khối quà bất ngờ và một cây thông để trang trí bằng bông tuyết ❄. Chủ đề Giáng sinh miễn phí đến ngày 6 tháng 1.","xAll":"🎄 Bật không khí Giáng sinh","xLater":"Để sau","xCal":"Lịch","xTree":"Cây thông","xYearB":"🎆 Năm {y} của bạn trong Fury Puzzle","xOpen":"🎁 Mở quà!","xLocked":"🔒 Mở vào {d}","xMissed":"Bạn đã lỡ ngày này, nhưng vẫn có thể mở.","xRecVideo":"Mở bằng video","xRecCoins":"Mở với {n}","xDbl":"Nhân đôi bằng video","xGot":"Quà của bạn","xBoard":"🎄 Bàn Giáng sinh: phá {n} hàng","xBoardRw":"Phần thưởng:","xBoardPlay":"Chơi bàn này","xBoardDone":"✅ Đã hoàn thành bàn!","xBoardWin":"Hoàn thành bàn Giáng sinh!","xDay25":"Giáng sinh","xDay31":"Giao thừa","xDayR":"Quà cuối","xTreeInfo":"Phá hàng trong bất kỳ ván nào để gom bông tuyết ❄ (gấp đôi trong Chế độ Cuồng nộ). Dùng chúng để treo đồ trang trí, mỗi món đều có quà.","xNext":"Món tiếp theo: {a} / {b} ❄","xNextRw":"Quà của món tiếp theo:","xHang":"Treo đồ trang trí","xTreeDone":"Cây thông hoàn tất! Chủ đề Giáng sinh là của bạn mãi mãi.","xStar":"⭐ Chủ đề Giáng sinh vĩnh viễn","t_xOrn":"Có đồ trang trí mới! Treo lên cây thông 🎄","t_xHung":"Đã treo đồ trang trí!","skin_xmas":"Giáng sinh","xFree":"Miễn phí","xUseTheme":"🎄 Dùng chủ đề Giáng sinh","snd_bells":"Chuông leng keng","xPackEvt":"🎄 Quà Giáng sinh từ lịch","p_gift":"QUÀ!","h_gift":"Quà: mở ra xu, một công cụ hoặc siêu năng lực bất ngờ (chỉ dịp Giáng sinh).","trk_2":"Nhạc Giáng sinh","xFury":"CUỒNG NỘ GIÁNG SINH!","xYearT":"Năm {y} của bạn trong Fury Puzzle","y_lines":"Hàng đã phá","y_games":"Số ván","y_best":"Kỷ lục","y_combo":"Combo cao nhất","y_pieces":"Khối đã đặt","y_power":"Siêu năng lực","y_fury":"Lần Cuồng nộ","y_flakes":"Bông tuyết","xShareY":"Chia sẻ năm của tôi","xYearMsg":"Năm {y} của mình trong Fury Puzzle: phá {l} hàng, kỷ lục {b} điểm và combo x{c} 🔥 Bạn vượt được không?","nXsoon":"🎄 Ngày mai bắt đầu Giáng sinh Cuồng nộ! Mỗi ngày một món quà.","nXwin":"🎁 Quà số {n} trong lịch đang chờ bạn","nX24":"🎄 Đêm Giáng sinh rồi! Mở quà hôm nay nhé","nX25":"🎅 Giáng sinh vui vẻ! Món quà lớn đã sẵn sàng","nX31":"🎆 Món quà cuối năm! Mở trước nửa đêm nhé","nXR":"👑 Món quà cuối đã đến! Ngày cuối của sự kiện","nXtree":"❄ Gom bông tuyết và trang trí xong cây thông của bạn"},
+"hi":{"xName":"फ़्यूरी क्रिसमस","xSoon":"{n} दिन में शुरू","xSoon1":"कल से शुरू!","xSoonT":"1 दिसंबर से शुरू 🎄","xWinReady":"🎁 तोहफ़ा {n} तैयार है!","xToXmas":"क्रिसमस में {n} दिन बाकी","xToXmas1":"कल क्रिसमस है!","xMerry":"मेरी क्रिसमस!","xToNY":"{y} में {n} दिन बाकी","xToNYt":"⏳ {y} में {t} बाकी","xHappyNY":"नया साल {y} मुबारक!","xEnds":"इवेंट {n} दिन में खत्म होगा","xLast":"इवेंट का आख़िरी दिन!","xIntroT":"फ़्यूरी क्रिसमस आ गया!","xIntro":"कैलेंडर में रोज़ एक तोहफ़ा, सरप्राइज़ गिफ़्ट ब्लॉक और बर्फ़ के फाहों ❄ से सजाने के लिए एक पेड़। क्रिसमस थीम 6 जनवरी तक मुफ़्त है।","xAll":"🎄 सब कुछ क्रिसमस वाला करें","xLater":"अभी नहीं","xCal":"कैलेंडर","xTree":"पेड़","xYearB":"🎆 Fury Puzzle में आपका {y}","xOpen":"🎁 तोहफ़ा खोलें!","xLocked":"🔒 {d} को खुलेगा","xMissed":"आप यह दिन चूक गए, पर अभी भी खोल सकते हैं।","xRecVideo":"वीडियो देखकर खोलें","xRecCoins":"{n} में खोलें","xDbl":"वीडियो से दोगुना करें","xGot":"आपका तोहफ़ा","xBoard":"🎄 क्रिसमस बोर्ड: {n} लाइनें तोड़ें","xBoardRw":"इनाम:","xBoardPlay":"बोर्ड खेलें","xBoardDone":"✅ बोर्ड पूरा!","xBoardWin":"क्रिसमस बोर्ड पूरा हुआ!","xDay25":"क्रिसमस","xDay31":"नया साल","xDayR":"आख़िरी तोहफ़ा","xTreeInfo":"किसी भी गेम में लाइनें तोड़कर बर्फ़ के फाहे ❄ जमा करें (रोष मोड में दोगुने)। इनसे सजावट टाँगें, हर सजावट के साथ इनाम मिलता है।","xNext":"अगली सजावट: {a} / {b} ❄","xNextRw":"अगली सजावट का इनाम:","xHang":"सजावट टाँगें","xTreeDone":"पेड़ पूरा सज गया! क्रिसमस थीम हमेशा के लिए आपकी।","xStar":"⭐ क्रिसमस थीम हमेशा के लिए","t_xOrn":"नई सजावट! इसे पेड़ पर टाँगें 🎄","t_xHung":"सजावट टँग गई!","skin_xmas":"क्रिसमस","xFree":"मुफ़्त","xUseTheme":"🎄 क्रिसमस थीम लगाएँ","snd_bells":"घंटियाँ","xPackEvt":"🎄 कैलेंडर का क्रिसमस तोहफ़ा","p_gift":"तोहफ़ा!","h_gift":"तोहफ़ा: खुलकर सिक्के, कोई टूल या सरप्राइज़ सुपरपावर देता है (सिर्फ़ क्रिसमस पर)।","trk_2":"क्रिसमस धुनें","xFury":"क्रिसमस रोष!","xYearT":"Fury Puzzle में आपका {y}","y_lines":"टूटी लाइनें","y_games":"गेम","y_best":"रिकॉर्ड","y_combo":"सबसे अच्छा कॉम्बो","y_pieces":"रखे गए टुकड़े","y_power":"सुपरपावर","y_fury":"रोष मोड","y_flakes":"बर्फ़ के फाहे","xShareY":"अपना साल शेयर करें","xYearMsg":"Fury Puzzle में मेरा {y}: {l} लाइनें तोड़ीं, {b} अंकों का रिकॉर्ड और x{c} कॉम्बो 🔥 क्या आप मुझे हरा सकते हैं?","nXsoon":"🎄 कल से फ़्यूरी क्रिसमस शुरू! रोज़ एक तोहफ़ा।","nXwin":"🎁 आपके कैलेंडर का तोहफ़ा {n} इंतज़ार कर रहा है","nX24":"🎄 आज क्रिसमस की पूर्व संध्या है! आज का तोहफ़ा खोलें","nX25":"🎅 मेरी क्रिसमस! आपका बड़ा तोहफ़ा तैयार है","nX31":"🎆 साल का आख़िरी तोहफ़ा! आधी रात से पहले खोलें","nXR":"👑 आख़िरी तोहफ़ा आ गया! इवेंट का आख़िरी दिन","nXtree":"❄ बर्फ़ के फाहे जमा करें और अपना पेड़ सजाएँ"},
+"tr":{"xNY":"1","xName":"Fury Yılbaşı","xSoon":"{n} gün sonra başlıyor","xSoon1":"Yarın başlıyor!","xSoonT":"1 Aralık'ta başlıyor 🎄","xWinReady":"🎁 {n}. hediyen hazır!","xToXmas":"Yılbaşına {n} gün kaldı","xToXmas1":"Yarın yılbaşı!","xMerry":"İyi tatiller!","xToNY":"{y} yılına {n} gün kaldı","xToNYt":"⏳ {y} yılına {t}","xHappyNY":"Mutlu yıllar, {y}!","xEnds":"Etkinlik {n} gün sonra bitiyor","xLast":"Etkinliğin son günü!","xIntroT":"Fury Yılbaşı geldi!","xIntro":"Takvimde her gün bir hediye, sürpriz hediye blokları ve kar taneleriyle ❄ süsleyeceğin bir yılbaşı ağacı. Yılbaşı teması 6 Ocak'a kadar ücretsiz.","xAll":"🎄 Her şeyi yılbaşı yap","xLater":"Şimdi değil","xCal":"Takvim","xTree":"Ağaç","xYearB":"🎆 Fury Puzzle'da {y} yılın","xOpen":"🎁 Hediyeyi aç!","xLocked":"🔒 {d} tarihinde açılır","xMissed":"Bu günü kaçırdın ama hâlâ açabilirsin.","xRecVideo":"Video ile aç","xRecCoins":"{n} karşılığında aç","xDbl":"Video ile ikiye katla","xGot":"Hediyen","xBoard":"🎄 Yılbaşı tahtası: {n} çizgi kır","xBoardRw":"Ödül:","xBoardPlay":"Tahtayı oyna","xBoardDone":"✅ Tahta tamamlandı!","xBoardWin":"Yılbaşı tahtası tamamlandı!","xDay25":"Büyük hediye","xDay31":"Yılbaşı gecesi","xDayR":"Son hediye","xTreeInfo":"Her oyunda çizgi kırarak kar tanesi ❄ topla (Öfke Modunda iki kat). Onlarla süs as, her süs bir ödül getirir.","xNext":"Sıradaki süs: {a} / {b} ❄","xNextRw":"Sıradaki süsün ödülü:","xHang":"Süsü as","xTreeDone":"Ağaç tamamlandı! Yılbaşı teması artık sonsuza dek senin.","xStar":"⭐ Sonsuza dek Yılbaşı teması","t_xOrn":"Yeni süs! Ağaca as 🎄","t_xHung":"Süs asıldı!","skin_xmas":"Yılbaşı","xFree":"Ücretsiz","xUseTheme":"🎄 Yılbaşı temasını kullan","snd_bells":"Çıngıraklar","xPackEvt":"🎄 Takvimin büyük hediyesi","p_gift":"HEDİYE!","h_gift":"Hediye: açılınca altın, bir araç ya da sürpriz bir güç verir (sadece yılbaşında).","trk_2":"Kış melodileri","xFury":"YILBAŞI ÖFKESİ!","xYearT":"Fury Puzzle'da {y} yılın","y_lines":"Kırılan çizgi","y_games":"Oyun","y_best":"Rekor","y_combo":"En iyi kombo","y_pieces":"Konan parça","y_power":"Güç","y_fury":"Öfke Modu","y_flakes":"Kar tanesi","xShareY":"Yılımı paylaş","xYearMsg":"Fury Puzzle'da {y} yılım: {l} çizgi kırdım, rekorum {b} puan ve x{c} kombo 🔥 Beni geçebilir misin?","nXsoon":"🎄 Fury Yılbaşı yarın başlıyor! Her gün bir hediye.","nXwin":"🎁 Takvimindeki {n}. hediye seni bekliyor","nX24":"🎁 Bugünün hediyesi seni bekliyor","nX25":"🎁 Büyük hediyen hazır!","nX31":"🎆 Yılın son hediyesi! Gece yarısından önce aç","nXR":"🎁 Son hediye geldi! Etkinliğin son günü","nXtree":"❄ Kar tanesi topla ve ağacını süslemeyi bitir"},
+"ru":{"xNY":"1","xName":"Новогодняя Ярость","xSoon":"Начнётся через {n} дн.","xSoon1":"Начнётся завтра!","xSoonT":"Начнётся 1 декабря 🎄","xWinReady":"🎁 Подарок {n} готов!","xToXmas":"До Нового года {n} дн.","xToXmas1":"Завтра Новый год!","xMerry":"С праздником!","xToNY":"До {y} года {n} дн.","xToNYt":"⏳ До {y} года {t}","xHappyNY":"С Новым {y} годом!","xEnds":"Событие закончится через {n} дн.","xLast":"Последний день события!","xIntroT":"Новогодняя Ярость началась!","xIntro":"Подарок каждый день в календаре, блоки-сюрпризы и ёлка, которую можно украсить снежинками ❄. Новогодняя тема бесплатна до 6 января.","xAll":"🎄 Включить новогоднее настроение","xLater":"Не сейчас","xCal":"Календарь","xTree":"Ёлка","xYearB":"🎆 Твой {y} в Fury Puzzle","xOpen":"🎁 Открыть подарок!","xLocked":"🔒 Откроется {d}","xMissed":"Ты пропустил этот день, но ещё можешь его открыть.","xRecVideo":"Открыть за видео","xRecCoins":"Открыть за {n}","xDbl":"Удвоить за видео","xGot":"Твой подарок","xBoard":"🎄 Новогоднее поле: сломай {n} линий","xBoardRw":"Награда:","xBoardPlay":"Играть поле","xBoardDone":"✅ Поле пройдено!","xBoardWin":"Новогоднее поле пройдено!","xDay25":"Большой подарок","xDay31":"Новый год","xDayR":"Финал","xTreeInfo":"Ломай линии в любой игре, чтобы собирать снежинки ❄ (вдвое больше в режиме Ярости). За снежинки вешай игрушки — каждая приносит награду.","xNext":"Следующая игрушка: {a} / {b} ❄","xNextRw":"Награда за следующую игрушку:","xHang":"Повесить игрушку","xTreeDone":"Ёлка готова! Новогодняя тема теперь твоя навсегда.","xStar":"⭐ Новогодняя тема навсегда","t_xOrn":"Новая игрушка! Повесь её на ёлку 🎄","t_xHung":"Игрушка на ёлке!","skin_xmas":"Новогодняя","xFree":"Бесплатно","xUseTheme":"🎄 Включить новогоднюю тему","snd_bells":"Бубенцы","xPackEvt":"🎄 Большой подарок из календаря","p_gift":"ПОДАРОК!","h_gift":"Подарок: открывается и даёт монеты, инструмент или усилитель-сюрприз (только на Новый год).","trk_2":"Зимние мелодии","xFury":"НОВОГОДНЯЯ ЯРОСТЬ!","xYearT":"Твой {y} в Fury Puzzle","y_lines":"Сломано линий","y_games":"Игр","y_best":"Рекорд","y_combo":"Лучшее комбо","y_pieces":"Фигур поставлено","y_power":"Усилители","y_fury":"Режимы Ярости","y_flakes":"Снежинки","xShareY":"Поделиться годом","xYearMsg":"Мой {y} в Fury Puzzle: {l} линий, рекорд {b} очков и комбо x{c} 🔥 Сможешь лучше?","nXsoon":"🎄 Завтра начинается Новогодняя Ярость! Подарок каждый день.","nXwin":"🎁 Подарок {n} в календаре ждёт тебя","nX24":"🎁 Сегодняшний подарок ждёт тебя","nX25":"🎁 Твой большой подарок готов!","nX31":"🎆 Последний подарок года! Открой до полуночи","nXR":"🎁 Финальный подарок здесь! Последний день события","nXtree":"❄ Собирай снежинки и наряди свою ёлку"},
+"id":{"xNY":"1","xName":"Festival Akhir Tahun","xSoon":"Mulai dalam {n} hari","xSoon1":"Mulai besok!","xSoonT":"Mulai 1 Desember 🎄","xWinReady":"🎁 Hadiah {n} sudah siap!","xToXmas":"{n} hari lagi menuju tahun baru","xToXmas1":"Besok tahun baru!","xMerry":"Selamat berlibur!","xToNY":"{n} hari lagi menuju {y}","xToNYt":"⏳ {t} lagi menuju {y}","xHappyNY":"Selamat Tahun Baru {y}!","xEnds":"Event berakhir dalam {n} hari","xLast":"Hari terakhir event!","xIntroT":"Festival Akhir Tahun sudah tiba!","xIntro":"Hadiah setiap hari di kalender, balok hadiah kejutan, dan pohon untuk dihias dengan kepingan salju ❄. Tema Akhir Tahun gratis sampai 6 Januari.","xAll":"🎄 Ubah semuanya jadi meriah","xLater":"Nanti saja","xCal":"Kalender","xTree":"Pohon","xYearB":"🎆 Tahun {y}-mu di Fury Puzzle","xOpen":"🎁 Buka hadiah!","xLocked":"🔒 Terbuka pada {d}","xMissed":"Kamu melewatkan hari ini, tapi masih bisa membukanya.","xRecVideo":"Buka dengan video","xRecCoins":"Buka seharga {n}","xDbl":"Gandakan dengan video","xGot":"Hadiahmu","xBoard":"🎄 Papan spesial: hancurkan {n} garis","xBoardRw":"Hadiah:","xBoardPlay":"Main papan","xBoardDone":"✅ Papan selesai!","xBoardWin":"Papan spesial selesai!","xDay25":"Hadiah besar","xDay31":"Malam Tahun Baru","xDayR":"Hadiah akhir","xTreeInfo":"Hancurkan garis di permainan apa pun untuk mengumpulkan kepingan salju ❄ (dua kali lipat di Mode Amarah). Pakai untuk menggantung hiasan, dan setiap hiasan membawa hadiah.","xNext":"Hiasan berikutnya: {a} / {b} ❄","xNextRw":"Hadiah hiasan berikutnya:","xHang":"Gantung hiasan","xTreeDone":"Pohon lengkap! Tema Akhir Tahun jadi milikmu selamanya.","xStar":"⭐ Tema Akhir Tahun selamanya","t_xOrn":"Hiasan baru! Gantung di pohon 🎄","t_xHung":"Hiasan tergantung!","skin_xmas":"Akhir Tahun","xFree":"Gratis","xUseTheme":"🎄 Pakai tema Akhir Tahun","snd_bells":"Lonceng","xPackEvt":"🎄 Hadiah besar dari kalender","p_gift":"HADIAH!","h_gift":"Hadiah: terbuka dan memberi koin, alat, atau kekuatan kejutan (hanya saat festival).","trk_2":"Lagu Liburan","xFury":"AMARAH FESTIVAL!","xYearT":"Tahun {y}-mu di Fury Puzzle","y_lines":"Garis dihancurkan","y_games":"Permainan","y_best":"Rekor","y_combo":"Kombo terbaik","y_pieces":"Potongan dipasang","y_power":"Kekuatan","y_fury":"Mode Amarah","y_flakes":"Kepingan salju","xShareY":"Bagikan tahunku","xYearMsg":"Tahun {y}-ku di Fury Puzzle: {l} garis dihancurkan, rekor {b} poin dan kombo x{c} 🔥 Bisa kalahkan aku?","nXsoon":"🎄 Festival Akhir Tahun mulai besok! Hadiah setiap hari.","nXwin":"🎁 Hadiah {n} di kalendermu sedang menunggu","nX24":"🎁 Hadiah hari ini menunggumu","nX25":"🎁 Hadiah besarmu sudah siap!","nX31":"🎆 Hadiah terakhir tahun ini! Buka sebelum tengah malam","nXR":"🎁 Hadiah akhir sudah tiba! Hari terakhir event","nXtree":"❄ Kumpulkan kepingan salju dan selesaikan hiasan pohonmu"},
+"ur":{"xNY":"1","xName":"سرمائی میلہ","xSoon":"{n} دن میں شروع","xSoon1":"کل سے شروع!","xSoonT":"1 دسمبر سے شروع 🎄","xWinReady":"🎁 تحفہ {n} تیار ہے!","xToXmas":"نئے سال میں {n} دن باقی","xToXmas1":"کل نیا سال ہے!","xMerry":"چھٹیاں مبارک!","xToNY":"{y} میں {n} دن باقی","xToNYt":"⏳ {y} میں {t} باقی","xHappyNY":"نیا سال {y} مبارک!","xEnds":"میلہ {n} دن میں ختم ہوگا","xLast":"میلے کا آخری دن!","xIntroT":"سرمائی میلہ آ گیا!","xIntro":"کیلنڈر میں روز ایک تحفہ، سرپرائز تحفہ بلاکس اور برف کے گالوں ❄ سے سجانے کے لیے ایک درخت۔ سرمائی تھیم 6 جنوری تک مفت ہے۔","xAll":"🎄 سب کچھ سرمائی بنائیں","xLater":"ابھی نہیں","xCal":"کیلنڈر","xTree":"درخت","xYearB":"🎆 Fury Puzzle میں آپ کا {y}","xOpen":"🎁 تحفہ کھولیں!","xLocked":"🔒 {d} کو کھلے گا","xMissed":"آپ یہ دن چوک گئے، مگر اب بھی کھول سکتے ہیں۔","xRecVideo":"ویڈیو سے کھولیں","xRecCoins":"{n} میں کھولیں","xDbl":"ویڈیو سے دگنا کریں","xGot":"آپ کا تحفہ","xBoard":"🎄 خاص بورڈ: {n} لائنیں توڑیں","xBoardRw":"انعام:","xBoardPlay":"بورڈ کھیلیں","xBoardDone":"✅ بورڈ مکمل!","xBoardWin":"خاص بورڈ مکمل!","xDay25":"بڑا تحفہ","xDay31":"نیا سال","xDayR":"آخری تحفہ","xTreeInfo":"کسی بھی کھیل میں لائنیں توڑ کر برف کے گالے ❄ جمع کریں (غصے کے موڈ میں دگنے)۔ ان سے سجاوٹ لٹکائیں، ہر سجاوٹ کے ساتھ انعام ملتا ہے۔","xNext":"اگلی سجاوٹ: {a} / {b} ❄","xNextRw":"اگلی سجاوٹ کا انعام:","xHang":"سجاوٹ لٹکائیں","xTreeDone":"درخت مکمل! سرمائی تھیم ہمیشہ کے لیے آپ کی۔","xStar":"⭐ سرمائی تھیم ہمیشہ کے لیے","t_xOrn":"نئی سجاوٹ! اسے درخت پر لٹکائیں 🎄","t_xHung":"سجاوٹ لٹک گئی!","skin_xmas":"سرما","xFree":"مفت","xUseTheme":"🎄 سرمائی تھیم لگائیں","snd_bells":"گھنٹیاں","xPackEvt":"🎄 کیلنڈر کا بڑا تحفہ","p_gift":"تحفہ!","h_gift":"تحفہ: کھل کر سکے، کوئی ٹول یا سرپرائز طاقت دیتا ہے (صرف میلے میں)۔","trk_2":"سرمائی دھنیں","xFury":"سرمائی غصہ!","xYearT":"Fury Puzzle میں آپ کا {y}","y_lines":"ٹوٹی لائنیں","y_games":"کھیل","y_best":"ریکارڈ","y_combo":"بہترین کومبو","y_pieces":"رکھے گئے ٹکڑے","y_power":"طاقتیں","y_fury":"غصے کے موڈ","y_flakes":"برف کے گالے","xShareY":"اپنا سال شیئر کریں","xYearMsg":"Fury Puzzle میں میرا {y}: {l} لائنیں توڑیں، {b} پوائنٹس کا ریکارڈ اور x{c} کومبو 🔥 کیا آپ مجھے ہرا سکتے ہیں؟","nXsoon":"🎄 کل سے سرمائی میلہ شروع! روز ایک تحفہ۔","nXwin":"🎁 آپ کے کیلنڈر کا تحفہ {n} انتظار کر رہا ہے","nX24":"🎁 آج کا تحفہ آپ کا انتظار کر رہا ہے","nX25":"🎁 آپ کا بڑا تحفہ تیار ہے!","nX31":"🎆 سال کا آخری تحفہ! آدھی رات سے پہلے کھولیں","nXR":"🎁 آخری تحفہ آ گیا! میلے کا آخری دن","nXtree":"❄ برف کے گالے جمع کریں اور اپنا درخت سجائیں"}
+};
+for(const l in I18N_V11)Object.assign(I18N[l],I18N_V11[l]);
 
 const detectLang=()=>{const list=(navigator.languages||[navigator.language||'en']).map(x=>String(x).toLowerCase());
   for(const l of list){const b=l.split('-')[0];if(b==='tl'||b==='fil')return'fil';if(b==='in')return'id';if(I18N[b])return b}return'en'};
@@ -694,7 +785,7 @@ const INTERSTITIAL_EVERY=2;     // anuncio de pantalla completa cada N partidas
 const START_COINS=100;
 const START_TOOLS={hammer:1,shuffle:1,undo:1};
 const TOOL_PRICE={hammer:60,shuffle:50,undo:40};
-const SKIN_PRICE={fury:0,neon:300,candy:300,ocean:500,wood:500,gems:800};
+const SKIN_PRICE={fury:0,neon:300,candy:300,ocean:500,wood:500,gems:800,xmas:800};
 const POINTS_PER_COIN=20;       // monedas al terminar = puntos / 20
 const FURY_SECONDS=15, X2_SECONDS=20;
 const SPECIAL_CHANCE=.14;       // probabilidad de que una pieza traiga un superpoder
@@ -702,6 +793,17 @@ const GIFTS=[{c:50},{t:'hammer',n:1},{c:100},{t:'shuffle',n:2},{c:150},{t:'undo'
 
 const $=s=>document.querySelector(s), $$=s=>document.querySelectorAll(s);
 const store={get(k,d){try{const v=localStorage.getItem('fury.'+k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem('fury.'+k,JSON.stringify(v))}catch(e){}}};
+/* ================= NAVIDAD: FECHAS =================
+   El evento se enciende solo del 1 de diciembre al 6 de enero (hora del celular) y vuelve cada año.
+   Del 24 al 30 de noviembre se ve un aviso de "empieza pronto".
+   'xsim' solo lo usa la app de PRUEBA para adelantar el reloj del evento. */
+let xSim=+store.get('xsim',0)||0;
+const xNow=()=>new Date(Date.now()+xSim);
+const xYearOf=(d=xNow())=>d.getMonth()===0?d.getFullYear()-1:d.getFullYear();      // año del diciembre del evento
+function xPhase(d=xNow()){const m=d.getMonth(),dd=d.getDate();if(m===11||(m===0&&dd<=6))return'on';if(m===10&&dd>=24)return'soon';return'off'}
+const xOn=()=>xPhase()==='on';
+const xDay=(d=xNow())=>d.getMonth()===11?d.getDate():d.getMonth()===0?31+d.getDate():0; // 1..31 = diciembre, 32..37 = 1..6 de enero
+const XNY=()=>!!(I18N[lang]&&I18N[lang].xNY==='1');                                    // idiomas con enfoque de Año Nuevo
 const REDUCE=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const COIN='<svg class="coin" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#ffc233" stroke="#b7791f" stroke-width="2"/><circle cx="12" cy="12" r="5.5" fill="none" stroke="#c98a1c" stroke-width="2"/></svg>';
 const ICONS={hammer:$('.tool[data-t=hammer] svg').outerHTML,shuffle:$('.tool[data-t=shuffle] svg').outerHTML,undo:$('.tool[data-t=undo] svg').outerHTML};
@@ -747,14 +849,21 @@ const SKINS={
     colors:['#e3123f','#1f5fe0','#0fb87a','#9b2fe6','#f2a20c','#08b6d6','#ea3c9a'],dead:'#4c4458',
     board:'#140822',boardEdge:'#6b3fa0',glow:'rgba(190,120,255,.35)',cell:'#1f1032',
     ui:{fg:'#f6eeff',muted:'rgba(235,220,255,.6)',accent:'#b04bff',accent2:'#ffd166',panel:'rgba(24,10,40,.94)',edge:'rgba(190,140,255,.35)',btnfg:'#1a0630'},
-    particle:'sparkle',ambient:'twinkle'}
+    particle:'sparkle',ambient:'twinkle'},
+  // Navidad: gratis durante el evento; para siempre al completar el árbol (o comprándolo fuera del evento)
+  xmas:{style:'gift',bg:'radial-gradient(120% 70% at 50% -10%,#24508f 0%,#0d2148 52%,#060e22 100%)',
+    colors:['#e8283c','#1fa855','#ffc53d','#eef3ff','#3db8ff','#a45cff','#ff8a2a'],dead:'#4a5670',
+    board:'#0a1730',boardEdge:'#4a7cc4',glow:'rgba(120,190,255,.42)',cell:'#13264a',
+    ui:{fg:'#f4f8ff',muted:'rgba(220,232,255,.66)',accent:'#ff4d5e',accent2:'#ffd34d',panel:'rgba(10,22,48,.95)',edge:'rgba(140,190,255,.34)',btnfg:'#2a0410'},
+    particle:'snow',ambient:'snow',lights:true}
 };
 
 /* ================= PROGRESO GUARDADO ================= */
 let coins=store.get('coins',START_COINS);
 const inv=Object.assign({},START_TOOLS,store.get('inv',{}));
 const owned=store.get('owned',['fury']);
-let skin=store.get('skin','fury'); if(!SKINS[skin]||!owned.includes(skin)) skin='fury';
+const skinOwned=k=>owned.includes(k)||(k==='xmas'&&xOn());
+let skin=store.get('skin','fury'); if(!SKINS[skin]||!skinOwned(skin)) skin='fury';
 function saveProg(){store.set('coins',coins);store.set('inv',inv);store.set('owned',owned)}
 
 /* ================= DIBUJO DE BLOQUES ================= */
@@ -821,6 +930,22 @@ function paintBlock(g,s,col,style,seed){
     g.fillStyle='rgba(255,255,255,.2)';g.fillRect(x+b,y,w-2*b,b*.8);
     g.fillStyle='rgba(0,0,0,.25)';g.fillRect(x+b,y+w-b*.8,w-2*b,b*.8);
     break;}
+  case 'gift':{ // caja de regalo con cinta y moño
+    const[cr,cg,cb]=hex(col),lum=(.2126*cr+.7152*cg+.0722*cb)/255;
+    const rc=lum>.7?'#d81e34':lum>.5?'#ffffff':'#ffd34d';
+    rr(g,x,y,w,w,s*.12);g.fillStyle=D(col,.5);g.fill();
+    x+=s*.02;y+=s*.02;w-=s*.04;
+    g.save();rr(g,x,y,w,w,s*.11);g.clip();
+    const gr=g.createLinearGradient(0,y,0,y+w);gr.addColorStop(0,L(col,.28));gr.addColorStop(.55,col);gr.addColorStop(1,D(col,.16));g.fillStyle=gr;g.fillRect(x,y,w,w);
+    const rw=w*.17;g.fillStyle=rc;g.fillRect(x+w/2-rw/2,y,rw,w);g.fillRect(x,y+w/2-rw/2,w,rw);
+    g.fillStyle='rgba(255,255,255,.35)';g.fillRect(x+w/2-rw/2,y,rw*.33,w);g.fillRect(x,y+w/2-rw/2,w,rw*.33);
+    g.fillStyle='rgba(0,0,0,.16)';g.fillRect(x+w/2+rw*.2,y,rw*.3,w);g.fillRect(x,y+w/2+rw*.2,w,rw*.3);
+    g.fillStyle='rgba(255,255,255,.22)';g.fillRect(x,y,w,w*.1);
+    g.restore();
+    const cx=x+w/2,cy=y+w/2;g.fillStyle=rc;g.strokeStyle=D(rc==='#ffffff'?'#c8d0e0':rc,.3);g.lineWidth=Math.max(1,s*.022);
+    for(const sd of[-1,1]){g.beginPath();g.ellipse(cx+sd*w*.13,cy-w*.04,w*.14,w*.085,sd*-.55,0,7);g.fill();g.stroke()}
+    g.beginPath();g.arc(cx,cy,w*.065,0,7);g.fill();g.stroke();
+    break;}
   }
 }
 const sprites=new Map();
@@ -834,6 +959,7 @@ function sprite(ci,size,sk=skin){
 /* Íconos de superpoderes dibujados sobre el bloque */
 
 const POWER_W={bomb:30,bolt:25,rainbow:15,x2:15,ice:15};
+const powW=()=>xOn()?Object.assign({gift:22},POWER_W):POWER_W;   // en Navidad aparece el bloque Regalo
 function drawPower(g,type,x,y,s,t){
   const p=1+.08*Math.sin(t/170);g.save();g.translate(x+s/2,y+s/2);g.scale(p,p);
   g.beginPath();g.arc(0,0,s*.33,0,7);g.fillStyle='rgba(0,0,0,.38)';g.fill();
@@ -851,6 +977,12 @@ function drawPower(g,type,x,y,s,t){
   case 'ice':g.strokeStyle='#d6f7ff';g.lineWidth=s*.045;g.lineCap='round';
     for(let i=0;i<3;i++){g.save();g.rotate(i*Math.PI/3);g.beginPath();g.moveTo(0,-s*.22);g.lineTo(0,s*.22);
       g.moveTo(-s*.07,-s*.17);g.lineTo(0,-s*.1);g.lineTo(s*.07,-s*.17);g.moveTo(-s*.07,s*.17);g.lineTo(0,s*.1);g.lineTo(s*.07,s*.17);g.stroke();g.restore()}break;
+  case 'gift':{const b=s*.34;g.lineJoin='round';g.lineWidth=s*.03;g.strokeStyle='#fff';
+    g.fillStyle='#e8283c';rr(g,-b/2,-b*.12,b,b*.66,s*.03);g.fill();g.stroke();
+    g.fillStyle='#ff4d5e';rr(g,-b*.58,-b*.38,b*1.16,b*.28,s*.03);g.fill();g.stroke();
+    g.fillStyle='#ffd34d';g.fillRect(-b*.09,-b*.38,b*.18,b*.92);
+    for(const sd of[-1,1]){g.beginPath();g.ellipse(sd*b*.2,-b*.5,b*.2,b*.12,sd*-.5,0,7);g.fill();g.stroke()}
+    g.beginPath();g.arc(0,-b*.44,b*.08,0,7);g.fill();break;}
   }
   g.restore();
 }
@@ -877,7 +1009,10 @@ function makePiece(avoid,small){const s=pickW(small?SMALL:SHAPES);
 
 /* ================= ESTADO ================= */
 const N=8;
-let mode='normal',dSpec=null,dProg=0,dHit=false;const GK=()=>mode==='daily'?'dgame':'game';
+let mode='normal',dSpec=null,dProg=0,dHit=false;
+// los tableros navideños usan el mismo modo que el Desafío del día, pero con su propia partida guardada
+const GK=()=>mode==='daily'?(dSpec&&dSpec.xmas?'xgame':'dgame'):'game';
+const MK=()=>dSpec&&dSpec.xmas?'xmeta':'dmeta';
 let grid,spec,tray,score,shown,combo,since,continued,sets,meter,furyT,x2T,iceSets,gameBest,recShown,state='menu',games=store.get('games',0);
 let best=store.get('best',0),earned=0,paid=0,undoSnap=null,hammer=false,lastFury=false,beatAcc=0;
 const pops=[],clearing=[],beams=[],parts=[],texts=[],rings=[];
@@ -891,7 +1026,7 @@ function genSet(count=3){const small=iceSets>0;let bestSet=null,bf=-1;
   for(let a=0;a<40;a++){const set=[];for(let i=0;i<count;i++)set.push(makePiece(set.map(p=>p.ci),small));
     const f=set.filter(canFit).length;if(f===count||(a>6&&f>=Math.min(2,count))||(a>20&&f>=1)){bestSet=set;break}if(f>bf){bf=f;bestSet=set}}
   // superpoderes: nunca en la primera tanda; como máximo uno por tanda (dos si vas bien)
-  if(sets>0){let maxSp=score>1500?2:1;for(const p of bestSet){if(maxSp>0&&Math.random()<SPECIAL_CHANCE){p.sp={i:Math.floor(Math.random()*p.cells.length),t:pickW(Object.entries(POWER_W),1)[0]};maxSp--}}}
+  if(sets>0){let maxSp=score>1500?2:1;for(const p of bestSet){if(maxSp>0&&Math.random()<SPECIAL_CHANCE){p.sp={i:Math.floor(Math.random()*p.cells.length),t:pickW(Object.entries(powW()),1)[0]};maxSp--}}}
   sets++;return bestSet}
 function nextSet(){const s=genSet(3);if(iceSets>0)iceSets--;trayT0=now();return s}
 function newGame(){grid=emptyGrid(-1);spec=emptyGrid(null);score=0;shown=0;combo=0;since=99;continued=false;sets=0;meter=0;furyT=0;x2T=0;iceSets=0;
@@ -900,8 +1035,8 @@ function newGame(){grid=emptyGrid(-1);spec=emptyGrid(null);score=0;shown=0;combo
 function snapshot(){return JSON.stringify({grid,spec,tray,score,combo,since,continued,sets,meter,furyT,x2T,iceSets,gameBest,recShown,paid})}
 function restore(s){const g=JSON.parse(s);grid=g.grid;spec=g.spec||emptyGrid(null);tray=g.tray;score=g.score;combo=g.combo;since=g.since;continued=g.continued;
   sets=g.sets||1;meter=g.meter||0;furyT=g.furyT||0;x2T=g.x2T||0;iceSets=g.iceSets||0;gameBest=g.gameBest!=null?g.gameBest:best;recShown=!!g.recShown;paid=g.paid||0}
-function save(){const live=state==='play'||state==='stuck';store.set(GK(),live?JSON.parse(snapshot()):null);if(mode==='daily'&&dSpec)store.set('dmeta',{d:dSpec.d,p:dProg,h:dHit})}
-function load(){const g=store.get(GK(),null);if(!g||!g.grid)return false;if(mode==='daily'){const m=store.get('dmeta',null);if(!m||!dSpec||m.d!==dSpec.d)return false;dProg=m.p||0;dHit=!!m.h}restore(JSON.stringify(g));shown=score;state='play';trayT0=now();updateHud(true);return true}
+function save(){const live=state==='play'||state==='stuck';store.set(GK(),live?JSON.parse(snapshot()):null);if(mode==='daily'&&dSpec)store.set(MK(),{d:dSpec.d,p:dProg,h:dHit})}
+function load(){const g=store.get(GK(),null);if(!g||!g.grid)return false;if(mode==='daily'){const m=store.get(MK(),null);if(!m||!dSpec||m.d!==dSpec.d)return false;dProg=m.p||0;dHit=!!m.h}restore(JSON.stringify(g));shown=score;state='play';trayT0=now();updateHud(true);return true}
 
 /* ================= SONIDO / VIBRACIÓN ================= */
 /* ================= MOTOR DE AUDIO ================= */
@@ -946,6 +1081,9 @@ const ekick=(dl=0)=>T(130,.16,{f2:45,v:.3,dl});
 const br=(m,d=.5,dl=0,v=.07)=>{const f=m2f(m);T(f,d,{type:'sawtooth',lp:2200,lp2:700,v,dl,a:.04});T(f*1.006,d,{type:'sawtooth',lp:2200,lp2:700,v:v*.8,dl,a:.04})};
 const timp=(dl=0,v=.3,f=90)=>T(f,.5,{f2:f*.7,v,dl});
 const hit=(ms,dl=0)=>{ms.forEach(m=>br(m,.7,dl,.06));Nz(.6,{lp:1500,v:.2,dl});timp(dl,.35,55)};
+// cascabeles de trineo: ráfagas cortas de ruido agudo + destellos metálicos
+const jingle=(dl=0,v=.07)=>{for(let i=0;i<4;i++){const d=dl+i*.028+Math.random()*.01;Nz(.07,{bp:6800+i*700,q:5,v,dl:d});T(4100+i*430,.05,{v:v*.22,dl:d,a:.002})}};
+const chime=(m,dl=0,v=.07,d=1)=>{T(m2f(m),d,{fm:[3.01,.9],v,dl,a:.002,echo:true});T(m2f(m)*2.76,d*.4,{v:v*.18,dl,a:.002})};
 const PACKS={
 classic:{
   pick:()=>T(620,.06,{v:.07,f2:900}),
@@ -1089,12 +1227,27 @@ epic:{
   record:()=>{[67,72,76,79].forEach((m,i)=>br(m,.35,i*.15,.07));hit([48,55,60,64],.6)},
   hammer:()=>hit([40,47]),
   over:()=>[57,55,53,52].forEach((m,i)=>br(m,.5,i*.3,.07)),
-  tap:()=>T(m2f(81),.05,{type:'triangle',v:.04})}
+  tap:()=>T(m2f(81),.05,{type:'triangle',v:.04})},
+bells:{ // Navidad: cascabeles y campanitas
+  pick:()=>chime(88,0,.04,.35),
+  place:()=>{jingle(0,.045);T(m2f(55),.14,{type:'triangle',v:.13,f2:m2f(48)})},
+  bad:()=>T(m2f(50),.16,{type:'triangle',v:.06,f2:m2f(45)}),
+  clear:(n,cb)=>{const r=72+Math.min(cb,7);[0,4,7,12,16,19].slice(0,Math.min(n+2,6)).forEach((s,i)=>chime(r+s,i*.07,.075,1));jingle(0,.06)},
+  power:k=>{if(k==='bomb'){bell(43,0,.16,1.8);bell(50,0,.1,1.6);Nz(.4,{lp:900,v:.2})}else if(k==='bolt'){[96,91,88,84].forEach((m,i)=>chime(m,i*.05,.06,.6))}
+    else if(k==='ice'){[88,91,96,100].forEach((m,i)=>chime(m,i*.08,.05,1.2))}else if(k==='gift'){jingle(0,.08);[79,83,86,91].forEach((m,i)=>chime(m,.05+i*.07,.07,.9))}
+    else{[72,76,79,84,88].forEach((m,i)=>chime(m,i*.06,.06,.9))}},
+  fury:()=>{for(let i=0;i<6;i++)jingle(i*.12,.07);[67,71,74,79,83,86].forEach((m,i)=>chime(m,i*.09,.07,1.2))},
+  beat:i=>jingle(0,i%2?.03:.05),
+  coin:()=>{chime(88,0,.06,.6);chime(91,.08,.06,.8)},
+  record:()=>{[[83,0],[83,.16],[83,.32],[83,.64],[83,.8],[83,.96],[83,1.28],[86,1.44],[79,1.6],[81,1.84],[83,1.92]].forEach(([m,d])=>chime(m,d,.07,.7));jingle(0,.06);jingle(1.92,.07)},
+  hammer:()=>{bell(48,0,.15,1.4);Nz(.2,{lp:1200,v:.2})},
+  over:()=>[79,76,72,67].forEach((m,i)=>chime(m,i*.25,.07,1.2)),
+  tap:()=>chime(93,0,.035,.3)}
 };
-const PACK_ORDER=['classic','arcade','cartoon','wood','drums','water','crystal','piano','space','electro','epic'];
+const PACK_ORDER=['classic','arcade','cartoon','wood','drums','water','crystal','piano','space','electro','epic','bells'];
 // Logro que abre cada pack: [estadística, cantidad]
 const PACK_ACH={arcade:['lines',50],cartoon:['games',10],wood:['comboMax',4],drums:['pieces',500],water:['power',25],crystal:['score',3000],piano:['multi',10],space:['fury',10],electro:['clears',3],epic:['lines',1000]};
-const PACK_PRICE=id=>250+(PACK_ORDER.indexOf(id)-1)*100; // 250, 350, ... 1150 monedas
+const PACK_PRICE=id=>id==='bells'?600:250+(PACK_ORDER.indexOf(id)-1)*100; // 250, 350, ... 1150 monedas · Cascabeles 600
 const ACH_KEY={lines:'m_lines',games:'m_games',comboMax:'a_comboMax',pieces:'m_pieces',power:'m_power',score:'m_score',multi:'m_multi',fury:'m_fury',clears:'a_clears'};
 let sndPack=store.get('sndPack','classic');const sndOwned=store.get('sndOwned',['classic']);if(!sndOwned.includes(sndPack))sndPack='classic';
 const Snd={unlock(){AU.init();try{AU.c&&AU.c.resume()}catch(e){}Music.kick()},
@@ -1113,6 +1266,22 @@ function stat(k,v,max){if(!(k in stats))return;const b=stats[k];stats[k]=max?Mat
 const TRACKS=[
   {bpm:112,style:'beat',prog:[[57,60,64],[53,57,60],[48,52,55],[55,59,62]]},
   {bpm:78,style:'chill',prog:[[53,57,60,64],[52,55,59,62],[50,53,57,60],[48,52,55,59]]}];
+/* Villancicos (dominio público): Jingle Bells (estribillo, 1857) + We Wish You a Merry Christmas (tradicional).
+   Cada nota: [midi, duración en semicorcheas]. Acordes: [bajo, [notas]]. Solo se ofrece durante el evento. */
+(()=>{const G=[43,[59,62,67]],C=[48,[60,64,67]],A7=[45,[61,64,67]],D7=[50,[60,62,66]],Dm=[50,[62,66,69]],B7=[47,[63,66,69]],Em=[52,[59,64,67]];
+  const jb=[[71,4],[71,4],[71,8],[71,4],[71,4],[71,8],[71,4],[74,4],[67,6],[69,2],[71,16],
+    [72,4],[72,4],[72,6],[72,2],[72,4],[71,4],[71,4],[71,2],[71,2],[71,4],[69,4],[69,4],[71,4],[69,8],[74,8]];
+  const jb2=jb.slice(0,11).concat([[72,4],[72,4],[72,4],[72,4],[72,4],[71,4],[71,4],[71,2],[71,2],[74,4],[74,4],[72,4],[69,4],[67,16]]);
+  const ww=[[0,8],[62,4],[67,4],[67,2],[69,2],[67,2],[66,2],[64,4],[64,4],[64,4],[69,4],[69,2],[71,2],[69,2],[67,2],[66,4],[62,4],[62,4],
+    [71,4],[71,2],[72,2],[71,2],[69,2],[67,4],[64,4],[62,2],[62,2],[64,4],[69,4],[66,4],[67,12]].map(([m,d])=>[m?m+12:0,d]);
+  const secs=[{beats:4,mel:jb.concat(jb2),ch:[G,G,G,G,C,G,A7,D7,G,G,G,G,C,G,D7,G].map(c=>[c,16])},
+    {beats:3,mel:ww,ch:[[D7,12],[G,12],[C,12],[A7,12],[Dm,12],[B7,12],[Em,12],[C,8],[D7,4],[G,12]]}];
+  const ev=[];let s0=0;
+  for(const sc of secs){const bar=sc.beats*4;let p=s0;for(const[m,d]of sc.mel){if(m)(ev[p]=ev[p]||{}).m=[m,d];p+=d}
+    let q=s0;for(const[c,d]of sc.ch){(ev[q]=ev[q]||{}).c=c;q+=d}
+    for(let k=0;k<p-s0;k++){const e=ev[s0+k]=ev[s0+k]||{};e.k=k%bar;e.bar=bar}s0=p}
+  TRACKS.push({bpm:120,style:'song',ev,len:s0,xmas:true})})();
+const trackOn=i=>!TRACKS[i].xmas||xOn();
 const DB={db:null,open(){return new Promise((res,rej)=>{if(this.db)return res(this.db);try{const r=indexedDB.open('fury',1);
     r.onupgradeneeded=()=>r.result.createObjectStore('songs',{keyPath:'id'});r.onsuccess=()=>{this.db=r.result;res(this.db)};r.onerror=()=>rej(r.error)}catch(e){rej(e)}})},
   async tx(mode,fn){const db=await this.open();return new Promise((res,rej)=>{const t=db.transaction('songs',mode);const q=fn(t.objectStore('songs'));t.oncomplete=()=>res(q&&q.result);t.onerror=()=>rej(t.error);t.onabort=()=>rej(t.error)})},
@@ -1121,19 +1290,25 @@ let songs=[];
 const Music={el:null,iv:null,step:0,next:0,cur:-1,url:null,started:false,paused:false,
   kick(){if(this.started||!AU.c)return;this.started=true;this.apply()},
   stopAll(){clearInterval(this.iv);this.iv=null;this.cur=-1;if(this.el){this.el.pause();this.el.removeAttribute('src');try{this.el.load()}catch(e){}}if(this.url){URL.revokeObjectURL(this.url);this.url=null}},
-  apply(){this.stopAll();if(!this.started||!sndSet.musOn||this.paused)return;const s=sndSet.sel;
+  apply(){this.stopAll();if(sndSet.sel[0]==='b'&&!trackOn(+sndSet.sel.slice(1)||0))sndSet.sel='b0';if(!this.started||!sndSet.musOn||this.paused)return;const s=sndSet.sel;
     if(s[0]==='b'){this.cur=+s.slice(1)||0;this.step=0;this.next=AU.c.currentTime+.1;this.iv=setInterval(()=>this.tick(),40)}
     else{const so=songs.find(x=>x.id===s.slice(2));if(!so){sndSet.sel='b0';return this.apply()}
       if(!this.el){this.el=new Audio();this.el.addEventListener('ended',()=>this.ended());this.el.addEventListener('error',()=>{if(this.el.getAttribute('src'))toast(T_('songErr'))})}
       this.url=URL.createObjectURL(so.blob);this.el.src=this.url;this.el.loop=sndSet.mode==='one';this.el.volume=sndSet.musVol;this.el.play().catch(()=>{})}},
-  ended(){if(sndSet.mode!=='all')return;const list=['b0','b1'].concat(songs.map(x=>'u:'+x.id));const i=list.indexOf(sndSet.sel);sndSet.sel=list[(i+1)%list.length];store.set('musSel',sndSet.sel);this.apply();if(!$('#ovMusic').hidden)renderMusic()},
+  ended(){if(sndSet.mode!=='all')return;const list=TRACKS.map((_,i)=>'b'+i).filter((_,i)=>trackOn(i)).concat(songs.map(x=>'u:'+x.id));const i=list.indexOf(sndSet.sel);sndSet.sel=list[(i+1)%list.length];store.set('musSel',sndSet.sel);this.apply();if(!$('#ovMusic').hidden)renderMusic()},
   setVol(v){sndSet.musVol=v;store.set('musVol',v);if(AU.mus)AU.mus.gain.value=v*.6;if(this.el)this.el.volume=v},
   pause(){this.paused=true;clearInterval(this.iv);this.iv=null;if(this.el&&this.url)this.el.pause()},
   resume(){if(!this.paused)return;this.paused=false;if(!this.started||!sndSet.musOn)return;if(this.url&&this.el)this.el.play().catch(()=>{});else if(this.cur>=0){this.next=AU.c.currentTime+.1;this.iv=setInterval(()=>this.tick(),40)}else this.apply()},
   tick(){const c=AU.c,tr=TRACKS[this.cur];if(!tr)return;const sp=60/tr.bpm/4;let bar=0;
-    if(sndSet.mode==='all'&&this.step===0&&this.loops>=8){this.loops=0;return this.ended()}
-    while(this.next<c.currentTime+.15){this.note(tr,this.step,this.next-c.currentTime,sp);this.step=(this.step+1)%64;if(this.step===0)this.loops=(this.loops||0)+1;this.next+=sp}},
-  note(tr,s,dl,sp){const B=AU.mus,st=s&15,ch=tr.prog[s>>4];
+    if(sndSet.mode==='all'&&this.step===0&&this.loops>=(tr.len?2:8)){this.loops=0;return this.ended()}
+    while(this.next<c.currentTime+.15){this.note(tr,this.step,this.next-c.currentTime,sp);this.step=(this.step+1)%(tr.len||64);if(this.step===0)this.loops=(this.loops||0)+1;this.next+=sp}},
+  song(tr,s,dl,sp){const B=AU.mus,e=tr.ev[s];if(!e)return;if(e.c)this.ch=e.c;const ch=this.ch||tr.ev[0].c,k=e.k;
+    if(e.m){const[m,d]=e.m;T(m2f(m),Math.min(d*sp*.92,1.1),{type:'triangle',v:.075,dl,bus:B,a:.006});T(m2f(m+12),.45,{fm:[3.5,1.1],v:.02,dl,bus:B,a:.003})}
+    if(k===0){T(m2f(ch[0]+12),sp*3.6,{type:'triangle',v:.12,dl,bus:B});T(105,.18,{f2:48,v:.15,dl,bus:B})}
+    else if(e.bar===16&&k===8){T(m2f(ch[0]+7),sp*3.6,{type:'triangle',v:.11,dl,bus:B});T(105,.16,{f2:48,v:.11,dl,bus:B})}
+    else if(k%4===0)ch[1].forEach(n=>T(m2f(n),sp*1.5,{v:.022,dl,bus:B,a:.01}));
+    if(k%4===0)Nz(.05,{hp:6500,v:.04,dl,bus:B});else if(k%2===0)Nz(.025,{hp:8500,v:.018,dl,bus:B})},
+  note(tr,s,dl,sp){if(tr.style==='song')return this.song(tr,s,dl,sp);const B=AU.mus,st=s&15,ch=tr.prog[s>>4];
     if(tr.style==='beat'){
       if(st%4===0)T(130,.2,{f2:45,v:.5,dl,bus:B});
       if(st%4===2)Nz(.04,{hp:7000,v:.12,dl,bus:B});
@@ -1168,7 +1343,7 @@ function renderMusic(){const el=$('#musBody');el.innerHTML='';
     if(del){const x=document.createElement('button');x.className='tdel';x.textContent=delPending===id?T_('delQ'):'✕';x.setAttribute('aria-label',T_('del'));
       x.onclick=async()=>{if(delPending!==id){delPending=id;renderMusic();return}delPending=null;try{await DB.del(id.slice(2))}catch(e){}await loadSongs();if(sndSet.sel===id){sndSet.sel='b0';store.set('musSel','b0');Music.apply()}renderMusic()};d.append(x)}
     el.append(d)};
-  TRACKS.forEach((_,i)=>item('b'+i,T_('trk_'+i),false));
+  TRACKS.forEach((tr,i)=>{if(trackOn(i))item('b'+i,(tr.xmas?'🎄 ':'')+T_('trk_'+i),false)});
   const h2=document.createElement('h3');h2.innerHTML=`${T_('yourSongs')} <small>${T_('slotsInfo',{a:songs.length,b:musSlots})}</small>`;el.append(h2);
   songs.forEach(s=>item('u:'+s.id,s.name,true));
   if(songs.length<musSlots){const b=document.createElement('button');b.className='btn ghost';b.textContent='+ '+T_('addSong');b.onclick=()=>{Snd.unlock();$('#songFile').click()};el.append(b)}
@@ -1184,15 +1359,16 @@ $('#songFile').onchange=async e=>{const f=e.target.files&&e.target.files[0];e.ta
 
 /* ================= PANTALLA DE PACKS DE SONIDO ================= */
 function renderSnd(){const el=$('#sndList');el.innerHTML='';
-  for(const id of PACK_ORDER){const own=sndOwned.includes(id),d=document.createElement('div');d.className='snd'+(id===sndPack?' on':'')+(own?'':' locked');
+  for(const id of PACK_ORDER){const own=sndOwned.includes(id);if(id==='bells'&&!own&&!xOn())continue;const d=document.createElement('div');d.className='snd'+(id===sndPack?' on':'')+(own?'':' locked');
     const top=document.createElement('div');top.className='sndtop';
     const nm=document.createElement('b');nm.textContent=(own?'':'🔒 ')+T_('snd_'+id);
     const pv=document.createElement('button');pv.className='btn ghost pv';pv.innerHTML=`▶ ${T_('listen')}`;pv.onclick=()=>preview(id);
     top.append(nm,pv);d.append(top);
     if(own){const u=document.createElement('button');u.className='btn'+(id===sndPack?' ghost':'');u.textContent=id===sndPack?T_('inUse'):T_('use');u.disabled=id===sndPack;
       u.onclick=()=>{sndPack=id;store.set('sndPack',id);Snd.unlock();Snd.coin();renderSnd()};d.append(u)}
-    else{const[k,n]=PACK_ACH[id],cur=Math.min(n,stats[k]);
-      const a=document.createElement('div');a.className='ach';a.innerHTML=`<span>🏆 ${T_('achievement')}: ${T_(ACH_KEY[k],{n})}</span><div class="bar"><i style="width:${cur/n*100}%"></i></div><small>${cur} / ${n}</small>`;d.append(a);
+    else{const a=document.createElement('div');a.className='ach';
+      if(PACK_ACH[id]){const[k,n]=PACK_ACH[id],cur=Math.min(n,stats[k]);a.innerHTML=`<span>🏆 ${T_('achievement')}: ${T_(ACH_KEY[k],{n})}</span><div class="bar"><i style="width:${cur/n*100}%"></i></div><small>${cur} / ${n}</small>`}
+      else a.innerHTML=`<span>${T_('xPackEvt')}</span>`;d.append(a);
       const b=document.createElement('button');b.className='btn';b.innerHTML=`${T_('buyFor',{n:PACK_PRICE(id)})} ${COIN}`;
       b.onclick=()=>{const p=PACK_PRICE(id);if(coins<p){toast(T_('t_needCoins',{n:p-coins}));return}coins-=p;sndOwned.push(id);store.set('sndOwned',sndOwned);saveProg();syncCoins();sndPack=id;store.set('sndPack',id);preview(id);renderSnd()};d.append(b)}
     el.append(d)}}
@@ -1206,7 +1382,7 @@ const Ads={A:null,
     const bn=$('#banner');bn.textContent='';bn.classList.add('native');
     try{const AP=(C.Plugins&&C.Plugins.App)||(C.registerPlugin&&C.registerPlugin('App'));const info=AP&&await AP.getInfo();
       if(info&&/\.test$/.test(info.id)){TEST_APP=true;AD_TESTING=true;Object.assign(AD_IDS,{banner:'ca-app-pub-3940256099942544/9214589741',interstitial:'ca-app-pub-3940256099942544/1033173712',rewarded:'ca-app-pub-3940256099942544/5224354917'});
-        const lg=$('.logo');if(lg&&!lg.querySelector('.testtag'))lg.insertAdjacentHTML('beforeend',`<span class="testtag">${T_('testApp')}</span>`)}}catch(e){}
+        const lg=$('.logo');if(lg&&!lg.querySelector('.testtag'))lg.insertAdjacentHTML('beforeend',`<span class="testtag">${T_('testApp')}</span>`);xSimInit()}}catch(e){}
     try{await this.A.initialize({initializeForTesting:AD_TESTING});
       try{const ci=await this.A.requestConsentInfo();if(ci&&ci.isConsentFormAvailable&&ci.status==='REQUIRED')await this.A.showConsentForm()}catch(e){}
       try{this.A.addListener('bannerAdSizeChanged',s=>{if(s&&s.height)bn.style.height=s.height+'px'})}catch(e){}
@@ -1246,12 +1422,12 @@ const overlayOpen=()=>!!document.querySelector('.overlay:not([hidden])');
 
 /* ================= AMBIENTE / PARTÍCULAS ================= */
 let amb=[];
-function buildAmbient(){amb=[];const k=SKINS[skin].ambient;if(REDUCE||k==='none'||k==='grid')return;
-  for(let i=0;i<18;i++)amb.push({x:Math.random()*W,y:Math.random()*H,v:8+Math.random()*22,s:1+Math.random()*3,p:Math.random()*7})}
+function buildAmbient(){amb=[];const k=SKINS[skin].ambient;if(REDUCE||k==='none'||k==='grid')return;const snow=k==='snow';
+  for(let i=0;i<(snow?46:18);i++)amb.push({x:Math.random()*W,y:Math.random()*H,v:snow?14+Math.random()*30:8+Math.random()*22,s:snow?.8+Math.random()*2.6:1+Math.random()*3,p:Math.random()*7})}
 function spawn(x,y,col,n,kind){const k=kind||SKINS[skin].particle;
-  for(let i=0;i<n;i++){const a=Math.random()*Math.PI*2,sp=(k==='bubble'?40:120)+Math.random()*220;
-    parts.push({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-(k==='bubble'?60:120),life:0,max:.6+Math.random()*.5,col,k,
-      s:k==='confetti'?4+Math.random()*5:k==='bubble'?3+Math.random()*6:2+Math.random()*3.5,rot:Math.random()*6,vr:(Math.random()-.5)*14})}}
+  for(let i=0;i<n;i++){const a=Math.random()*Math.PI*2,sp=(k==='bubble'?40:k==='snow'?60:k==='fw'?50:120)+Math.random()*(k==='snow'?170:220);
+    parts.push({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-(k==='bubble'?60:k==='fw'?20:k==='snow'?70:120),life:0,max:k==='fw'?1+Math.random()*.7:k==='snow'?.9+Math.random()*.7:.6+Math.random()*.5,col,k,
+      s:k==='confetti'?4+Math.random()*5:k==='bubble'?3+Math.random()*6:k==='snow'?2+Math.random()*2.4:k==='fw'?1.6+Math.random()*1.8:2+Math.random()*3.5,rot:Math.random()*6,vr:(Math.random()-.5)*(k==='snow'?5:14)})}}
 function floatText(txt,x,y,col,size){texts.push({txt,x:Math.max(size*2.4,Math.min(W-size*2.4,x)),y,col,size,t0:now()})}
 let toastT=0;function toast(msg){const t=$('#toast');t.textContent=msg;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>t.hidden=true,2200)}
 
@@ -1331,8 +1507,9 @@ function blast(set,n,cr,cc){
   const t=now(),S=SKINS[skin],base=set.size,q=[],done=new Set();let powers=0;
   set.forEach(k=>{if(spec[k/N|0][k%N])q.push(k)});
   const add=(a,b)=>{if(a<0||b<0||a>=N||b>=N||grid[a][b]<0)return;const kk=a*N+b;if(!set.has(kk)){set.add(kk);if(spec[a][b])q.push(kk)}};
-  while(q.length){const k=q.shift();if(done.has(k))continue;done.add(k);const i=k/N|0,j=k%N,type=spec[i][j];if(!type)continue;
+  while(q.length){const k=q.shift();if(done.has(k))continue;done.add(k);const i=k/N|0,j=k%N;let type=spec[i][j];if(!type)continue;
     powers++;const x=bx+(j+.5)*cell,y=by+(i+.5)*cell,ci=grid[i][j];
+    if(type==='gift'){type=openGiftBlock(x,y,t);if(!type){mission('power',1);continue}}
     floatText(T_('p_'+type),x,y-cell*.7,'#ffffff',cell*.5);Snd.power(type);vib([20,20,40]);mission('power',1);
     if(type==='bomb'){for(let a=i-1;a<=i+1;a++)for(let b=j-1;b<=j+1;b++)add(a,b);rings.push({x,y,t0:t,col:'#ffb020',r:cell*2.2});shake=Math.max(shake,12)}
     else if(type==='bolt'){for(let m=0;m<N;m++){add(i,m);add(m,j)}beams.push({rc:'r',i,t0:t,ci:3},{rc:'c',i:j,t0:t,ci:3});shake=Math.max(shake,8)}
@@ -1347,15 +1524,24 @@ function blast(set,n,cr,cc){
   if(n){const praise=n>=5?T_('pr5'):n===4?T_('pr4'):n===3?T_('pr3'):n===2?T_('pr2'):'';
     if(praise)floatText(praise,W/2,by+cell*2.6,S.ui.accent2,cell*.75);
     stat('comboMax',combo,true);if(combo>=2){floatText(T_('combo',{n:combo}),W/2,by+cell*(praise?3.6:3),S.ui.fg,cell*.55);mission('combo',1)}
-    mission('lines',n);if(n>=3)mission('multi',1);Snd.clear(n,combo)}
+    mission('lines',n);if(n>=3)mission('multi',1);Snd.clear(n,combo);xFlakes(n*(furyT>0?2:1));xFlash=t}
   if(gain)floatText('+'+gain,px,py,'#ffffff',cell*.5);
   if(grid.every(row=>row.every(v=>v<0))){stat('clears',1);addScore(300*mult());floatText(T_('boardClear'),W/2,by+cell*4.6,S.ui.accent2,cell*.55)}
   vib(n>1?[20,30,40]:25);if(!REDUCE)shake=Math.max(shake,Math.min(14,4+n*3+combo));
   if(furyT<=0){meter=Math.min(100,meter+n*11+(combo>1?(combo-1)*9:0)+powers*8);if(meter>=100)startFury()}
 }
-function startFury(){furyT=FURY_SECONDS;meter=100;lastFury=true;floatText(T_('furyMode'),W/2,by+cell*3.2,'#ff6a1a',cell*.8);floatText(T_('x3'),W/2,by+cell*4.2,'#ffe14d',cell*.5);
-  Snd.fury();vib([40,30,40,30,80]);if(!REDUCE)shake=16;mission('fury',1);
-  for(let i=0;i<40;i++)spawn(bx+Math.random()*cell*N,by+cell*N,'#ff7a1a',1,'ember')}
+function startFury(){furyT=FURY_SECONDS;meter=100;lastFury=true;const xs=skin==='xmas';
+  floatText(T_(xs?'xFury':'furyMode'),W/2,by+cell*3.2,xs?'#ffd34d':'#ff6a1a',cell*(xs?.6:.8));floatText(T_('x3'),W/2,by+cell*4.2,'#ffe14d',cell*.5);
+  Snd.fury();if(xs&&settings.snd&&sndPack!=='bells')for(let i=0;i<5;i++)jingle(i*.13,.06);
+  vib([40,30,40,30,80]);if(!REDUCE)shake=16;mission('fury',1);
+  for(let i=0;i<40;i++)spawn(bx+Math.random()*cell*N,by+cell*N,xs?(i%2?'#ffffff':'#ffd34d'):'#ff7a1a',1,xs?'snow':'ember')}
+/* Bloque Regalo: se abre y da monedas, una herramienta o un superpoder sorpresa (devuelve el superpoder o null) */
+function openGiftBlock(x,y,t){floatText(T_('p_gift'),x,y-cell*1.3,'#ffd34d',cell*.55);Snd.power('gift');if(settings.snd&&sndPack!=='bells')jingle(0,.07);vib([20,30,20]);
+  rings.push({x,y,t0:t,col:'#ffd34d',r:cell*2.4});['#e8283c','#ffd34d','#1fa855'].forEach(c=>spawn(x,y,c,REDUCE?1:6,'confetti'));xFlakes(5);
+  const r=Math.random();
+  if(r<.45)return['bomb','bolt','rainbow'][Math.floor(Math.random()*3)];
+  if(r<.75){const c=10+Math.floor(Math.random()*5)*5;coins+=c;saveProg();syncCoins();floatText(T_('dCoins',{n:c}),x,y-cell*.45,'#ffd34d',cell*.42);return null}
+  const k=['hammer','shuffle','undo'][Math.floor(Math.random()*3)];inv[k]++;saveProg();syncTools();floatText(T_('t_plusOne',{tool:T_(k)}),x,y-cell*.45,'#ffffff',cell*.42);return null}
 function checkOver(){if(state!=='play')return;const rest=tray.filter(q=>!q.placed);
   if(rest.length&&!rest.some(canFit)){
     if(inv.hammer+inv.shuffle+inv.undo>0){state='stuck';$('#stuck').hidden=false;Snd.bad();vib([30,60,30]);save();return}
@@ -1384,7 +1570,7 @@ let lastShown=-1;
 function updateHud(force){if(mode!=='daily'&&score>best){best=score;store.set('best',best)}$('#best').textContent=best;$('#startBest').textContent=best;if(force){shown=score;lastShown=-1}
   const tb=$('#tobest');
   if(state!=='play'&&state!=='stuck'){tb.textContent='';tb.className='tobest'}
-  else if(mode==='daily'&&dSpec){tb.textContent=dHit?'✅ '+T_('dWin'):`🎯 ${T_('dShort')}: ${Math.min(dProg,dSpec.goal)} / ${dSpec.goal}`;tb.className='tobest rec'}
+  else if(mode==='daily'&&dSpec){tb.textContent=dHit?'✅ '+T_(dSpec.xmas?'xBoardWin':'dWin'):`${dSpec.xmas?'🎄':'🎯 '+T_('dShort')+':'} ${Math.min(dProg,dSpec.goal)} / ${dSpec.goal}`;tb.className='tobest rec'}
   else if(recShown){tb.textContent=T_('newRecord').toUpperCase();tb.className='tobest rec'}
   else if(gameBest>0&&score>=gameBest*.6){tb.textContent=T_('toBest',{n:gameBest-score+1});tb.className='tobest'}
   else{tb.textContent='';tb.className='tobest'}}
@@ -1424,12 +1610,15 @@ let last=now(),beatN=0;
 function frame(){const t=now(),dt=Math.min(.05,(t-last)/1000);last=t;const S=SKINS[skin];
   // relojes de poderes (solo corren mientras juegas)
   if((state==='play'||state==='stuck')&&!overlayOpen()){
-    if(furyT>0){furyT-=dt;beatAcc+=dt;if(beatAcc>=.42){beatAcc=0;Snd.beat(beatN++)}if(furyT<=0){furyT=0;meter=0;toast(T_('t_furyEnd'));save()}}
+    if(furyT>0){furyT-=dt;beatAcc+=dt;if(beatAcc>=.42){beatAcc=0;Snd.beat(beatN++);if(S.lights&&settings.snd&&sndPack!=='bells')jingle(0,.025)}if(furyT<=0){furyT=0;meter=0;toast(T_('t_furyEnd'));save()}}
     if(x2T>0){x2T-=dt;if(x2T<=0)x2T=0}}
   const fury=furyT>0;
   ctx.setTransform(DPR,0,0,DPR,0,0);ctx.clearRect(0,0,W,H);
   // ambiente
-  for(const a of amb){a.y-=a.v*dt*(fury?3:1);a.p+=dt;if(a.y<-10){a.y=H+10;a.x=Math.random()*W}
+  for(const a of amb){a.p+=dt;
+    if(S.ambient==='snow'){a.y+=a.v*dt*(fury?2.2:1);if(a.y>H+10){a.y=-10;a.x=Math.random()*W}
+      ctx.fillStyle=`rgba(255,255,255,${.28+.18*a.s})`;ctx.beginPath();ctx.arc(a.x+Math.sin(a.p*.9+a.s*3)*9,a.y,a.s,0,7);ctx.fill();continue}
+    a.y-=a.v*dt*(fury?3:1);if(a.y<-10){a.y=H+10;a.x=Math.random()*W}
     const al=.25+.25*Math.sin(a.p*2);
     if(S.ambient==='ember'){ctx.fillStyle=`rgba(255,${120+Math.round(80*Math.sin(a.p))},40,${al})`;ctx.beginPath();ctx.arc(a.x+Math.sin(a.p)*6,a.y,a.s,0,7);ctx.fill()}
     else if(S.ambient==='bubble'){ctx.strokeStyle=`rgba(180,240,255,${al})`;ctx.lineWidth=1;ctx.beginPath();ctx.arc(a.x+Math.sin(a.p)*8,a.y,a.s*1.6,0,7);ctx.stroke()}
@@ -1448,10 +1637,12 @@ function frame(){const t=now(),dt=Math.min(.05,(t-last)/1000);last=t;const S=SKI
       ctx.save();if(fury||fill>.85){ctx.shadowColor='#ff6a1a';ctx.shadowBlur=12+6*Math.sin(t/100)}rr(ctx,x0,barY,Math.max(barH,w0*fill),barH,barH/2);ctx.fillStyle=gr;ctx.fill();ctx.restore()}
   }
   // tablero (en Modo Furia se prende fuego)
-  if(fury){const gr=ctx.createRadialGradient(W/2,by+bs/2,bs*.2,W/2,by+bs/2,bs*.95);gr.addColorStop(0,'rgba(255,80,0,0)');gr.addColorStop(1,`rgba(255,80,0,${.28+.12*Math.sin(t/110)})`);ctx.fillStyle=gr;ctx.fillRect(0,by-pad*3,W,bs+pad*6);
-    if(!REDUCE&&Math.random()<.6)spawn(bx+Math.random()*bs,by+bs+pad,Math.random()<.5?'#ffc233':'#ff5a14',1,'ember')}
-  ctx.save();ctx.shadowColor=fury?'#ff5a14':S.glow;ctx.shadowBlur=fury?cell*(1+.4*Math.sin(t/100)):cell*.7;rr(ctx,bx-pad,by-pad,bs+pad*2,bs+pad*2,cell*.3);ctx.fillStyle=S.board;ctx.fill();ctx.restore();
-  ctx.lineWidth=fury?3:2;ctx.strokeStyle=fury?'#ff7a1a':S.boardEdge;rr(ctx,bx-pad,by-pad,bs+pad*2,bs+pad*2,cell*.3);ctx.stroke();
+  const XS=!!S.lights; // Navidad: la Furia es dorada y con destellos
+  if(fury){const fc=XS?'255,200,60':'255,80,0',gr=ctx.createRadialGradient(W/2,by+bs/2,bs*.2,W/2,by+bs/2,bs*.95);gr.addColorStop(0,`rgba(${fc},0)`);gr.addColorStop(1,`rgba(${fc},${.28+.12*Math.sin(t/110)})`);ctx.fillStyle=gr;ctx.fillRect(0,by-pad*3,W,bs+pad*6);
+    if(!REDUCE&&Math.random()<.6){if(XS){if(Math.random()<.5)spawn(bx+Math.random()*bs,by+Math.random()*bs,'#ffffff',1,'sparkle')}else spawn(bx+Math.random()*bs,by+bs+pad,Math.random()<.5?'#ffc233':'#ff5a14',1,'ember')}}
+  ctx.save();ctx.shadowColor=fury?(XS?'#ffd34d':'#ff5a14'):S.glow;ctx.shadowBlur=fury?cell*(1+.4*Math.sin(t/100)):cell*.7;rr(ctx,bx-pad,by-pad,bs+pad*2,bs+pad*2,cell*.3);ctx.fillStyle=S.board;ctx.fill();ctx.restore();
+  ctx.lineWidth=fury?3:2;ctx.strokeStyle=fury?(XS?'#ffd34d':'#ff7a1a'):S.boardEdge;rr(ctx,bx-pad,by-pad,bs+pad*2,bs+pad*2,cell*.3);ctx.stroke();
+  if(XS)drawXmasFrame(t,fury);
   if(S.ambient==='grid'){ctx.strokeStyle='rgba(120,90,255,.18)';ctx.lineWidth=1;for(let i=1;i<N;i++){ctx.beginPath();ctx.moveTo(bx+i*cell,by);ctx.lineTo(bx+i*cell,by+bs);ctx.moveTo(bx,by+i*cell);ctx.lineTo(bx+bs,by+i*cell);ctx.stroke()}}
   ctx.fillStyle=S.cell;for(let i=0;i<N;i++)for(let j=0;j<N;j++){rr(ctx,bx+j*cell+cell*.06,by+i*cell+cell*.06,cell*.88,cell*.88,cell*.16);ctx.fill()}
   if(grid){
@@ -1494,13 +1685,17 @@ function frame(){const t=now(),dt=Math.min(.05,(t-last)/1000);last=t;const S=SKI
     if(q.sp){const[dr,dc]=q.cells[q.sp.i];drawPower(ctx,q.sp.t,g.x+dc*g.s,g.y+dr*g.s,g.s,t)}}
   // partículas
   for(let k=parts.length-1;k>=0;k--){const p=parts[k];p.life+=dt;if(p.life>p.max){parts.splice(k,1);continue}
-    const grav=p.k==='bubble'?-160:p.k==='ember'?-260:p.k==='confetti'?380:600;p.vy+=grav*dt;p.vx*=.98;p.x+=p.vx*dt;p.y+=p.vy*dt;p.rot+=p.vr*dt;
+    const grav=p.k==='bubble'?-160:p.k==='ember'?-260:p.k==='confetti'?380:p.k==='snow'?70:p.k==='fw'?150:600;p.vy+=grav*dt;p.vx*=.98;if(p.k==='fw'||p.k==='snow'){p.vx*=.975;p.vy*=.975}p.x+=p.vx*dt;p.y+=p.vy*dt;p.rot+=p.vr*dt;
     const al=1-p.life/p.max;ctx.globalAlpha=al;
     if(p.k==='bubble'){ctx.strokeStyle=L(p.col,.5);ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(p.x,p.y,p.s,0,7);ctx.stroke()}
     else if(p.k==='confetti'||p.k==='chip'){ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.rot);ctx.fillStyle=p.k==='chip'?D(p.col,.15):p.col;ctx.fillRect(-p.s/2,-p.s/4,p.s,p.s/2);ctx.restore()}
     else if(p.k==='sparkle'){star(ctx,p.x,p.y,p.s*1.6,al)}
+    else if(p.k==='snow'){ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.rot);ctx.strokeStyle=L(p.col,.72);ctx.lineWidth=Math.max(1,p.s*.38);ctx.lineCap='round';ctx.beginPath();
+      for(let m=0;m<3;m++){const an=m*Math.PI/3,cx=Math.cos(an)*p.s*1.7,cy=Math.sin(an)*p.s*1.7;ctx.moveTo(-cx,-cy);ctx.lineTo(cx,cy)}ctx.stroke();ctx.restore()}
+    else if(p.k==='fw'){ctx.globalCompositeOperation='lighter';ctx.fillStyle=p.col;ctx.beginPath();ctx.arc(p.x,p.y,p.s*(.5+al*.7),0,7);ctx.fill();ctx.globalCompositeOperation='source-over'}
     else{ctx.fillStyle=L(p.col,.35);ctx.beginPath();ctx.arc(p.x,p.y,p.s*al+.5,0,7);ctx.fill()}
     ctx.globalAlpha=1}
+  if(rockets.length)drawRockets(dt);
   // textos flotantes
   for(let k=texts.length-1;k>=0;k--){const f=texts[k],u=(t-f.t0)/1100;if(u>1){texts.splice(k,1);continue}
     const sc=u<.15?.5+u/.15*.6:u<.25?1.1-(u-.15):1;ctx.save();ctx.globalAlpha=u>.7?(1-u)/.3:1;ctx.translate(f.x,f.y-u*cell*1.2);ctx.scale(sc,sc);
@@ -1516,13 +1711,14 @@ function applySkin(k){skin=k;store.set('skin',k);const S=SKINS[k],app=$('#app');
   document.body.style.background=S.board;sprites.clear();buildAmbient()}
 let pendingBuy=null;
 function buildSkinList(){const list=$('#skinList');list.innerHTML='';
-  for(const k in SKINS){const S=SKINS[k],own=owned.includes(k),b=document.createElement('button');
+  for(const k in SKINS){const S=SKINS[k],own=skinOwned(k),b=document.createElement('button');
     b.className='skin'+(own?'':' locked')+(pendingBuy===k?' confirm':'');b.dataset.k=k;b.style.background=S.bg;b.setAttribute('aria-pressed',k===skin);
     const c=document.createElement('canvas');c.width=240;c.height=132;const g=c.getContext('2d');const s=56;
     [0,1,2,3].forEach(i=>{const tmp=document.createElement('canvas');tmp.width=tmp.height=s;paintBlock(tmp.getContext('2d'),s,S.colors[i],S.style,i);g.drawImage(tmp,12+i*s,i%2?66:24)});
     const sp=document.createElement('span');
     const nm=T_('skin_'+k);sp.innerHTML=pendingBuy===k?`${T_('buyQ')} <em>${SKIN_PRICE[k]} ${COIN}</em>`:own?nm:`${nm} <em>${SKIN_PRICE[k]} ${COIN}</em>`;
     b.append(c,sp);if(!own){const l=document.createElement('i');l.className='lock';l.innerHTML=LOCK;b.append(l)}
+    if(k==='xmas'&&!owned.includes(k)&&xOn()){const f=document.createElement('i');f.className='free';f.textContent=T_('xFree');b.append(f)}
     b.onclick=()=>{Snd.tap();
       if(own){pendingBuy=null;applySkin(k);buildSkinList();return}
       if(coins<SKIN_PRICE[k]){pendingBuy=null;toast(T_('t_needCoins',{n:SKIN_PRICE[k]-coins}));buildSkinList();return}
@@ -1572,7 +1768,7 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden&&(state==='
 function applyLang(){document.documentElement.lang=lang;$('#app').dir=lang==='ur'?'rtl':'ltr';
   $$('[data-i]').forEach(e=>e.textContent=T_(e.dataset.i));$$('[data-ta]').forEach(e=>e.setAttribute('aria-label',T_(e.dataset.ta)));
   const L=LANGS.find(x=>x.c===lang);$$('.langname').forEach(e=>e.textContent=L.n);
-  syncTog();updateHud();if(!$('#ovSkin').hidden)buildSkinList();if(!$('#ovMis').hidden)renderMis();if(!$('#ovHelp').hidden)buildHelp();if(!$('#ovMusic').hidden)renderMusic();if(!$('#ovSnd').hidden)renderSnd();if(TUT)tutShow()}
+  syncTog();updateHud();syncXBtn();if(!$('#ovXmas').hidden)renderXmas();if(!$('#ovSkin').hidden)buildSkinList();if(!$('#ovMis').hidden)renderMis();if(!$('#ovHelp').hidden)buildHelp();if(!$('#ovMusic').hidden)renderMusic();if(!$('#ovSnd').hidden)renderSnd();if(TUT)tutShow()}
 function buildLangs(){const el=$('#langList');el.innerHTML='';
   for(const L of LANGS){const b=document.createElement('button');b.className='lang';b.setAttribute('aria-pressed',L.c===lang);b.innerHTML=`<b>${L.f}</b><span>${L.n}</span>`;
     b.onclick=()=>{lang=L.c;store.set('lang',lang);Snd.tap();applyLang();buildLangs()};el.append(b)}}
@@ -1582,17 +1778,17 @@ $('#btnLangDone').onclick=()=>{closeOv('#ovLang');Snd.tap()};
 
 /* ================= MANUAL: CÓMO JUGAR ================= */
 function powerIcon(type){const s=72,c=document.createElement('canvas');c.width=c.height=s;const g=c.getContext('2d');
-  paintBlock(g,s,SKINS[skin].colors[{bomb:1,bolt:5,rainbow:6,x2:0,ice:6}[type]],SKINS[skin].style,1);drawPower(g,type,0,0,s,0);return c}
+  paintBlock(g,s,SKINS[skin].colors[{bomb:1,bolt:5,rainbow:6,x2:0,ice:6,gift:1}[type]],SKINS[skin].style,1);drawPower(g,type,0,0,s,0);return c}
 function buildHelp(){const el=$('#helpBody');el.innerHTML='';
   const sec=(tk,pk)=>{const d=document.createElement('section');d.innerHTML=`<h3>${T_(tk)}</h3><p>${T_(pk)}</p>`;el.append(d);return d};
   sec('h_goal_t','h_goal');sec('h_combo_t','h_combo');sec('h_fury_t','h_fury');
   const pw=sec('h_pow_t','h_pow'),ul=document.createElement('ul');
-  for(const k of['bomb','bolt','rainbow','x2','ice']){const li=document.createElement('li');li.append(powerIcon(k));const sp=document.createElement('span');sp.textContent=T_('h_'+k);li.append(sp);ul.append(li)}pw.append(ul);
+  for(const k of['bomb','bolt','rainbow','x2','ice'].concat(xOn()?['gift']:[])){const li=document.createElement('li');li.append(powerIcon(k));const sp=document.createElement('span');sp.textContent=T_('h_'+k);li.append(sp);ul.append(li)}pw.append(ul);
   const tl=sec('h_tools_t','h_tools'),ul2=document.createElement('ul');
   for(const k of['hammer','shuffle','undo']){const li=document.createElement('li');li.innerHTML=`<i class="hi">${ICONS[k]}</i><span><b>${T_(k)}:</b> ${T_(k+'D')}</span>`;ul2.append(li)}tl.append(ul2);
   sec('h_coins_t','h_coins');sec('h_music_t','h_music');
   const fbs=document.createElement('section');fbs.className='fbsec';fbs.innerHTML=`<p>${T_('fbQ')}</p>`;const fbb=document.createElement('button');fbb.className='btn ghost';fbb.innerHTML=`✉️ <span>${T_('fbWrite')}</span>`;fbb.onclick=sendFeedback;fbs.append(fbb);el.append(fbs);el.scrollTop=0}
-const FB_MAIL='fabiberg123@gmail.com',FB_REWARD=50,APP_VER='1.2';
+const FB_MAIL='fabiberg123@gmail.com',FB_REWARD=50,APP_VER='1.4';
 function devModel(){const ua=navigator.userAgent||'';const m=ua.match(/Android\s([\d.]+);\s*([^;)]+?)(?:\sBuild|\)|;)/);return m?('Android '+m[1]+' · '+m[2].trim()):ua.slice(0,80)}
 function syncFbDot(){const d=$('.fbdot');if(d)d.hidden=!!store.get('fbDone',false)}
 function sendFeedback(){Snd.unlock();Snd.tap();
@@ -1619,17 +1815,17 @@ function dlyState(){const g=store.get('dly',{last:null,streak:0});const today=da
 function applyDaily(){for(const[r,c,ci]of dSpec.cells)grid[r][c]=ci;dProg=0;dHit=false;recShown=false;gameBest=Infinity}
 function dailyTrack(id,v){if(!dSpec||dHit)return;if(dSpec.type==='score'&&id==='score')dProg=Math.max(dProg,v);else if(dSpec.type==='lines'&&id==='lines')dProg+=v;else return;
   if(dProg>=dSpec.goal)dailyWin();updateHud()}
-function unlockSomething(){const ls=Object.keys(SKINS).filter(k=>!owned.includes(k)).map(k=>['s',k]),lp=PACK_ORDER.filter(k=>!sndOwned.includes(k)).map(k=>['p',k]);
+function unlockSomething(){const ls=Object.keys(SKINS).filter(k=>k!=='xmas'&&!owned.includes(k)).map(k=>['s',k]),lp=PACK_ORDER.filter(k=>k!=='bells'&&!sndOwned.includes(k)).map(k=>['p',k]);
   const all=ls.concat(lp);if(!all.length){addCoins(500);return T_('dCoins',{n:500})}
   const[t,k]=all[Math.floor(Math.random()*all.length)];
   if(t==='s'){owned.push(k);saveProg();return T_('dUnlock',{name:T_('skin_'+k)})}
   sndOwned.push(k);store.set('sndOwned',sndOwned);return T_('dUnlock',{name:T_('snd_'+k)})}
-function dailyWin(){dHit=true;const st=dlyState();let msg=T_('dWin');
+function dailyWin(){if(dSpec&&dSpec.xmas)return xBoardWin();dHit=true;const st=dlyState();let msg=T_('dWin');
   if(!st.doneToday){const day=st.next;store.set('dly',{last:dayKey(),streak:day});const rw=DREW[day-1];
     msg+=' '+(rw==='unlock'?unlockSomething():(addCoins(rw),T_('dCoins',{n:rw})))}
   Snd.record();vib([30,40,90]);floatText(T_('dWin'),W/2,by+cell*2.2,'#ffe14d',cell*.62);toast(msg);save();syncDailyDot();scheduleNotifs()}
 function dailyOver(){const el=$('#overDaily');if(mode!=='daily'||!dSpec){el.hidden=true;$('#btnOverMenu').hidden=true;$('#btnAgain').textContent=T_('playAgain');return}
-  el.hidden=false;el.textContent=dHit?'✅ '+T_('dWin'):T_('dMiss',{n:dSpec.goal-dProg});$('#btnOverMenu').hidden=false;$('#btnAgain').textContent=T_('dTry')}
+  el.hidden=false;el.textContent=dHit?'✅ '+T_(dSpec.xmas?'xBoardWin':'dWin'):T_('dMiss',{n:dSpec.goal-dProg});$('#btnOverMenu').hidden=false;$('#btnAgain').textContent=T_('dTry')}
 function syncDailyDot(){const d=$('.dlydot');if(d)d.hidden=dlyState().doneToday}
 function renderDaily(){const sp=dailySpec(),st=dlyState();
   $('#dGoal').textContent=sp.type==='score'?T_('dGoalScore',{n:sp.goal}):T_('dGoalLines',{n:sp.goal});
@@ -1649,7 +1845,7 @@ $('#btnDailyPlay').onclick=async()=>{Snd.tap();back=null;$('#ovDaily').hidden=tr
   if(LNP&&!store.get('notifAsked',false)){store.set('notifAsked',true);await notifPerm(true);scheduleNotifs()}
   startDaily(false)};
 $('#btnOverMenu').onclick=()=>{Snd.tap();$('#ovOver').hidden=true;$('#btnOverMenu').hidden=true;state='menu';updateHud();syncDailyDot();$('#ovStart').hidden=false};
-const _againD=again;again=async function(){if(mode==='daily'){$('#ovOver').hidden=true;$('#btnOverMenu').hidden=true;if(games>1&&games%INTERSTITIAL_EVERY===0)await Ads.interstitial();dSpec=dailySpec();newGame();return}return _againD()};
+const _againD=again;again=async function(){if(mode==='daily'){$('#ovOver').hidden=true;$('#btnOverMenu').hidden=true;if(games>1&&games%INTERSTITIAL_EVERY===0)await Ads.interstitial();dSpec=dSpec&&dSpec.xmas?xBoardSpec(dSpec.xmas):dailySpec();newGame();return}return _againD()};
 $('#btnAgain').onclick=()=>again();
 
 /* ================= NOTIFICACIONES DIARIAS ================= */
@@ -1660,10 +1856,15 @@ async function scheduleNotifs(){if(!LNP)return;try{
   await LNP.cancel({notifications:[101,102,103,104,105,106,107].map(id=>({id}))});
   if(!store.get('notif',true)||!(await notifPerm(false)))return;
   const st=dlyState(),now=new Date(),list=[],gen=[T_('nDaily'),T_('nGift'),T_('nBack')];
-  for(let k=0;k<7;k++){const at=new Date(now);at.setDate(now.getDate()+k);at.setHours(19,0,0,0);if(at<=now)continue;if(k===0&&st.doneToday)continue;
+  for(let k=0;k<7;k++){const at=new Date(now);at.setDate(now.getDate()+k);at.setHours(19,0,0,0);if(at<=now)continue;const xb=xNotif(at,k);if(k===0&&st.doneToday&&!xb)continue;
     let body;if(k===0)body=st.cur>0?T_('nStreak',{n:st.cur}):T_('nDaily');else if(k===1)body=st.doneToday&&st.cur>0?T_('nStreak',{n:st.cur}):T_('nDaily');else body=gen[k%3];
-    list.push({id:101+k,title:'Fury Puzzle',body,schedule:{at,allowWhileIdle:true},smallIcon:'ic_stat_fury',iconColor:'#FF6A1A'})}
+    if(xb)body=xb;
+    list.push({id:101+k,title:xb?'🎄 Fury Puzzle':'Fury Puzzle',body,schedule:{at,allowWhileIdle:true},smallIcon:'ic_stat_fury',iconColor:'#FF6A1A'})}
   if(list.length)await LNP.schedule({notifications:list})}catch(e){}}
+// textos de Navidad para el recordatorio de las 19:00 (si no hay nada del evento, devuelve null)
+function xNotif(at,k){const d=new Date(at.getTime()+xSim);if(d.getMonth()===10&&d.getDate()===30)return T_('nXsoon');if(xPhase(d)!=='on')return null;
+  const w=XW.find(x=>x.day===xDay(d));if(w&&!(k===0&&xData().open[w.id])){if(w.id==='25')return T_('nX25');if(w.id==='31')return T_('nX31');if(w.id==='R')return T_('nXR');return w.day===24?T_('nX24'):T_('nXwin',{n:w.id})}
+  return xData().orn<XORN.length?T_('nXtree'):null}
 $('#chkNotif').onchange=async e=>{const on=e.target.checked;store.set('notif',on);
   if(on){const ok=await notifPerm(true);if(!ok){e.target.checked=false;store.set('notif',false);toast(T_('dNotifOff'))}}scheduleNotifs()};
 if(LNP){notifPerm(false).then(()=>scheduleNotifs())}
@@ -1732,7 +1933,7 @@ if(AppP&&AppP.addListener){try{AppP.addListener('backButton',()=>{
   if(!$('#adsim').hidden)return;
   const open=[...$$('.overlay')].filter(o=>!o.hidden);const top=open[open.length-1];
   if(!top){if(state==='play'||state==='stuck')$('#ovPause').hidden=false;return}
-  const close={ovMusic:'#btnMusDone',ovSnd:'#btnSndDone',ovSkin:'#btnSkinDone',ovMis:'#btnMisDone',ovTool:'#btnToolClose',ovHelp:'#btnHelpDone',ovLang:'#btnLangDone',ovExit:'#btnExitCancel'}[top.id];
+  const close={ovMusic:'#btnMusDone',ovSnd:'#btnSndDone',ovSkin:'#btnSkinDone',ovMis:'#btnMisDone',ovTool:'#btnToolClose',ovHelp:'#btnHelpDone',ovLang:'#btnLangDone',ovExit:'#btnExitCancel',ovXmas:'#btnXDone',ovXYear:'#btnXYearDone',ovXIntro:'#btnXLater'}[top.id];
   if(close){$(close).click();return}
   if(top.id==='ovPause'){top.hidden=true;return}
   if(top.id==='ovGift'){top.hidden=true;return}
@@ -1746,6 +1947,210 @@ $('#btnStartMusic').onclick=()=>openMusic('#ovStart');$('#btnPauseMusic').onclic
 $('#btnStartSnd').onclick=()=>openSnd('#ovStart');$('#btnPauseSnd').onclick=()=>openSnd('#ovPause');
 $('#btnMusDone').onclick=()=>{closeOv('#ovMusic');Snd.tap()};$('#btnSndDone').onclick=()=>{pvT.forEach(clearTimeout);closeOv('#ovSnd');Snd.tap()};
 
+/* ================= NAVIDAD: EVENTO =================
+   Calendario (24 días + Navidad, Fin de año y Reyes), tableros navideños, copos ❄ y árbol con 10 adornos,
+   resumen del año, fuegos artificiales de Año Nuevo y fecha simulada para la app de PRUEBA.
+   Todo se guarda aparte por año ('x2026', 'xgame', 'xmeta'); el año siguiente empieza de cero. */
+let XD=null,xFlash=0,xSel=null,xTab='cal',xLastKey='';const rockets=[];
+function xData(){const k='x'+xYearOf();if(!XD||XD.k!==k)XD=Object.assign({open:{},dbl:{},board:{},flakes:0,orn:0,ornN:0,intro:false,ny:false,xd:false},store.get(k,{}),{k});return XD}
+function xSave(){if(XD)store.set(XD.k,XD)}
+const XW=[...Array(24)].map((_,i)=>({id:String(i+1),day:i+1})).concat([{id:'25',day:25,sp:'xDay25'},{id:'31',day:31,sp:'xDay31'},{id:'R',day:37,sp:'xDayR'}]);
+// premio de cada ventana: c=monedas, f=copos, tl=herramientas, pack=pack de sonido
+const XRW={1:{c:50},2:{tl:{hammer:1}},3:{c:60,f:10},4:{tl:{shuffle:2}},5:{c:70},6:{f:20},7:{tl:{undo:2}},8:{c:80},9:{tl:{hammer:1,shuffle:1}},10:{f:25},11:{c:90},12:{tl:{hammer:2}},
+  13:{c:100},14:{f:30},15:{tl:{undo:2,shuffle:2}},16:{c:110},17:{f:35},18:{c:120},19:{tl:{hammer:2}},20:{c:130,f:20},21:{tl:{shuffle:3}},22:{c:150},23:{f:40,tl:{undo:2}},24:{c:200,f:50},
+  25:{pack:'bells',c:300},31:{c:250,tl:{hammer:3}},R:{c:300,f:60,tl:{hammer:1,shuffle:1,undo:1}}};
+// árbol: [copos necesarios, premio]; el último (estrella) deja el tema Navidad para siempre
+const XORN=[[15,{c:50}],[40,{tl:{hammer:1}}],[80,{c:75}],[130,{tl:{shuffle:2}}],[200,{c:100}],[290,{tl:{undo:2}}],[400,{c:150}],[540,{c:175,tl:{hammer:1,shuffle:1,undo:1}}],[720,{c:200,tl:{hammer:2}}],[950,{c:300,skin:'xmas'}]];
+const XREC=50; // monedas para abrir un día que te perdiste
+// tableros navideños (8x8): r=rojo g=verde y=dorado w=blanco b=azul p=violeta o=naranja
+const XSHAPES=[
+  ['...yy...','...gg...','..gggg..','..grgg..','.gggggb.','...oo...'],          // árbol
+  ['...yy...','.yyyyyy.','..yyyy..','..y..y..'],                                  // estrella
+  ['..rrrr..','...rr...','...ww...','..wbbw..','..wwww..','...ww...'],          // muñeco de nieve
+  ['...yy...','..yyyy..','..yyyy..','.yyyyyy.','...rr...'],                     // campana
+  ['..rwr...','.w...w..','.....r..','.....w..','.....r..','.....w..'],          // bastón de caramelo
+  ['..r..r..','...rr...','.ggrrgg.','.ggrrgg.','.ggrrgg.'],                     // regalo
+  ['...yy...','..bbbb..','.bwbbbb.','.bbbbbb.','..bbbb..'],                     // bola de árbol
+  ['..www...','..rrr...','..rrr...','..rrrr...','..rrrrr.','...rrr..'],         // bota
+  ['...y....','...r....','...w....','..www...','..www...','.ggggg..'],          // vela
+  ['.y.yy.y.','.yyyyyy.','.yryyry.','.yyyyyy.']];                              // corona (Reyes)
+function xBoardSpec(day){const sp=day>24,idx=day===25?0:day===31?1:day===37?9:(day-1)%9,flip=!sp&&Math.floor((day-1)/9)%2===1;
+  const sh=XSHAPES[idx],off=Math.floor((N-sh.length)/2),cells=[],map={r:0,g:1,y:2,w:3,b:4,p:5,o:6};
+  sh.forEach((row,r)=>[...row].slice(0,N).forEach((ch,c)=>{if(map[ch]!=null)cells.push([r+off,flip?N-1-c:c,map[ch]])}));
+  return{d:'x'+xYearOf()+'-'+day,type:'lines',goal:sp?12:5+Math.floor(day/4),cells,xmas:day,rw:{c:sp?100:40+day*2,f:25}}}
+function xRwHtml(r){const a=[];if(r.c)a.push(`<b>${r.c} ${COIN}</b>`);if(r.f)a.push(`<b>${r.f} ❄</b>`);if(r.tl)for(const k in r.tl)a.push(`<b>${r.tl[k]}× ${ICONS[k]}</b>`);
+  if(r.pack)a.push(`<b>🎵 ${sndOwned.includes(r.pack)?'+500 '+COIN:T_('snd_'+r.pack)}</b>`);if(r.skin)a.push(`<b>${T_('xStar')}</b>`);return a.join(' ')}
+function xGrant(r,x=1){if(r.c)coins+=r.c*x;if(r.tl)for(const k in r.tl)inv[k]+=r.tl[k]*x;
+  if(r.pack){if(sndOwned.includes(r.pack))coins+=500;else{sndOwned.push(r.pack);store.set('sndOwned',sndOwned)}}
+  if(r.skin&&!owned.includes(r.skin))owned.push(r.skin);
+  saveProg();syncCoins();syncTools();if(r.f)xFlakes(r.f*x,true)}
+function xFlakes(n,force){if(!(xOn()||force)||n<=0)return;const d=xData();d.flakes+=n;
+  const ready=XORN.filter(o=>d.flakes>=o[0]).length;if(ready>d.ornN){d.ornN=ready;if(ready>d.orn&&state==='play')toast(T_('t_xOrn'))}
+  xSave();syncFlakes(true);syncXDot()}
+function syncFlakes(bump){const on=xOn(),el=$('#flakes');el.hidden=!on;if(!on)return;const v=xData().flakes;$('#flakeval').textContent=v;$$('.flakeval2').forEach(e=>e.textContent=v);
+  if(bump){el.classList.remove('bump');void el.offsetWidth;el.classList.add('bump')}}
+function xWState(w){const d=xData(),day=xDay(),avail=xOn()&&day>=w.day,opened=!!d.open[w.id],today=avail&&day===w.day;return{avail,opened,today,missed:avail&&!opened&&!today}}
+const xTodayW=()=>XW.find(w=>w.day===xDay())||null;
+function xClaimable(){if(!xOn())return{cal:0,tree:0};const d=xData(),w=xTodayW();return{cal:w&&!d.open[w.id]?1:0,tree:XORN.filter(o=>d.flakes>=o[0]).length-d.orn}}
+function syncXDot(){const c=xClaimable();$$('.xdot').forEach(e=>e.hidden=!(c.cal||c.tree));$$('.xcaldot').forEach(e=>e.hidden=!c.cal);$$('.xtreedot').forEach(e=>e.hidden=!c.tree)}
+function xDateLbl(w){const dt=new Date(xYearOf(),11,w.day);try{return dt.toLocaleDateString(lang==='fil'?'fil-PH':lang,{day:'numeric',month:'long'})}catch(e){return dt.toDateString()}}
+function xCountText(){const n=xNow(),ph=xPhase(n);
+  if(ph==='soon'){const left=Math.round((new Date(n.getFullYear(),11,1)-new Date(n.getFullYear(),n.getMonth(),n.getDate()))/864e5);return left<=1?T_('xSoon1'):T_('xSoon',{n:left})}
+  if(ph!=='on')return'';const m=n.getMonth(),dd=n.getDate(),ny=xYearOf(n)+1;
+  if(m===11){
+    if(dd===31){const ms=Math.max(0,new Date(ny,0,1)-n),h=Math.floor(ms/36e5),mi=Math.floor(ms%36e5/6e4),se=Math.floor(ms%6e4/1e3);
+      return T_('xToNYt',{t:h+':'+String(mi).padStart(2,'0')+':'+String(se).padStart(2,'0'),y:ny})}
+    if(XNY())return T_('xToXmas',{n:32-dd});
+    if(dd<24)return T_('xToXmas',{n:25-dd});if(dd===24)return T_('xToXmas1');if(dd===25)return T_('xMerry');return T_('xToNY',{n:32-dd,y:ny})}
+  if(dd===6)return T_('xLast');const e=T_('xEnds',{n:7-dd});return dd===1?T_('xHappyNY',{y:n.getFullYear()})+' · '+e:e}
+function xMenuSub(){const ph=xPhase();if(ph==='soon')return xCountText();if(ph!=='on')return'';
+  const c=xClaimable();if(c.cal){const w=xTodayW();return w.sp?T_('xOpen'):T_('xWinReady',{n:w.id})}if(c.tree)return T_('t_xOrn');return xCountText()}
+function syncXBtn(){const ph=xPhase(),b=$('#btnStartXmas');b.hidden=ph==='off';b.classList.toggle('soon',ph==='soon');$('#xSub').textContent=xMenuSub();syncXDot()}
+
+/* ---- pantalla del evento ---- */
+function openXmas(tab){if(!xOn()){toast(T_('xSoonT'));return}Snd.unlock();if(tab)xTab=tab;xSel=null;renderXmas();openOv('#ovXmas','#ovStart')}
+function renderXmas(){$('#xCount').textContent=xCountText();syncFlakes();syncXDot();
+  $('#xTabCal').setAttribute('aria-pressed',xTab==='cal');$('#xTabTree').setAttribute('aria-pressed',xTab==='tree');
+  const body=$('#xBody');body.innerHTML='';if(xTab==='cal')renderXCal(body);else renderXTree(body);
+  const yb=$('#btnXYear');yb.hidden=xDay()<26;yb.textContent=T_('xYearB',{y:xYearOf()});
+  const tb=$('#btnXTheme');tb.hidden=skin==='xmas';tb.textContent=T_('xUseTheme')}
+function renderXCal(body){const d=xData(),g=document.createElement('div');g.className='xcal';
+  if(!xSel){const tw=xTodayW(),miss=XW.filter(w=>xWState(w).missed);xSel=(tw&&!d.open[tw.id]?tw:miss[miss.length-1]||tw||XW.filter(w=>d.open[w.id]).pop()||XW[0]).id}
+  for(const w of XW){const st=xWState(w),b=document.createElement('button');b.dataset.id=w.id;
+    b.className='xw'+(w.sp?' sp':'')+(st.opened?' open':!st.avail?' lock':st.today?' today':' miss')+(xSel===w.id?' sel':'');
+    b.innerHTML=(w.sp?`${w.id==='R'?'👑':w.id==='31'?'🎆':'🎄'} ${T_(w.sp)}`:w.id)+(st.today&&!st.opened&&!w.sp?'<i>🎁</i>':'');
+    b.onclick=()=>{Snd.tap();xSel=w.id;renderXmas()};g.append(b)}
+  body.append(g);
+  const w=XW.find(x=>x.id===xSel),st=xWState(w),r=XRW[w.id],det=document.createElement('div');det.className='xdet';
+  det.innerHTML=`<h3>${w.sp?T_(w.sp):T_('day',{n:w.id})}</h3><div class="xr">${xRwHtml(r)}</div>`;
+  const btn=(cls,html,fn)=>{const b=document.createElement('button');b.className='btn'+(cls?' '+cls:'');b.innerHTML=html;b.onclick=fn;det.append(b);return b};
+  const par=html=>{const p=document.createElement('p');p.innerHTML=html;det.append(p);return p};
+  const video=async fn=>{$('#ovXmas').hidden=true;const ok=await Ads.rewarded();$('#ovXmas').hidden=false;if(ok)fn();else renderXmas()};
+  if(!st.avail)par(T_('xLocked',{d:xDateLbl(w)}));
+  else if(!st.opened){
+    if(st.today)btn('',T_('xOpen'),()=>xOpenW(w));
+    else{par(T_('xMissed'));btn('video',T_('xRecVideo'),()=>video(()=>xOpenW(w)));
+      btn('ghost',`${T_('xRecCoins',{n:XREC})} ${COIN}`,()=>{if(coins<XREC){toast(T_('t_needCoins',{n:XREC-coins}));return}coins-=XREC;saveProg();syncCoins();xOpenW(w)})}}
+  else{
+    if(st.today&&!d.dbl[w.id])btn('video',T_('xDbl'),()=>video(()=>{d.dbl[w.id]=1;xSave();xGrant(Object.assign({},r,{pack:null}));Snd.record();toast(T_('t_double'));renderXmas()}));
+    const sp=xBoardSpec(w.day),bw=d.board[w.id];
+    par(`${T_('xBoard',{n:sp.goal})}<br>${bw?T_('xBoardDone'):T_('xBoardRw')+' '+xRwHtml(sp.rw)}`);
+    btn(bw?'ghost':'',T_(bw?'dPlayAgain':'xBoardPlay'),()=>xPlayBoard(w))}
+  body.append(det)}
+function xOpenW(w){const d=xData();if(d.open[w.id])return;d.open[w.id]=1;xSave();xGrant(XRW[w.id]);
+  Snd.record();if(settings.snd&&sndPack!=='bells')jingle(0,.08);vib([20,30,60]);toast(T_('t_claimed'));xSel=w.id;renderXmas();
+  const el=$(`.xw[data-id="${w.id}"]`);if(el)el.classList.add('pop');syncXBtn();scheduleNotifs()}
+function xPlayBoard(w){Snd.tap();back=null;$('#ovXmas').hidden=true;if(state==='play'||state==='stuck')save();
+  mode='daily';dSpec=xBoardSpec(w.day);$('#ovStart').hidden=true;$('#ovOver').hidden=true;
+  if(!load())newGame();else{syncTools();updateHud(true);if(state==='play')checkOver()}}
+function xBoardWin(){dHit=true;const d=xData(),w=XW.find(x=>x.day===dSpec.xmas);
+  if(w&&!d.board[w.id]){d.board[w.id]=1;xSave();xGrant(dSpec.rw);toast(T_('xBoardWin')+' '+T_('dCoins',{n:dSpec.rw.c})+' · +'+dSpec.rw.f+' ❄')}else toast(T_('xBoardWin'));
+  Snd.record();if(settings.snd&&sndPack!=='bells')jingle(0,.08);vib([30,40,90]);floatText(T_('xBoardDone'),W/2,by+cell*2.2,'#ffd34d',cell*.4);
+  for(let i=0;i<6;i++)spawn(bx+Math.random()*cell*N,by+Math.random()*cell*3,SKINS[skin].colors[i],10,'confetti');save();syncXBtn()}
+
+/* ---- árbol ---- */
+const ORN_POS=[[.5,.76],[.33,.73],[.67,.71],[.42,.6],[.6,.55],[.38,.47],[.57,.41],[.46,.33],[.53,.24]];
+const ORN_COL=['#e8283c','#ffd34d','#3db8ff','#a45cff','#ff8a2a','#eef3ff','#ff5fa2','#4ade80','#ffc53d'];
+function starPath(g,cx,cy,R,r){g.beginPath();for(let i=0;i<10;i++){const a=-Math.PI/2+i*Math.PI/5,q=i%2?r:R;g.lineTo(cx+Math.cos(a)*q,cy+Math.sin(a)*q)}g.closePath()}
+function drawXTree(g,S,n){g.clearRect(0,0,S,S);
+  const bg=g.createRadialGradient(S/2,S*.4,S*.05,S/2,S*.5,S*.62);bg.addColorStop(0,'rgba(90,150,240,.4)');bg.addColorStop(1,'rgba(10,22,48,0)');g.fillStyle=bg;g.fillRect(0,0,S,S);
+  for(let i=0;i<34;i++){const x=(Math.sin(i*12.9898)*43758.5453%1+1)%1*S,y=(Math.sin(i*78.233)*12345.678%1+1)%1*S*.85;g.fillStyle='rgba(255,255,255,.55)';g.beginPath();g.arc(x,y,S*.004+i%3*S*.002,0,7);g.fill()}
+  g.fillStyle='#eef3ff';g.beginPath();g.ellipse(S/2,S*.92,S*.42,S*.055,0,0,7);g.fill();
+  g.fillStyle='#6b3f22';g.fillRect(S*.45,S*.8,S*.1,S*.11);
+  [[.4,.84,.38],[.24,.63,.29],[.11,.43,.19]].forEach(([a,b,h])=>{const gr=g.createLinearGradient(0,S*a,0,S*b);gr.addColorStop(0,'#2fbf6a');gr.addColorStop(1,'#0f6b35');g.fillStyle=gr;
+    g.beginPath();g.moveTo(S/2,S*a);g.lineTo(S/2+S*h,S*b);g.quadraticCurveTo(S/2,S*(b+.05),S/2-S*h,S*b);g.closePath();g.fill();
+    g.fillStyle='rgba(245,250,255,.92)';for(let k=-4;k<=4;k++){const u=k/4.4;g.beginPath();g.arc(S/2+u*S*h,S*(b+.024*(1-u*u))-S*.004,S*.022,0,7);g.fill()}});
+  g.save();g.setLineDash([S*.008,S*.014]);g.lineWidth=S*.008;g.strokeStyle='#ffd34d';
+  [[.3,.5,.7,.46],[.2,.7,.8,.66]].forEach(([x1,y1,x2,y2])=>{g.beginPath();g.moveTo(S*x1,S*y1);g.quadraticCurveTo(S*.5,S*(y1+.07),S*x2,S*y2);g.stroke()});g.restore();
+  ORN_POS.forEach(([px,py],i)=>{const x=S*px,y=S*py,r=S*.036,c=ORN_COL[i];
+    if(i<n){g.save();g.shadowColor=c;g.shadowBlur=S*.04;const gr=g.createRadialGradient(x-r*.35,y-r*.35,r*.1,x,y,r);gr.addColorStop(0,L(c,.6));gr.addColorStop(1,D(c,.2));g.fillStyle=gr;g.beginPath();g.arc(x,y,r,0,7);g.fill();g.restore();
+      g.fillStyle='#d9c27a';g.fillRect(x-r*.3,y-r*1.25,r*.6,r*.35);g.fillStyle='rgba(255,255,255,.75)';g.beginPath();g.arc(x-r*.35,y-r*.35,r*.25,0,7);g.fill()}
+    else{g.save();g.setLineDash(i===n?[S*.008,S*.008]:[]);g.lineWidth=S*.006;g.strokeStyle=i===n?'#ffffff':'rgba(255,255,255,.25)';g.beginPath();g.arc(x,y,r,0,7);g.stroke();g.restore()}});
+  const done=n>=XORN.length;g.save();if(done){g.shadowColor='#ffd34d';g.shadowBlur=S*.07}starPath(g,S/2,S*.1,S*.065,S*.028);
+  if(done){g.fillStyle='#ffd34d';g.fill()}else{g.setLineDash(n===XORN.length-1?[S*.01,S*.008]:[]);g.lineWidth=S*.007;g.strokeStyle=n===XORN.length-1?'#ffffff':'rgba(255,255,255,.3)';g.stroke()}g.restore()}
+function renderXTree(body){const d=xData(),c=document.createElement('canvas');c.id='xTreeCv';c.width=c.height=560;drawXTree(c.getContext('2d'),560,d.orn);body.append(c);
+  const next=XORN[d.orn],info=document.createElement('div');info.className='xdet';
+  if(next){const prev=d.orn?XORN[d.orn-1][0]:0;
+    info.innerHTML=`<p>${T_('xNext',{a:Math.min(d.flakes,next[0]),b:next[0]})}</p><div class="xbar"><i style="width:${Math.max(0,Math.min(100,(d.flakes-prev)/(next[0]-prev)*100))}%"></i></div><p>${T_('xNextRw')}</p><div class="xr">${xRwHtml(next[1])}</div>`;
+    if(d.flakes>=next[0]){const b=document.createElement('button');b.className='btn';b.textContent='🎄 '+T_('xHang');b.onclick=xHang;info.append(b)}}
+  else info.innerHTML=`<h3>⭐</h3><p>${T_('xTreeDone')}</p>`;
+  const p=document.createElement('p');p.style.fontSize='13px';p.textContent=T_('xTreeInfo');info.append(p);body.append(info)}
+function xHang(){const d=xData(),o=XORN[d.orn];if(!o||d.flakes<o[0])return;d.orn++;xSave();xGrant(o[1]);Snd.record();if(settings.snd&&sndPack!=='bells')jingle(0,.08);vib([20,30,60]);
+  toast(o[1].skin?T_('xTreeDone'):T_('t_xHung'));renderXmas();syncXBtn()}
+
+/* ---- bienvenida, resumen del año ---- */
+function drawXIntro(){const c=$('#xIntroCv'),g=c.getContext('2d'),W0=c.width,H0=c.height,s=92,cols=SKINS.xmas.colors;g.clearRect(0,0,W0,H0);
+  [0,1,2,4,5].forEach((ci,i)=>{const tmp=document.createElement('canvas');tmp.width=tmp.height=s;paintBlock(tmp.getContext('2d'),s,cols[ci],'gift',i);g.drawImage(tmp,40+i*(s+10),H0/2-s/2+(i%2?16:-16))});
+  for(let i=0;i<46;i++){g.fillStyle=`rgba(255,255,255,${.3+Math.random()*.6})`;g.beginPath();g.arc(Math.random()*W0,Math.random()*H0,1+Math.random()*3,0,7);g.fill()}}
+function xShowIntro(){drawXIntro();$('#ovXIntro').hidden=false}
+$('#btnXAll').onclick=()=>{const d=xData();d.intro=true;xSave();Snd.unlock();applySkin('xmas');
+  if(sndSet.sel==='b0'||sndSet.sel==='b1'){sndSet.sel='b2';store.set('musSel','b2');sndSet.musOn=true;store.set('musOn',true);Music.apply()}
+  $('#ovXIntro').hidden=true;Snd.record();if(settings.snd)jingle(0,.08);openXmas('cal')};
+$('#btnXLater').onclick=()=>{const d=xData();d.intro=true;xSave();$('#ovXIntro').hidden=true;Snd.tap()};
+function openXYear(){const y=xYearOf();$('#xYearT').textContent=T_('xYearT',{y});
+  const it=[['y_lines',stats.lines],['y_games',stats.games],['y_best',best],['y_combo','x'+stats.comboMax],['y_pieces',stats.pieces],['y_power',stats.power],['y_fury',stats.fury],['y_flakes',xData().flakes]];
+  $('#xYearStats').innerHTML=it.map(([k,v])=>`<div><b>${v}</b><span>${T_(k)}</span></div>`).join('');$('#ovXmas').hidden=true;$('#ovXYear').hidden=false}
+async function shareText(text){try{const SP=NATIVE&&((window.Capacitor.Plugins&&window.Capacitor.Plugins.Share)||(window.Capacitor.registerPlugin&&window.Capacitor.registerPlugin('Share')));
+    if(SP){await SP.share({title:'Fury Puzzle',text,url:STORE_URL,dialogTitle:T_('share')});return}
+    if(navigator.share){await navigator.share({title:'Fury Puzzle',text,url:STORE_URL});return}}
+  catch(e){if(e&&/cancel/i.test(String(e.message||e)))return}
+  try{await navigator.clipboard.writeText(text+' '+STORE_URL);toast(T_('shareCopied'))}catch(_){toast(text)}}
+$('#btnXShare').onclick=()=>{Snd.tap();shareText(T_('xYearMsg',{y:xYearOf(),l:stats.lines,b:best,c:stats.comboMax}))};
+$('#btnXYearDone').onclick=()=>{$('#ovXYear').hidden=true;$('#ovXmas').hidden=false;Snd.tap()};
+$('#btnStartXmas').onclick=()=>{Snd.unlock();Snd.tap();if(xPhase()==='soon'){toast(T_('xSoonT'));return}openXmas()};
+$('#xTabCal').onclick=()=>{xTab='cal';Snd.tap();renderXmas()};$('#xTabTree').onclick=()=>{xTab='tree';Snd.tap();renderXmas()};
+$('#btnXDone').onclick=()=>{closeOv('#ovXmas');Snd.tap();syncXBtn()};
+$('#btnXYear').onclick=()=>{Snd.tap();openXYear()};
+$('#btnXTheme').onclick=()=>{applySkin('xmas');Snd.record();renderXmas()};
+
+/* ---- luces del tablero, fuegos artificiales y celebraciones ---- */
+const LIGHT_COLS=['#ff3b4f','#3dff7a','#ffd34d','#4fc3ff','#c77dff'],glowC=new Map();
+function glowSpr(col){let c=glowC.get(col);if(!c){c=document.createElement('canvas');c.width=c.height=64;const g=c.getContext('2d'),gr=g.createRadialGradient(32,32,0,32,32,32);
+  gr.addColorStop(0,A(col,.85));gr.addColorStop(.35,A(col,.35));gr.addColorStop(1,A(col,0));g.fillStyle=gr;g.fillRect(0,0,64,64);glowC.set(col,c)}return c}
+function drawXmasFrame(t,fury){const x0=bx-pad,y0=by-pad,w=cell*N+pad*2,r0=cell*.3;
+  ctx.fillStyle='rgba(245,250,255,.95)'; // nieve acumulada sobre el tablero
+  for(let i=0;i<=10;i++){const x=x0+r0*.8+i/10*(w-r0*1.6);ctx.beginPath();ctx.ellipse(x,y0+1,cell*.36,cell*(.07+.05*Math.abs(Math.sin(i*2.3))),0,Math.PI,0);ctx.fill()}
+  const per=N+1,pts=[];for(let sd=0;sd<4;sd++)for(let i=0;i<per;i++){const u=(i+.5)/per;pts.push(sd===0?[x0+u*w,y0]:sd===1?[x0+w,y0+u*w]:sd===2?[x0+w-u*w,y0+w]:[x0,y0+w-u*w])}
+  ctx.strokeStyle='rgba(16,70,34,.95)';ctx.lineWidth=Math.max(1.2,cell*.035);ctx.beginPath();pts.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.closePath();ctx.stroke();
+  // las luces se van prendiendo con la barra de Furia; en Furia parpadean todas
+  const n=pts.length,lit=fury?n:Math.round(n*Math.min(1,meter/100)),flash=t-xFlash<450,rad=Math.max(2.5,cell*.1);
+  pts.forEach(([x,y],i)=>{const col=LIGHT_COLS[i%5];const a=fury?(Math.sin(t/110+i*.9)>-.2?1:.3):flash?1:i<lit?.8+.2*Math.sin(t/260+i*1.7):.22;
+    if(a>.5&&!REDUCE){ctx.globalAlpha=a*.85;const gs=rad*(fury?7:5.5);ctx.drawImage(glowSpr(col),x-gs/2,y-gs/2,gs,gs)}
+    ctx.globalAlpha=1;ctx.fillStyle=a>.5?L(col,.25):D(col,.45);ctx.beginPath();ctx.arc(x,y,rad,0,7);ctx.fill();
+    if(a>.5){ctx.fillStyle='rgba(255,255,255,.7)';ctx.beginPath();ctx.arc(x-rad*.3,y-rad*.3,rad*.35,0,7);ctx.fill()}});ctx.globalAlpha=1}
+function fireworks(n){for(let i=0;i<n;i++)setTimeout(()=>{rockets.push({x:W*(.15+Math.random()*.7),y:H+8,vy:-(H*.9+Math.random()*H*.5),ty:H*(.12+Math.random()*.38),col:LIGHT_COLS[Math.floor(Math.random()*5)]});
+  if(settings.snd)T(380+Math.random()*200,.5,{f2:1400,v:.025,type:'triangle'})},i*(260+Math.random()*200))}
+function drawRockets(dt){for(let k=rockets.length-1;k>=0;k--){const r=rockets[k];r.y+=r.vy*dt;r.vy*=.985;
+  ctx.fillStyle='#fff';ctx.globalAlpha=.9;ctx.beginPath();ctx.arc(r.x,r.y,2.2,0,7);ctx.fill();ctx.globalAlpha=.35;ctx.fillRect(r.x-1,r.y,2,14);ctx.globalAlpha=1;
+  if(r.y<=r.ty){rockets.splice(k,1);[r.col,'#ffffff',LIGHT_COLS[(LIGHT_COLS.indexOf(r.col)+2)%5]].forEach(c=>spawn(r.x,r.y,c,REDUCE?6:18,'fw'));
+    if(settings.snd){Nz(.5,{lp:1100,v:.22});Nz(.9,{hp:4000,v:.04,dl:.1})}vib(15)}}}
+function xBig(txt,ms){setTimeout(()=>floatText(txt.toLocaleUpperCase(lang==='fil'?'fil':lang),W/2,H*.3,'#ffd34d',Math.min(cell*.7,W/12)),ms)}
+function xCelebrate(kind){if(kind==='ny'){fireworks(14);[0,1400,2800].forEach(ms=>xBig(T_('xHappyNY',{y:xNow().getFullYear()}),ms));setTimeout(()=>Snd.record(),300)}
+  else{for(let i=0;i<50;i++)setTimeout(()=>spawn(Math.random()*W,H*.2*Math.random(),'#ffffff',1,'snow'),i*45);fireworks(6);[0,1500].forEach(ms=>xBig(T_('xMerry'),ms));
+    if(settings.snd)for(let i=0;i<6;i++)jingle(i*.15,.07);setTimeout(()=>Snd.record(),400)}}
+const otherOverlay=()=>[...$$('.overlay')].some(o=>!o.hidden&&o.id!=='ovStart');
+function xCheckParty(){if(!xOn()||otherOverlay())return;const d=xData(),dy=xDay();
+  if(dy===25&&!d.xd){d.xd=true;xSave();xCelebrate('xmas')}else if(dy>=32&&!d.ny){d.ny=true;xSave();xCelebrate('ny')}}
+function xRefresh(){if(!skinOwned(skin))applySkin('fury');if(Music.cur>=0&&!trackOn(Music.cur))Music.apply();
+  syncXBtn();syncFlakes();if(!$('#ovXmas').hidden)renderXmas();
+  if(xOn()&&!xData().intro&&!$('#ovStart').hidden&&!otherOverlay())xShowIntro()}
+setInterval(()=>{const k=dayKey(xNow());if(k!==xLastKey){xLastKey=k;xRefresh()}xCheckParty();
+  if(xPhase()!=='off'){if(!$('#ovStart').hidden)$('#xSub').textContent=xMenuSub();if(!$('#ovXmas').hidden)$('#xCount').textContent=xCountText()}
+  if(!$('#xSim').hidden)xSimLbl()},1000);
+
+/* ---- app de PRUEBA: fecha simulada ---- */
+const XPRE=[[10,24,12],[11,1,10],[11,12,10],[11,24,21],[11,25,10],[11,31,-1],[0,1,10],[0,6,10],[0,7,10]];
+function xSimLbl(){const d=xNow();$('#xSimD').textContent=(xSim?'':'● ')+d.toLocaleString('es',{weekday:'short',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}
+function xSimInit(){if(NATIVE&&!TEST_APP)return;const el=$('#xSim');if(!el.hidden)return;el.hidden=false;xSimLbl();
+  el.onclick=e=>{const b=e.target.closest('button');if(!b)return;const v=b.dataset.s;Snd.unlock();Snd.tap();
+    if(v==='0')xSim=0;
+    else if(v==='r'){store.set('x'+xYearOf(),null);store.set('xgame',null);store.set('xmeta',null);XD=null;toast('Evento reiniciado')}
+    else if(v==='p'){const r=new Date(),base=r.getMonth()===0?r.getFullYear()-1:r.getFullYear(),cur=xNow().getTime();
+      const list=XPRE.map(([m,d,h])=>h<0?new Date(base,m,d,23,59,40).getTime():new Date(m===0?base+1:base,m,d,h,0,0).getTime());
+      xSim=(list.find(t=>t>cur+6e4)||list[0])-Date.now()}
+    else xSim+=(+v)*864e5;
+    store.set('xsim',xSim);XD=null;xLastKey='';xSimLbl();xRefresh();toast('🧪 '+$('#xSimD').textContent)}}
+
 /* ================= INICIO ================= */
 grid=emptyGrid(-1);spec=emptyGrid(null);sets=0;meter=35;furyT=0;x2T=0;iceSets=0;score=0;gameBest=best;
 // tablero de muestra detrás del menú
@@ -1753,7 +2158,9 @@ grid=emptyGrid(-1);spec=emptyGrid(null);sets=0;meter=35;furyT=0;x2T=0;iceSets=0;
 spec[7][3]='bomb';spec[6][6]='bolt';
 tray=[makePiece([]),makePiece([]),makePiece([])];tray[1].sp={i:0,t:'rainbow'};
 applySkin(skin);applyLang();loadSongs();document.addEventListener('pointerdown',()=>Snd.unlock(),{once:true});syncCoins();syncTools();syncDots();resize();updateHud(true);requestAnimationFrame(frame);Ads.init();
-if(giftState().avail){$('#btnStartGift').hidden=false;openGift()}
+xLastKey=dayKey(xNow());xSimInit();syncXBtn();syncFlakes();
+const xIntro=xOn()&&!xData().intro;if(xIntro)xShowIntro();
+if(giftState().avail){$('#btnStartGift').hidden=false;if(!xIntro)openGift()}
 if(document.fonts&&document.fonts.load)document.fonts.load('20px Bungee').catch(()=>{});
 })();
 </script>
