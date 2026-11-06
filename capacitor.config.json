@@ -2,5 +2,13 @@
   "appId": "com.furypuzzle.game",
   "appName": "Fury Puzzle",
   "webDir": "www",
-  "android": { "backgroundColor": "#120403" }
+  "android": {
+    "backgroundColor": "#120403"
+  },
+  "plugins": {
+    "LocalNotifications": {
+      "smallIcon": "ic_stat_fury",
+      "iconColor": "#FF6A1A"
+    }
+  }
 }
