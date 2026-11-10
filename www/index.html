@@ -687,7 +687,7 @@ const AD_IDS={
 };
 let AD_TESTING=false;           // true = anuncios de prueba (se activa solo en la app de PRUEBA)
 let TEST_APP=false;
-const INTERSTITIAL_EVERY=2;     // anuncio de pantalla completa cada N partidas
+const INTERSTITIAL_EVERY=3;     // anuncio de pantalla completa cada N partidas (antes 2: los jugadores se quejan de demasiados anuncios)
 
 /* ================= CONFIG: ECONOMÍA ================= */
 const START_COINS=100;
@@ -889,6 +889,9 @@ function canFit(p){for(let r=0;r<=N-p.h;r++)for(let c=0;c<=N-p.w;c++)if(canPlace
 function genSet(count=3){const small=iceSets>0;let bestSet=null,bf=-1;
   for(let a=0;a<40;a++){const set=[];for(let i=0;i<count;i++)set.push(makePiece(set.map(p=>p.ci),small));
     const f=set.filter(canFit).length;if(f===count||(a>6&&f>=Math.min(2,count))||(a>20&&f>=1)){bestSet=set;break}if(f>bf){bf=f;bestSet=set}}
+  // piezas justas: si ninguna entra pero hay lugar, cambiamos una por la pieza más grande que sí entre
+  if(!bestSet.some(canFit)){const pool=SHAPES.concat(SMALL).slice().sort((a,b)=>b.cells.length-a.cells.length);
+    const ok=pool.find(s=>canFit({cells:s.cells,w:s.w,h:s.h}));if(ok)bestSet[Math.floor(Math.random()*count)]=Object.assign(makePiece(bestSet.map(p=>p.ci),false),{cells:ok.cells,w:ok.w,h:ok.h})}
   // superpoderes: nunca en la primera tanda; como máximo uno por tanda (dos si vas bien)
   if(sets>0){let maxSp=score>1500?2:1;for(const p of bestSet){if(maxSp>0&&Math.random()<SPECIAL_CHANCE){p.sp={i:Math.floor(Math.random()*p.cells.length),t:pickW(Object.entries(POWER_W),1)[0]};maxSp--}}}
   sets++;return bestSet}
@@ -1206,12 +1209,14 @@ const Ads={A:null,
     try{const AP=(C.Plugins&&C.Plugins.App)||(C.registerPlugin&&C.registerPlugin('App'));const info=AP&&await AP.getInfo();
       if(info&&/\.test$/.test(info.id)){TEST_APP=true;AD_TESTING=true;Object.assign(AD_IDS,{banner:'ca-app-pub-3940256099942544/9214589741',interstitial:'ca-app-pub-3940256099942544/1033173712',rewarded:'ca-app-pub-3940256099942544/5224354917'});
         const lg=$('.logo');if(lg&&!lg.querySelector('.testtag'))lg.insertAdjacentHTML('beforeend',`<span class="testtag">${T_('testApp')}</span>`)}}catch(e){}
-    try{await this.A.initialize({initializeForTesting:AD_TESTING});
+    try{await this.A.initialize({initializeForTesting:AD_TESTING,maxAdContentRating:'ParentalGuidance'});this.mute();
       try{const ci=await this.A.requestConsentInfo();if(ci&&ci.isConsentFormAvailable&&ci.status==='REQUIRED')await this.A.showConsentForm()}catch(e){}
       try{this.A.addListener('bannerAdSizeChanged',s=>{if(s&&s.height)bn.style.height=s.height+'px'})}catch(e){}
       await this.A.showBanner({adId:AD_IDS.banner,adSize:'ADAPTIVE_BANNER',position:'BOTTOM_CENTER',margin:0,isTesting:AD_TESTING});
     }catch(e){}
     this.prepI();this.prepR()},
+  // si el jugador apagó el sonido, los anuncios también salen en silencio
+  mute(){if(this.A&&this.A.setApplicationMuted)this.A.setApplicationMuted({muted:!settings.snd}).catch(()=>{})},
   prepI(){this.A&&this.A.prepareInterstitial({adId:AD_IDS.interstitial,isTesting:AD_TESTING}).catch(()=>{})},
   prepR(){this.A&&this.A.prepareRewardVideoAd({adId:AD_IDS.rewarded,isTesting:AD_TESTING}).catch(()=>{})},
   async interstitial(){Music.pause();if(this.A){try{await this.A.showInterstitial()}catch(e){}this.prepI();Music.resume();return}
@@ -1563,7 +1568,7 @@ $('#btnPauseSkin').onclick=()=>{pendingBuy=null;buildSkinList();openOv('#ovSkin'
 $('#btnPauseMis').onclick=()=>{renderMis();openOv('#ovMis','#ovPause')};
 $('#btnContinue').onclick=doContinue;$('#btnAgain').onclick=again;
 function syncTog(){$('#togSound b').textContent=settings.snd?T_('yes'):T_('no');$('#togVib b').textContent=settings.vib?T_('yes'):T_('no')}
-$('#togSound').onclick=()=>{settings.snd=!settings.snd;store.set('snd',settings.snd);syncTog();Snd.tap()};
+$('#togSound').onclick=()=>{settings.snd=!settings.snd;store.set('snd',settings.snd);syncTog();Snd.tap();Ads.mute()};
 $('#togVib').onclick=()=>{settings.vib=!settings.vib;store.set('vib',settings.vib);syncTog();vib(20)};
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&(state==='play'||state==='stuck'))save()});
 
