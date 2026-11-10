@@ -1210,7 +1210,7 @@ const Ads={A:null,
     try{const AP=(C.Plugins&&C.Plugins.App)||(C.registerPlugin&&C.registerPlugin('App'));const info=AP&&await AP.getInfo();
       if(info&&/\.test$/.test(info.id)){TEST_APP=true;AD_TESTING=true;Object.assign(AD_IDS,{banner:'ca-app-pub-3940256099942544/9214589741',interstitial:'ca-app-pub-3940256099942544/1033173712',rewarded:'ca-app-pub-3940256099942544/5224354917'});
         const lg=$('.logo');if(lg&&!lg.querySelector('.testtag'))lg.insertAdjacentHTML('beforeend',`<span class="testtag">${T_('testApp')}</span>`)}}catch(e){}
-    try{await this.A.initialize({initializeForTesting:AD_TESTING,maxAdContentRating:'ParentalGuidance'});this.mute();
+    try{await this.A.initialize({initializeForTesting:AD_TESTING});this.mute();
       try{const ci=await this.A.requestConsentInfo();if(ci&&ci.isConsentFormAvailable&&ci.status==='REQUIRED')await this.A.showConsentForm()}catch(e){}
       try{this.A.addListener('bannerAdSizeChanged',s=>{if(s&&s.height)bn.style.height=s.height+'px'})}catch(e){}
       await this.A.showBanner({adId:AD_IDS.banner,adSize:'ADAPTIVE_BANNER',position:'BOTTOM_CENTER',margin:0,isTesting:AD_TESTING});
