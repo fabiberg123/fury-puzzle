@@ -2,7 +2,7 @@ name: Construir APK
 
 on:
   push:
-    branches: [main]
+    branches: [main, navidad]   # otras ramas = versiones de prueba (no tocan el release de Play)
   workflow_dispatch: {}
 
 permissions:
@@ -50,7 +50,7 @@ jobs:
           path: FuryPuzzle-PRUEBA.apk
 
       - name: Construir AAB firmado (para Google Play)
-        if: env.HAS_KEY == 'true'
+        if: env.HAS_KEY == 'true' && github.ref_name == 'main'
         env:
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
@@ -65,7 +65,7 @@ jobs:
           cp app/build/outputs/bundle/release/app-release.aab ../FuryPuzzle.aab
 
       - uses: actions/upload-artifact@v4
-        if: env.HAS_KEY == 'true'
+        if: env.HAS_KEY == 'true' && github.ref_name == 'main'
         with:
           name: FuryPuzzle-GooglePlay-AAB
           path: android/app/build/outputs/bundle/release/app-release.aab
@@ -73,10 +73,12 @@ jobs:
       - name: Publicar APK para descargar desde el celular
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v${{ github.run_number }}
-          name: Fury Puzzle (versión ${{ github.run_number }})
+          tag_name: ${{ github.ref_name == 'main' && format('v{0}', github.run_number) || format('{0}-{1}', github.ref_name, github.run_number) }}
+          name: ${{ github.ref_name == 'main' && format('Fury Puzzle (versión {0})', github.run_number) || format('Fury Puzzle PRUEBA {0} ({1})', github.ref_name, github.run_number) }}
+          target_commitish: ${{ github.sha }}
           files: |
             FuryPuzzle-PRUEBA.apk
             FuryPuzzle.aab
-          make_latest: true
+          prerelease: ${{ github.ref_name != 'main' }}
+          make_latest: ${{ github.ref_name == 'main' }}
 
