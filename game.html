@@ -16,7 +16,7 @@ html,body{height:100%;overflow:hidden;background:#0d0403;overscroll-behavior:non
 body{font-family:var(--body);color:var(--fg);-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
 #app{position:relative;height:100%;display:flex;flex-direction:column;background:var(--bg);color:var(--fg);transition:background .4s}
 button{font-family:var(--body)}
-.hud{display:grid;grid-template-columns:48px 1fr 48px;align-items:center;gap:8px;padding:8px 16px 0}
+.hud{display:grid;grid-template-columns:48px 1fr 48px;align-items:center;gap:8px;padding:5px 12px 0}
 .icon{position:relative;width:44px;height:44px;border-radius:14px;border:1px solid var(--edge);background:var(--panel);color:var(--fg);display:grid;place-items:center;cursor:pointer}
 .icon svg{width:22px;height:22px}
 .icon:focus-visible,.btn:focus-visible,.skin:focus-visible,.tool:focus-visible{outline:3px solid var(--accent2);outline-offset:2px}
@@ -33,9 +33,9 @@ svg.coin{width:17px;height:17px;flex:none}
 .tobest.rec{color:var(--accent2);font-family:var(--display);font-weight:400}
 #stage{position:relative;flex:1;min-height:0}
 #cv{position:absolute;inset:0;width:100%;height:100%;touch-action:none;display:block}
-.tools{display:flex;justify-content:center;gap:14px;padding:4px 16px 6px;flex:none}
-.tool{position:relative;width:62px;height:50px;border-radius:16px;border:1px solid var(--edge);background:var(--panel);color:var(--fg);cursor:pointer;display:grid;place-items:center;padding:0}
-.tool svg{width:26px;height:26px}
+.tools{display:flex;justify-content:center;gap:14px;padding:6px 16px 4px;flex:none}
+.tool{position:relative;width:62px;height:44px;border-radius:16px;border:1px solid var(--edge);background:var(--panel);color:var(--fg);cursor:pointer;display:grid;place-items:center;padding:0}
+.tool svg{width:24px;height:24px}
 .tool .cnt{position:absolute;top:-6px;right:-6px;min-width:22px;height:22px;padding:0 5px;border-radius:11px;background:var(--accent2);color:var(--btnfg);font-family:var(--display);font-size:12px;display:grid;place-items:center;box-shadow:0 2px 0 rgba(0,0,0,.3)}
 .tool .cnt.zero{background:#5d9cff;color:#fff}
 .tool.on{background:var(--accent2);color:var(--btnfg);animation:wob .6s infinite}
@@ -876,7 +876,7 @@ function bevel(g,x,y,w,r,b,c,t,l,ri,bo){
 }
 function star(g,cx,cy,s,a){g.save();g.globalAlpha=a;g.fillStyle='#fff';g.beginPath();g.moveTo(cx,cy-s);g.quadraticCurveTo(cx,cy,cx+s,cy);g.quadraticCurveTo(cx,cy,cx,cy+s);g.quadraticCurveTo(cx,cy,cx-s,cy);g.quadraticCurveTo(cx,cy,cx,cy-s);g.fill();g.restore()}
 function paintBlock(g,s,col,style,seed){
-  let m=s*.045,x=m,y=m,w=s-2*m;
+  let m=s*.028,x=m,y=m,w=s-2*m;
   switch(style){
   case 'gloss':{
     rr(g,x,y,w,w,s*.16);g.fillStyle=D(col,.5);g.fill();
@@ -1412,17 +1412,19 @@ const cv=$('#cv'),ctx=cv.getContext('2d'),stage=$('#stage');
 let DPR=1,W=0,H=0,cell=40,bx=0,by=0,pad=6,ty=0,trayH=0,slotW=0,tc=20,barY=0,barH=10;
 function resize(){DPR=Math.min(window.devicePixelRatio||1,3);W=stage.clientWidth;H=stage.clientHeight;
   cv.width=Math.round(W*DPR);cv.height=Math.round(H*DPR);
-  cell=Math.floor(Math.min((W-40)/N,(H-16)/(N+3.2+1.1),70));pad=Math.round(cell*.16);
-  const bs=cell*N,top=cell*1.1,total=top+bs+pad*2+cell*3.2;
+  // Tamaño: el tablero usa casi todo el ancho (deja lugar para el marco y las luces) y el alto que dejan la barra de Furia y la bandeja
+  cell=Math.floor(Math.min((W-14)/(N+.5),(H-12)/(N+3+.86),70));pad=Math.round(cell*.14);
+  const bs=cell*N,top=cell*.86,total=top+bs+pad*2+cell*3;
   const off=Math.max(4,(H-total)*.35);
-  barH=Math.max(10,Math.round(cell*.3));barY=Math.round(off+cell*.55);
+  barH=Math.max(9,Math.round(cell*.24));barY=Math.round(off+cell*.44);
   bx=Math.round((W-bs)/2);by=Math.round(off+top+pad);
-  ty=by+bs+pad+cell*.3;trayH=cell*2.9;slotW=(bs+pad*2)/3;tc=Math.min(cell*.56,slotW*.9/5);
+  // bandeja: las 3 piezas se reparten en todo el ancho de la pantalla (como Block Blast) y son más grandes
+  ty=by+bs+pad+cell*.22;trayH=cell*2.78;slotW=Math.min((W-6)/3,(bs+pad*2)/3*1.2);tc=Math.min(cell*.6,slotW*.96/5,trayH/5);
   sprites.clear();buildAmbient()}
 window.addEventListener('resize',resize);
 const now=()=>performance.now();
 const ease=t=>1-Math.pow(1-Math.min(1,Math.max(0,t)),3);
-const slotC=i=>({x:bx-pad+slotW*(i+.5),y:ty+trayH/2});
+const slotC=i=>({x:W/2+(i-1)*slotW,y:ty+trayH/2});
 const overlayOpen=()=>!!document.querySelector('.overlay:not([hidden])');
 
 /* ================= AMBIENTE / PARTÍCULAS ================= */
@@ -1649,7 +1651,7 @@ function frame(){const t=now(),dt=Math.min(.05,(t-last)/1000);last=t;const S=SKI
   ctx.lineWidth=fury?3:2;ctx.strokeStyle=fury?(XS?'#ffd34d':'#ff7a1a'):S.boardEdge;rr(ctx,bx-pad,by-pad,bs+pad*2,bs+pad*2,cell*.3);ctx.stroke();
   if(XS)drawXmasFrame(t,fury);
   if(S.ambient==='grid'){ctx.strokeStyle='rgba(120,90,255,.18)';ctx.lineWidth=1;for(let i=1;i<N;i++){ctx.beginPath();ctx.moveTo(bx+i*cell,by);ctx.lineTo(bx+i*cell,by+bs);ctx.moveTo(bx,by+i*cell);ctx.lineTo(bx+bs,by+i*cell);ctx.stroke()}}
-  ctx.fillStyle=S.cell;for(let i=0;i<N;i++)for(let j=0;j<N;j++){rr(ctx,bx+j*cell+cell*.06,by+i*cell+cell*.06,cell*.88,cell*.88,cell*.16);ctx.fill()}
+  ctx.fillStyle=S.cell;for(let i=0;i<N;i++)for(let j=0;j<N;j++){rr(ctx,bx+j*cell+cell*.04,by+i*cell+cell*.04,cell*.92,cell*.92,cell*.15);ctx.fill()}
   if(grid){
     const gl=ghost&&ghost.ok?ghost.lines:null;
     for(let i=0;i<N;i++)for(let j=0;j<N;j++){let ci=grid[i][j];if(ci<0)continue;
