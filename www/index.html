@@ -65,6 +65,31 @@ svg.coin{width:17px;height:17px;flex:none}
 .row{display:flex;gap:10px}.row>*{flex:1}
 .btn.daily{background:linear-gradient(#a86bff,#6a3df0);color:#fff;box-shadow:0 5px 0 #3a1a8a,0 10px 24px rgba(106,61,240,.35);position:relative}
 .btn.daily .gl{width:20px;height:20px}
+.btn.adv{background:linear-gradient(#ff8a3d,#e8401a);color:#fff;box-shadow:0 5px 0 #8a2208,0 10px 24px rgba(232,64,26,.35);flex-direction:column;gap:0;position:relative}
+.btn.adv small{font-family:inherit;font-size:12px;font-weight:800;opacity:.9}
+.advcard{max-height:calc(100vh - 40px)}
+.advmap{overflow-y:auto;max-height:58vh;display:flex;flex-direction:column;gap:10px;padding:2px 4px}
+.awld{display:flex;justify-content:space-between;align-items:center;padding:8px 10px;border-radius:12px;background:linear-gradient(90deg,color-mix(in srgb,var(--wc) 30%,transparent),transparent);font-family:var(--display);font-size:16px}
+.awld span{font-family:inherit;font-size:13px;color:var(--accent2)}
+.agrid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.alv{aspect-ratio:1;border-radius:50%;border:2px solid var(--wc);background:radial-gradient(circle at 35% 30%,color-mix(in srgb,var(--wc) 55%,#fff 0%),color-mix(in srgb,var(--wc) 35%,#000));color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:var(--display);font-size:18px;line-height:1;cursor:pointer;box-shadow:0 3px 0 rgba(0,0,0,.35)}
+.alv small{font-family:inherit;font-size:10px;color:#ffe14d;letter-spacing:-1px;margin-top:3px}
+.alv.lock{filter:grayscale(1);opacity:.4}
+.alv.boss{border-color:#ffe14d;box-shadow:0 0 14px rgba(255,225,77,.5),0 3px 0 rgba(0,0,0,.35)}
+.alv.cur{animation:apulse 1.2s ease-in-out infinite}
+@keyframes apulse{50%{transform:scale(1.1);box-shadow:0 0 18px var(--wc)}}
+.astars{display:flex;justify-content:center;gap:6px;font-size:26px;color:rgba(255,255,255,.18)}
+.astars i{font-style:normal}.astars i.on{color:#ffe14d;text-shadow:0 0 10px rgba(255,225,77,.6)}
+.astars.big{font-size:46px}.astars.big i.on{animation:apop .5s cubic-bezier(.2,1.6,.4,1) both}
+@keyframes apop{from{transform:scale(0) rotate(-40deg)}to{transform:none}}
+.lboard{display:grid;grid-template-columns:repeat(8,1fr);gap:2px;width:min(176px,60%);margin:0 auto;padding:5px;border-radius:10px;background:rgba(0,0,0,.35)}
+.lc{aspect-ratio:1;border-radius:3px;background:rgba(255,255,255,.08);font-style:normal;font-size:9px;display:grid;place-items:center;line-height:1}
+.lc.h{background:transparent}.lc.x{background:#ff7a1a}.lc.s{background:#80808c}.lc.i{background:#bdf1ff}.lc.g{background:#1aa6d8}.lc.b{background:#333}.lc.t{background:transparent;outline:1.5px dashed #ffe14d;outline-offset:-2px}
+.alist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;text-align:left;font-weight:700;font-size:14px}
+.alist li{padding:7px 10px;border-radius:10px;background:rgba(255,255,255,.06)}
+.alist.tips li{font-size:12.5px;font-weight:600;color:var(--muted);background:rgba(255,225,77,.07)}
+.tobest.adv{font-family:inherit;font-weight:800;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
 .dnotif{display:flex;align-items:center;justify-content:center;gap:8px;font-weight:700;font-size:14px;color:var(--muted);margin:4px 0 2px;cursor:pointer}
 .dnotif input{width:20px;height:20px;accent-color:var(--accent)}
 #dGoal{font-size:17px;font-weight:800;color:var(--fg);margin:2px 0 6px}
@@ -248,6 +273,7 @@ svg.coin{width:17px;height:17px;flex:none}
       <span class="pill"><i class="coinslot"></i><span class="coinval">0</span></span>
       <button class="btn" id="btnPlay"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l13-7.5z"/></svg><span data-i="play"></span></button>
       <button class="btn xmas" id="btnStartXmas" hidden><span class="xl">🎄 <span data-i="xName"></span></span><small id="xSub"></small><i class="dot xdot" hidden></i></button>
+      <button class="btn adv" id="btnStartAdv"><span class="xl">🗺️ <span data-i="aName"></span></span><small id="advSub"></small></button>
       <button class="btn daily" id="btnStartDaily"><svg class="gl" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/><path d="M9 15l2 2 4-4" stroke-linecap="round"/></svg><span data-i="daily"></span><i class="dot dlydot" hidden></i></button>
       <div class="row">
         <button class="btn ghost" id="btnStartMis"><span data-i="missions"></span><i class="dot misdot" hidden></i></button>
@@ -320,6 +346,45 @@ svg.coin{width:17px;height:17px;flex:none}
       <button class="btn" id="btnDailyPlay"></button>
       <label class="dnotif" id="dNotifRow" hidden><input type="checkbox" id="chkNotif"><span data-i="dRemind"></span></label>
       <button class="btn ghost" id="btnDailyBack" data-i="dBack"></button>
+    </div>
+  </div>
+
+
+  <div class="overlay" id="ovAdv" hidden>
+    <div class="card advcard">
+      <h2>🗺️ <span data-i="aName"></span></h2>
+      <div class="label" id="advStars"></div>
+      <div class="advmap" id="advMap"></div>
+      <button class="btn ghost" id="btnAdvBack" data-i="dBack"></button>
+    </div>
+  </div>
+
+  <div class="overlay" id="ovLvl" hidden>
+    <div class="card">
+      <div class="label" id="lvlWorld"></div>
+      <h2 id="lvlTitle"></h2>
+      <div class="astars" id="lvlStars"></div>
+      <div class="lboard" id="lvlBoard"></div>
+      <div class="label" data-i="aGoals"></div>
+      <ul class="alist" id="lvlGoals"></ul>
+      <ul class="alist tips" id="lvlTips"></ul>
+      <button class="btn" id="btnLvlPlay"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l13-7.5z"/></svg><span data-i="play"></span></button>
+      <button class="btn ghost" id="btnLvlBack" data-i="dBack"></button>
+    </div>
+  </div>
+
+  <div class="overlay" id="ovAdvEnd" hidden>
+    <div class="card">
+      <div class="label" id="aeLv"></div>
+      <h2 id="aeTitle"></h2>
+      <div class="astars big" id="aeStars"></div>
+      <p id="aeLeft"></p>
+      <div class="earn" id="aeEarn"></div>
+      <div class="record" id="aeExtra" hidden></div>
+      <button class="btn video" id="btnAeMore"><span id="aeMoreTxt"></span><small data-i="video"></small></button>
+      <button class="btn" id="btnAeNext" data-i="aNext"></button>
+      <button class="btn ghost" id="btnAeRetry" data-i="aRetry"></button>
+      <button class="btn ghost" id="btnAeMap" data-i="aMap"></button>
     </div>
   </div>
 
@@ -763,6 +828,88 @@ const I18N_V11={
 "ur":{"xNY":"1","xName":"سرمائی میلہ","xSoon":"{n} دن میں شروع","xSoon1":"کل سے شروع!","xSoonT":"1 دسمبر سے شروع 🎄","xWinReady":"🎁 تحفہ {n} تیار ہے!","xToXmas":"نئے سال میں {n} دن باقی","xToXmas1":"کل نیا سال ہے!","xMerry":"چھٹیاں مبارک!","xToNY":"{y} میں {n} دن باقی","xToNYt":"⏳ {y} میں {t} باقی","xHappyNY":"نیا سال {y} مبارک!","xEnds":"میلہ {n} دن میں ختم ہوگا","xLast":"میلے کا آخری دن!","xIntroT":"سرمائی میلہ آ گیا!","xIntro":"کیلنڈر میں روز ایک تحفہ، سرپرائز تحفہ بلاکس اور برف کے گالوں ❄ سے سجانے کے لیے ایک درخت۔ سرمائی تھیم 6 جنوری تک مفت ہے۔","xAll":"🎄 سب کچھ سرمائی بنائیں","xLater":"ابھی نہیں","xCal":"کیلنڈر","xTree":"درخت","xYearB":"🎆 Fury Puzzle میں آپ کا {y}","xOpen":"🎁 تحفہ کھولیں!","xLocked":"🔒 {d} کو کھلے گا","xMissed":"آپ یہ دن چوک گئے، مگر اب بھی کھول سکتے ہیں۔","xRecVideo":"ویڈیو سے کھولیں","xRecCoins":"{n} میں کھولیں","xDbl":"ویڈیو سے دگنا کریں","xGot":"آپ کا تحفہ","xBoard":"🎄 خاص بورڈ: {n} لائنیں توڑیں","xBoardRw":"انعام:","xBoardPlay":"بورڈ کھیلیں","xBoardDone":"✅ بورڈ مکمل!","xBoardWin":"خاص بورڈ مکمل!","xDay25":"بڑا تحفہ","xDay31":"نیا سال","xDayR":"آخری تحفہ","xTreeInfo":"کسی بھی کھیل میں لائنیں توڑ کر برف کے گالے ❄ جمع کریں (غصے کے موڈ میں دگنے)۔ ان سے سجاوٹ لٹکائیں، ہر سجاوٹ کے ساتھ انعام ملتا ہے۔","xNext":"اگلی سجاوٹ: {a} / {b} ❄","xNextRw":"اگلی سجاوٹ کا انعام:","xHang":"سجاوٹ لٹکائیں","xTreeDone":"درخت مکمل! سرمائی تھیم ہمیشہ کے لیے آپ کی۔","xStar":"⭐ سرمائی تھیم ہمیشہ کے لیے","t_xOrn":"نئی سجاوٹ! اسے درخت پر لٹکائیں 🎄","t_xHung":"سجاوٹ لٹک گئی!","skin_xmas":"سرما","xFree":"مفت","xUseTheme":"🎄 سرمائی تھیم لگائیں","snd_bells":"گھنٹیاں","xPackEvt":"🎄 کیلنڈر کا بڑا تحفہ","p_gift":"تحفہ!","h_gift":"تحفہ: کھل کر سکے، کوئی ٹول یا سرپرائز طاقت دیتا ہے (صرف میلے میں)۔","trk_2":"سرمائی دھنیں","xFury":"سرمائی غصہ!","xYearT":"Fury Puzzle میں آپ کا {y}","y_lines":"ٹوٹی لائنیں","y_games":"کھیل","y_best":"ریکارڈ","y_combo":"بہترین کومبو","y_pieces":"رکھے گئے ٹکڑے","y_power":"طاقتیں","y_fury":"غصے کے موڈ","y_flakes":"برف کے گالے","xShareY":"اپنا سال شیئر کریں","xYearMsg":"Fury Puzzle میں میرا {y}: {l} لائنیں توڑیں، {b} پوائنٹس کا ریکارڈ اور x{c} کومبو 🔥 کیا آپ مجھے ہرا سکتے ہیں؟","nXsoon":"🎄 کل سے سرمائی میلہ شروع! روز ایک تحفہ۔","nXwin":"🎁 آپ کے کیلنڈر کا تحفہ {n} انتظار کر رہا ہے","nX24":"🎁 آج کا تحفہ آپ کا انتظار کر رہا ہے","nX25":"🎁 آپ کا بڑا تحفہ تیار ہے!","nX31":"🎆 سال کا آخری تحفہ! آدھی رات سے پہلے کھولیں","nXR":"🎁 آخری تحفہ آ گیا! میلے کا آخری دن","nXtree":"❄ برف کے گالے جمع کریں اور اپنا درخت سجائیں"}
 };
 for(const l in I18N_V11)Object.assign(I18N[l],I18N_V11[l]);
+const I18N_ADV={
+es:{aName:"Aventura",aW1:"Volcán",aW2:"Glaciar",aW3:"Tormenta",aLevel:"Nivel {n}",aLvShort:"Nv {n}",aBoss:"¡JEFE!",aGoals:"Objetivos",aStars:"★ {n} / {m}",aLocked:"Supera el nivel anterior para abrirlo",
+ aWin:"¡NIVEL SUPERADO!",aLose_moves:"Te quedaste sin piezas",aLose_bomb:"¡Explotó una bomba!",aLose_space:"No hay más lugar",aMore:"+5 piezas",aMoreBomb:"+5 a las bombas",aMoreSpace:"Liberar el centro",
+ aNext:"Siguiente nivel",aRetry:"Reintentar",aMap:"Mapa",aLeft:"Te sobraron {n} piezas",aSafe:"¡A salvo!",aBoom:"¡BUM!",aColor:"¡LÍNEA DE COLOR!",
+ gLines:"Rompe {n} líneas",gScore:"Consigue {n} puntos",gGems:"Rompe las {n} gemas",gIce:"Rompe los {n} hielos",gBombs:"Desactiva las {n} bombas",gPaint:"Pinta la figura ({n} casillas)",gMoves:"Tienes {n} piezas",
+ tRot:"↻ Toca una pieza para girarla: ¡giran las tres! ({n} por tanda, sin vuelta atrás)",t_rows:"📏 Ley de las filas: solo explotan las filas",t_cols:"📏 Ley de las columnas: solo explotan las columnas",
+ t_square:"⬛ Ley del cuadrado: un cuadro de 3x3 lleno también explota",t_cross:"✖️ Ley de la cruz: solo explotan si completas 2 líneas a la vez",t_color:"🎨 Ley del color: una línea de un solo color da puntos extra",
+ tHole:"🕳️ El tablero tiene huecos: las líneas son más cortas",tStone:"🪨 La piedra cuenta como llena pero no se rompe (solo con el martillo)",tIce:"🧊 El hielo necesita 2 explosiones",
+ tGem:"💎 Rompe las gemas haciendo explotar su fila o columna",tBomb:"💣 Las bombas bajan 1 con cada pieza ({n} al empezar): rompe su línea antes de que lleguen a 0",tPaint:"✨ Pon bloques sobre todas las casillas marcadas"},
+en:{aName:"Adventure",aW1:"Volcano",aW2:"Glacier",aW3:"Storm",aLevel:"Level {n}",aLvShort:"Lv {n}",aBoss:"BOSS!",aGoals:"Goals",aStars:"★ {n} / {m}",aLocked:"Beat the previous level to unlock it",
+ aWin:"LEVEL COMPLETE!",aLose_moves:"Out of pieces",aLose_bomb:"A bomb exploded!",aLose_space:"No more space",aMore:"+5 pieces",aMoreBomb:"+5 to the bombs",aMoreSpace:"Clear the center",
+ aNext:"Next level",aRetry:"Retry",aMap:"Map",aLeft:"{n} pieces left over",aSafe:"Safe!",aBoom:"BOOM!",aColor:"COLOR LINE!",
+ gLines:"Clear {n} lines",gScore:"Score {n} points",gGems:"Break all {n} gems",gIce:"Break all {n} ice blocks",gBombs:"Defuse all {n} bombs",gPaint:"Paint the shape ({n} cells)",gMoves:"You have {n} pieces",
+ tRot:"↻ Tap a piece to rotate it: all three rotate! ({n} per set, no going back)",t_rows:"📏 Row law: only rows explode",t_cols:"📏 Column law: only columns explode",
+ t_square:"⬛ Square law: a full 3x3 square also explodes",t_cross:"✖️ Cross law: lines only explode if you complete 2 at once",t_color:"🎨 Color law: a single-color line gives bonus points",
+ tHole:"🕳️ The board has holes: lines are shorter",tStone:"🪨 Stone counts as filled but never breaks (only with the hammer)",tIce:"🧊 Ice needs 2 explosions",
+ tGem:"💎 Break gems by exploding their row or column",tBomb:"💣 Bombs count down 1 per piece ({n} at the start): clear their line before they hit 0",tPaint:"✨ Place blocks on every marked cell"},
+pt:{aName:"Aventura",aW1:"Vulcão",aW2:"Geleira",aW3:"Tempestade",aLevel:"Nível {n}",aLvShort:"Nv {n}",aBoss:"CHEFÃO!",aGoals:"Objetivos",aStars:"★ {n} / {m}",aLocked:"Passe o nível anterior para abrir",
+ aWin:"NÍVEL CONCLUÍDO!",aLose_moves:"Acabaram as peças",aLose_bomb:"Uma bomba explodiu!",aLose_space:"Sem espaço",aMore:"+5 peças",aMoreBomb:"+5 nas bombas",aMoreSpace:"Liberar o centro",
+ aNext:"Próximo nível",aRetry:"Tentar de novo",aMap:"Mapa",aLeft:"Sobraram {n} peças",aSafe:"Salvo!",aBoom:"BUM!",aColor:"LINHA DE COR!",
+ gLines:"Quebre {n} linhas",gScore:"Faça {n} pontos",gGems:"Quebre as {n} gemas",gIce:"Quebre os {n} gelos",gBombs:"Desarme as {n} bombas",gPaint:"Pinte a figura ({n} casas)",gMoves:"Você tem {n} peças",
+ tRot:"↻ Toque numa peça para girá-la: as três giram! ({n} por rodada, sem voltar)",t_rows:"📏 Lei das linhas: só as linhas explodem",t_cols:"📏 Lei das colunas: só as colunas explodem",
+ t_square:"⬛ Lei do quadrado: um quadrado 3x3 cheio também explode",t_cross:"✖️ Lei da cruz: só explodem se completar 2 linhas de uma vez",t_color:"🎨 Lei da cor: uma linha de uma só cor dá pontos extras",
+ tHole:"🕳️ O tabuleiro tem buracos: as linhas são mais curtas",tStone:"🪨 A pedra conta como cheia mas não quebra (só com o martelo)",tIce:"🧊 O gelo precisa de 2 explosões",
+ tGem:"💎 Quebre as gemas explodindo a linha ou coluna delas",tBomb:"💣 As bombas descem 1 a cada peça ({n} no início): limpe a linha delas antes de chegar a 0",tPaint:"✨ Coloque blocos em todas as casas marcadas"},
+id:{aName:"Petualangan",aW1:"Gunung Api",aW2:"Gletser",aW3:"Badai",aLevel:"Level {n}",aLvShort:"Lv {n}",aBoss:"BOS!",aGoals:"Target",aStars:"★ {n} / {m}",aLocked:"Selesaikan level sebelumnya untuk membuka",
+ aWin:"LEVEL SELESAI!",aLose_moves:"Kepingan habis",aLose_bomb:"Bom meledak!",aLose_space:"Tidak ada tempat lagi",aMore:"+5 kepingan",aMoreBomb:"+5 untuk bom",aMoreSpace:"Kosongkan tengah",
+ aNext:"Level berikutnya",aRetry:"Coba lagi",aMap:"Peta",aLeft:"Sisa {n} kepingan",aSafe:"Aman!",aBoom:"BUM!",aColor:"GARIS WARNA!",
+ gLines:"Hancurkan {n} garis",gScore:"Raih {n} poin",gGems:"Hancurkan {n} permata",gIce:"Pecahkan {n} es",gBombs:"Jinakkan {n} bom",gPaint:"Warnai bentuknya ({n} kotak)",gMoves:"Kamu punya {n} kepingan",
+ tRot:"↻ Ketuk kepingan untuk memutarnya: ketiganya ikut berputar! ({n} per set, tidak bisa kembali)",t_rows:"📏 Hukum baris: hanya baris yang meledak",t_cols:"📏 Hukum kolom: hanya kolom yang meledak",
+ t_square:"⬛ Hukum kotak: kotak 3x3 penuh juga meledak",t_cross:"✖️ Hukum silang: meledak hanya jika 2 garis lengkap sekaligus",t_color:"🎨 Hukum warna: garis satu warna memberi poin bonus",
+ tHole:"🕳️ Papan punya lubang: garisnya lebih pendek",tStone:"🪨 Batu dihitung penuh tapi tidak pecah (hanya dengan palu)",tIce:"🧊 Es butuh 2 ledakan",
+ tGem:"💎 Hancurkan permata dengan meledakkan baris atau kolomnya",tBomb:"💣 Bom berkurang 1 tiap kepingan ({n} di awal): bersihkan garisnya sebelum mencapai 0",tPaint:"✨ Letakkan blok di semua kotak bertanda"},
+vi:{aName:"Phiêu lưu",aW1:"Núi lửa",aW2:"Sông băng",aW3:"Bão tố",aLevel:"Màn {n}",aLvShort:"Màn {n}",aBoss:"TRÙM!",aGoals:"Mục tiêu",aStars:"★ {n} / {m}",aLocked:"Vượt màn trước để mở khóa",
+ aWin:"QUA MÀN!",aLose_moves:"Hết khối rồi",aLose_bomb:"Một quả bom đã nổ!",aLose_space:"Hết chỗ trống",aMore:"+5 khối",aMoreBomb:"+5 cho bom",aMoreSpace:"Dọn khu giữa",
+ aNext:"Màn tiếp theo",aRetry:"Chơi lại",aMap:"Bản đồ",aLeft:"Còn dư {n} khối",aSafe:"An toàn!",aBoom:"BÙM!",aColor:"HÀNG CÙNG MÀU!",
+ gLines:"Phá {n} hàng",gScore:"Đạt {n} điểm",gGems:"Phá {n} viên ngọc",gIce:"Phá {n} khối băng",gBombs:"Gỡ {n} quả bom",gPaint:"Tô kín hình ({n} ô)",gMoves:"Bạn có {n} khối",
+ tRot:"↻ Chạm vào một khối để xoay: cả ba cùng xoay! ({n} lần mỗi lượt, không quay lại)",t_rows:"📏 Luật hàng ngang: chỉ hàng ngang nổ",t_cols:"📏 Luật hàng dọc: chỉ hàng dọc nổ",
+ t_square:"⬛ Luật ô vuông: ô 3x3 đầy cũng nổ",t_cross:"✖️ Luật chữ thập: chỉ nổ khi hoàn thành 2 hàng cùng lúc",t_color:"🎨 Luật màu: hàng cùng một màu được thêm điểm",
+ tHole:"🕳️ Bàn có lỗ trống: các hàng ngắn hơn",tStone:"🪨 Đá tính là đầy nhưng không vỡ (chỉ dùng búa)",tIce:"🧊 Băng cần 2 lần nổ",
+ tGem:"💎 Phá ngọc bằng cách làm nổ hàng hoặc cột của nó",tBomb:"💣 Bom giảm 1 sau mỗi khối ({n} lúc đầu): dọn hàng của nó trước khi về 0",tPaint:"✨ Đặt khối lên tất cả ô được đánh dấu"},
+hi:{aName:"एडवेंचर",aW1:"ज्वालामुखी",aW2:"ग्लेशियर",aW3:"तूफ़ान",aLevel:"लेवल {n}",aLvShort:"Lv {n}",aBoss:"बॉस!",aGoals:"लक्ष्य",aStars:"★ {n} / {m}",aLocked:"खोलने के लिए पिछला लेवल पार करें",
+ aWin:"लेवल पूरा!",aLose_moves:"टुकड़े ख़त्म",aLose_bomb:"एक बम फट गया!",aLose_space:"और जगह नहीं",aMore:"+5 टुकड़े",aMoreBomb:"बमों को +5",aMoreSpace:"बीच खाली करें",
+ aNext:"अगला लेवल",aRetry:"फिर कोशिश",aMap:"नक्शा",aLeft:"{n} टुकड़े बचे",aSafe:"सुरक्षित!",aBoom:"धमाका!",aColor:"रंग की लाइन!",
+ gLines:"{n} लाइनें तोड़ें",gScore:"{n} अंक बनाएँ",gGems:"सभी {n} रत्न तोड़ें",gIce:"सभी {n} बर्फ़ तोड़ें",gBombs:"सभी {n} बम निष्क्रिय करें",gPaint:"आकृति भरें ({n} खाने)",gMoves:"आपके पास {n} टुकड़े हैं",
+ tRot:"↻ टुकड़े को घुमाने के लिए छुएँ: तीनों घूमते हैं! (हर सेट में {n}, वापसी नहीं)",t_rows:"📏 पंक्ति नियम: सिर्फ़ पंक्तियाँ फटती हैं",t_cols:"📏 कॉलम नियम: सिर्फ़ कॉलम फटते हैं",
+ t_square:"⬛ वर्ग नियम: भरा 3x3 वर्ग भी फटता है",t_cross:"✖️ क्रॉस नियम: एक साथ 2 लाइनें पूरी करने पर ही फटती हैं",t_color:"🎨 रंग नियम: एक रंग की लाइन पर बोनस अंक",
+ tHole:"🕳️ बोर्ड में छेद हैं: लाइनें छोटी हैं",tStone:"🪨 पत्थर भरा गिना जाता है पर टूटता नहीं (सिर्फ़ हथौड़े से)",tIce:"🧊 बर्फ़ को 2 धमाके चाहिए",
+ tGem:"💎 रत्न की पंक्ति या कॉलम फोड़कर उसे तोड़ें",tBomb:"💣 हर टुकड़े पर बम 1 घटता है (शुरू में {n}): 0 से पहले उसकी लाइन साफ़ करें",tPaint:"✨ सभी निशान वाले खानों पर ब्लॉक रखें"},
+tr:{aName:"Macera",aW1:"Yanardağ",aW2:"Buzul",aW3:"Fırtına",aLevel:"Bölüm {n}",aLvShort:"B{n}",aBoss:"BOSS!",aGoals:"Hedefler",aStars:"★ {n} / {m}",aLocked:"Açmak için önceki bölümü geç",
+ aWin:"BÖLÜM TAMAM!",aLose_moves:"Parçaların bitti",aLose_bomb:"Bir bomba patladı!",aLose_space:"Yer kalmadı",aMore:"+5 parça",aMoreBomb:"Bombalara +5",aMoreSpace:"Ortayı temizle",
+ aNext:"Sonraki bölüm",aRetry:"Tekrar dene",aMap:"Harita",aLeft:"{n} parça arttı",aSafe:"Güvende!",aBoom:"BUM!",aColor:"RENK ÇİZGİSİ!",
+ gLines:"{n} çizgi patlat",gScore:"{n} puan yap",gGems:"{n} mücevherin hepsini kır",gIce:"{n} buzun hepsini kır",gBombs:"{n} bombanın hepsini etkisiz hale getir",gPaint:"Şekli boya ({n} kare)",gMoves:"{n} parçan var",
+ tRot:"↻ Döndürmek için bir parçaya dokun: üçü birden döner! (set başına {n}, geri dönüş yok)",t_rows:"📏 Satır kuralı: sadece satırlar patlar",t_cols:"📏 Sütun kuralı: sadece sütunlar patlar",
+ t_square:"⬛ Kare kuralı: dolu bir 3x3 kare de patlar",t_cross:"✖️ Çapraz kuralı: sadece aynı anda 2 çizgi tamamlarsan patlar",t_color:"🎨 Renk kuralı: tek renkli çizgi ekstra puan verir",
+ tHole:"🕳️ Tahtada delikler var: çizgiler daha kısa",tStone:"🪨 Taş dolu sayılır ama kırılmaz (sadece çekiçle)",tIce:"🧊 Buz 2 patlama ister",
+ tGem:"💎 Mücevherleri satır veya sütununu patlatarak kır",tBomb:"💣 Bombalar her parçada 1 azalır (başta {n}): 0 olmadan çizgisini temizle",tPaint:"✨ İşaretli tüm karelere blok koy"},
+fil:{aName:"Adventure",aW1:"Bulkan",aW2:"Glacier",aW3:"Bagyo",aLevel:"Level {n}",aLvShort:"Lv {n}",aBoss:"BOSS!",aGoals:"Mga layunin",aStars:"★ {n} / {m}",aLocked:"Talunin ang naunang level para mabuksan",
+ aWin:"TAPOS ANG LEVEL!",aLose_moves:"Ubos na ang piraso",aLose_bomb:"May sumabog na bomba!",aLose_space:"Wala nang puwang",aMore:"+5 piraso",aMoreBomb:"+5 sa mga bomba",aMoreSpace:"Linisin ang gitna",
+ aNext:"Susunod na level",aRetry:"Subukan ulit",aMap:"Mapa",aLeft:"May natirang {n} piraso",aSafe:"Ligtas!",aBoom:"BOOM!",aColor:"KULAY NA LINYA!",
+ gLines:"Basagin ang {n} linya",gScore:"Makakuha ng {n} puntos",gGems:"Basagin ang {n} hiyas",gIce:"Basagin ang {n} yelo",gBombs:"Patayin ang {n} bomba",gPaint:"Kulayan ang hugis ({n} kahon)",gMoves:"May {n} piraso ka",
+ tRot:"↻ I-tap ang piraso para paikutin: umiikot ang tatlo! ({n} bawat set, walang balikan)",t_rows:"📏 Batas ng row: row lang ang sumasabog",t_cols:"📏 Batas ng column: column lang ang sumasabog",
+ t_square:"⬛ Batas ng parisukat: sumasabog din ang punong 3x3",t_cross:"✖️ Batas ng krus: sumasabog lang kapag 2 linya ang sabay na nabuo",t_color:"🎨 Batas ng kulay: may bonus ang linyang iisang kulay",
+ tHole:"🕳️ May butas ang board: mas maikli ang mga linya",tStone:"🪨 Bilang puno ang bato pero hindi nababasag (martilyo lang)",tIce:"🧊 Kailangan ng yelo ng 2 pagsabog",
+ tGem:"💎 Basagin ang hiyas sa pagsabog ng row o column nito",tBomb:"💣 Bumababa ng 1 ang bomba bawat piraso ({n} sa simula): linisin ang linya nito bago umabot sa 0",tPaint:"✨ Lagyan ng block ang lahat ng markadong kahon"},
+ur:{aName:"ایڈونچر",aW1:"آتش فشاں",aW2:"گلیشیئر",aW3:"طوفان",aLevel:"لیول {n}",aLvShort:"Lv {n}",aBoss:"باس!",aGoals:"اہداف",aStars:"★ {n} / {m}",aLocked:"کھولنے کے لیے پچھلا لیول پار کریں",
+ aWin:"لیول مکمل!",aLose_moves:"ٹکڑے ختم",aLose_bomb:"ایک بم پھٹ گیا!",aLose_space:"مزید جگہ نہیں",aMore:"+5 ٹکڑے",aMoreBomb:"بموں کو +5",aMoreSpace:"درمیان خالی کریں",
+ aNext:"اگلا لیول",aRetry:"دوبارہ کوشش",aMap:"نقشہ",aLeft:"{n} ٹکڑے بچ گئے",aSafe:"محفوظ!",aBoom:"دھماکا!",aColor:"رنگ کی لائن!",
+ gLines:"{n} لائنیں توڑیں",gScore:"{n} پوائنٹس بنائیں",gGems:"تمام {n} جواہر توڑیں",gIce:"تمام {n} برف توڑیں",gBombs:"تمام {n} بم ناکارہ کریں",gPaint:"شکل بھریں ({n} خانے)",gMoves:"آپ کے پاس {n} ٹکڑے ہیں",
+ tRot:"↻ گھمانے کے لیے ٹکڑے کو چھوئیں: تینوں گھومتے ہیں! (ہر سیٹ میں {n}، واپسی نہیں)",t_rows:"📏 قطار کا قانون: صرف قطاریں پھٹتی ہیں",t_cols:"📏 کالم کا قانون: صرف کالم پھٹتے ہیں",
+ t_square:"⬛ مربع کا قانون: بھرا ہوا 3x3 مربع بھی پھٹتا ہے",t_cross:"✖️ کراس کا قانون: ایک ساتھ 2 لائنیں مکمل ہوں تو ہی پھٹتی ہیں",t_color:"🎨 رنگ کا قانون: ایک رنگ کی لائن پر اضافی پوائنٹس",
+ tHole:"🕳️ بورڈ میں سوراخ ہیں: لائنیں چھوٹی ہیں",tStone:"🪨 پتھر بھرا ہوا گنا جاتا ہے مگر ٹوٹتا نہیں (صرف ہتھوڑے سے)",tIce:"🧊 برف کو 2 دھماکے چاہییں",
+ tGem:"💎 جواہر کی قطار یا کالم پھوڑ کر اسے توڑیں",tBomb:"💣 ہر ٹکڑے پر بم 1 کم ہوتا ہے (شروع میں {n}): 0 سے پہلے اس کی لائن صاف کریں",tPaint:"✨ تمام نشان زدہ خانوں پر بلاک رکھیں"},
+ru:{aName:"Приключение",aW1:"Вулкан",aW2:"Ледник",aW3:"Буря",aLevel:"Уровень {n}",aLvShort:"Ур {n}",aBoss:"БОСС!",aGoals:"Цели",aStars:"★ {n} / {m}",aLocked:"Пройди предыдущий уровень, чтобы открыть",
+ aWin:"УРОВЕНЬ ПРОЙДЕН!",aLose_moves:"Фигуры закончились",aLose_bomb:"Бомба взорвалась!",aLose_space:"Больше нет места",aMore:"+5 фигур",aMoreBomb:"+5 к бомбам",aMoreSpace:"Очистить центр",
+ aNext:"Следующий уровень",aRetry:"Ещё раз",aMap:"Карта",aLeft:"Осталось фигур: {n}",aSafe:"Обезврежено!",aBoom:"БУМ!",aColor:"ЦВЕТНАЯ ЛИНИЯ!",
+ gLines:"Убери {n} линий",gScore:"Набери {n} очков",gGems:"Разбей все {n} кристаллов",gIce:"Разбей весь лёд ({n})",gBombs:"Обезвредь все {n} бомбы",gPaint:"Закрась фигуру ({n} клеток)",gMoves:"У тебя {n} фигур",
+ tRot:"↻ Нажми на фигуру, чтобы повернуть: поворачиваются все три! ({n} за набор, без отмены)",t_rows:"📏 Закон строк: взрываются только строки",t_cols:"📏 Закон столбцов: взрываются только столбцы",
+ t_square:"⬛ Закон квадрата: заполненный квадрат 3x3 тоже взрывается",t_cross:"✖️ Закон креста: линии взрываются, только если собрать 2 сразу",t_color:"🎨 Закон цвета: линия одного цвета даёт бонус",
+ tHole:"🕳️ На поле есть дыры: линии короче",tStone:"🪨 Камень считается заполненным, но не ломается (только молотом)",tIce:"🧊 Льду нужно 2 взрыва",
+ tGem:"💎 Разбивай кристаллы, взрывая их строку или столбец",tBomb:"💣 Бомбы убывают на 1 с каждой фигурой ({n} в начале): убери их линию до 0",tPaint:"✨ Поставь блоки на все отмеченные клетки"}};
+for(const l in I18N_ADV)Object.assign(I18N[l],I18N_ADV[l]);
 
 const detectLang=()=>{const list=(navigator.languages||[navigator.language||'en']).map(x=>String(x).toLowerCase());
   for(const l of list){const b=l.split('-')[0];if(b==='tl'||b==='fil')return'fil';if(b==='in')return'id';if(I18N[b])return b}return'en'};
@@ -1003,14 +1150,15 @@ const SHAPES=[];
 const SMALL=SHAPES.filter(s=>s.cells.length<=3);
 function pickW(list,key){let r=Math.random()*list.reduce((a,x)=>a+(key?x[1]:x.wt),0);for(const x of list){r-=key?x[1]:x.wt;if(r<=0)return x}return list[0]}
 function makePiece(avoid,small){const s=pickW(small?SMALL:SHAPES);
-  let ci;do{ci=Math.floor(Math.random()*7)}while(avoid.includes(ci));
+  let ci;do{ci=Math.floor(Math.random()*(advColors||7))}while(avoid.includes(ci));
   return{cells:s.cells,w:s.w,h:s.h,ci,placed:false,sp:null}}
 
 /* ================= ESTADO ================= */
 const N=8;
 let mode='normal',dSpec=null,dProg=0,dHit=false;
+let adv=null,ob=null,tg=null,advForce=false,advColors=0; // Modo Aventura
 // los tableros navideños usan el mismo modo que el Desafío del día, pero con su propia partida guardada
-const GK=()=>mode==='daily'?(dSpec&&dSpec.xmas?'xgame':'dgame'):'game';
+const GK=()=>mode==='adv'?'agame':mode==='daily'?(dSpec&&dSpec.xmas?'xgame':'dgame'):'game';
 const MK=()=>dSpec&&dSpec.xmas?'xmeta':'dmeta';
 let grid,spec,tray,score,shown,combo,since,continued,sets,meter,furyT,x2T,iceSets,gameBest,recShown,state='menu',games=store.get('games',0);
 let best=store.get('best',0),earned=0,paid=0,undoSnap=null,hammer=false,lastFury=false,beatAcc=0;
@@ -1019,7 +1167,7 @@ let drag=null,ghost=null,shake=0,trayT0=0,dieT0=0;
 const settings={snd:store.get('snd',true),vib:store.get('vib',true)};
 const emptyGrid=v=>Array.from({length:N},()=>Array(N).fill(v));
 
-function canPlace(p,r,c){for(const[dr,dc]of p.cells){const a=r+dr,b=c+dc;if(a<0||b<0||a>=N||b>=N||grid[a][b]>=0)return false}return true}
+function canPlace(p,r,c){for(const[dr,dc]of p.cells){const a=r+dr,b=c+dc;if(a<0||b<0||a>=N||b>=N||grid[a][b]!==-1)return false}return true}
 function canFit(p){for(let r=0;r<=N-p.h;r++)for(let c=0;c<=N-p.w;c++)if(canPlace(p,r,c))return true;return false}
 function genSet(count=3){const small=iceSets>0;let bestSet=null,bf=-1;
   for(let a=0;a<40;a++){const set=[];for(let i=0;i<count;i++)set.push(makePiece(set.map(p=>p.ci),small));
@@ -1030,15 +1178,16 @@ function genSet(count=3){const small=iceSets>0;let bestSet=null,bf=-1;
   // superpoderes: nunca en la primera tanda; como máximo uno por tanda (dos si vas bien)
   if(sets>0){let maxSp=score>1500?2:1;for(const p of bestSet){if(maxSp>0&&Math.random()<SPECIAL_CHANCE){p.sp={i:Math.floor(Math.random()*p.cells.length),t:pickW(Object.entries(powW()),1)[0]};maxSp--}}}
   sets++;return bestSet}
-function nextSet(){const s=genSet(3);if(iceSets>0)iceSets--;trayT0=now();return s}
-function newGame(){grid=emptyGrid(-1);spec=emptyGrid(null);score=0;shown=0;combo=0;since=99;continued=false;sets=0;meter=0;furyT=0;x2T=0;iceSets=0;
+function nextSet(){const s=genSet(3);if(iceSets>0)iceSets--;trayT0=now();if(mode==='adv'&&adv)adv.rl=ADV[adv.lv].rot||0;return s}
+function newGame(){advColors=mode==='adv'&&adv?(ADV[adv.lv].colors||0):0;if(mode!=='adv'){ob=null;tg=null}grid=emptyGrid(-1);spec=emptyGrid(null);score=0;shown=0;combo=0;since=99;continued=false;sets=0;meter=0;furyT=0;x2T=0;iceSets=0;
   gameBest=best;recShown=false;undoSnap=null;hammer=false;paid=0;
-  clearing.length=parts.length=texts.length=beams.length=rings.length=0;tray=nextSet();state='play';if(mode==='daily')applyDaily();save();updateHud(true);syncTools()}
-function snapshot(){return JSON.stringify({grid,spec,tray,score,combo,since,continued,sets,meter,furyT,x2T,iceSets,gameBest,recShown,paid})}
+  clearing.length=parts.length=texts.length=beams.length=rings.length=0;tray=nextSet();state='play';if(mode==='daily')applyDaily();if(mode==='adv')advApply();save();updateHud(true);syncTools()}
+function snapshot(){return JSON.stringify({grid,spec,tray,score,combo,since,continued,sets,meter,furyT,x2T,iceSets,gameBest,recShown,paid,ob,tg,av:mode==='adv'&&adv?{mv:adv.mv,rl:adv.rl,ap:adv.ap}:null})}
 function restore(s){const g=JSON.parse(s);grid=g.grid;spec=g.spec||emptyGrid(null);tray=g.tray;score=g.score;combo=g.combo;since=g.since;continued=g.continued;
-  sets=g.sets||1;meter=g.meter||0;furyT=g.furyT||0;x2T=g.x2T||0;iceSets=g.iceSets||0;gameBest=g.gameBest!=null?g.gameBest:best;recShown=!!g.recShown;paid=g.paid||0}
-function save(){const live=state==='play'||state==='stuck';store.set(GK(),live?JSON.parse(snapshot()):null);if(mode==='daily'&&dSpec)store.set(MK(),{d:dSpec.d,p:dProg,h:dHit})}
-function load(){const g=store.get(GK(),null);if(!g||!g.grid)return false;if(mode==='daily'){const m=store.get(MK(),null);if(!m||!dSpec||m.d!==dSpec.d)return false;dProg=m.p||0;dHit=!!m.h}restore(JSON.stringify(g));shown=score;state='play';trayT0=now();updateHud(true);return true}
+  sets=g.sets||1;meter=g.meter||0;furyT=g.furyT||0;x2T=g.x2T||0;iceSets=g.iceSets||0;gameBest=g.gameBest!=null?g.gameBest:best;recShown=!!g.recShown;paid=g.paid||0;
+  if(mode==='adv'){ob=g.ob||null;tg=g.tg||null;if(adv&&g.av){adv.mv=g.av.mv;adv.rl=g.av.rl;adv.ap=g.av.ap}}}
+function save(){if(mode==='adv')return;const live=state==='play'||state==='stuck';store.set(GK(),live?JSON.parse(snapshot()):null);if(mode==='daily'&&dSpec)store.set(MK(),{d:dSpec.d,p:dProg,h:dHit})}
+function load(){if(mode==='adv')return false;const g=store.get(GK(),null);if(!g||!g.grid)return false;if(mode==='daily'){const m=store.get(MK(),null);if(!m||!dSpec||m.d!==dSpec.d)return false;dProg=m.p||0;dHit=!!m.h}restore(JSON.stringify(g));shown=score;state='play';trayT0=now();updateHud(true);return true}
 
 /* ================= SONIDO / VIBRACIÓN ================= */
 /* ================= MOTOR DE AUDIO ================= */
@@ -1496,17 +1645,19 @@ function addScore(v){score+=v;mission('score',score,true);
     for(let i=0;i<5;i++)spawn(bx+Math.random()*cell*N,by+Math.random()*cell*3,SKINS[skin].colors[i],10,'confetti');Snd.record();vib([30,40,30,40,60])}}
 function place(p,r,c){
   undoSnap=snapshot();const t=now();
-  p.cells.forEach(([dr,dc],k)=>{grid[r+dr][c+dc]=p.ci;spec[r+dr][c+dc]=p.sp&&p.sp.i===k?p.sp.t:null;pops.push({r:r+dr,c:c+dc,t0:t})});
+  p.cells.forEach(([dr,dc],k)=>{grid[r+dr][c+dc]=p.ci;spec[r+dr][c+dc]=p.sp&&p.sp.i===k?p.sp.t:null;pops.push({r:r+dr,c:c+dc,t0:t});
+    if(tg&&tg[r+dr][c+dc]===1){tg[r+dr][c+dc]=2;if(adv)adv.ap.paint++;spawn(bx+(c+dc+.5)*cell,by+(r+dr+.5)*cell,'#ffe14d',REDUCE?1:4,'sparkle')}});
   p.placed=true;addScore(p.cells.length*mult());Snd.place();vib(12);mission('pieces',1);
-  const rows=[],cols=[];
-  for(let i=0;i<N;i++){if(grid[i].every(v=>v>=0))rows.push(i);if(grid.every(row=>row[i]>=0))cols.push(i)}
-  const n=rows.length+cols.length,set=new Set();
+  const{rows,cols,sqs}=findLines(grid),cl=colorLines(rows,cols);
+  const n=rows.length+cols.length+sqs.length,set=new Set();
+  sqs.forEach(([a,b])=>{for(let i=a;i<a+3;i++)for(let j=b;j<b+3;j++)set.add(i*N+j);rings.push({x:bx+(b+1.5)*cell,y:by+(a+1.5)*cell,t0:t,col:'#ffd34d',r:cell*2.2})});
   rows.forEach(i=>{for(let j=0;j<N;j++)set.add(i*N+j);beams.push({rc:'r',i,t0:t,ci:p.ci})});
   cols.forEach(j=>{for(let i=0;i<N;i++)set.add(i*N+j);beams.push({rc:'c',i:j,t0:t,ci:p.ci})});
   if(n){combo=since<3?combo+1:1;since=0}else{since++;if(since>=3)combo=0}
   if(set.size)blast(set,n,r+p.h/2,c+p.w/2);
+  if(cl){addScore(cl*60*mult());floatText(T_('aColor'),W/2,by+cell*1.8,'#ffe14d',cell*.6)}
   if(tray.every(q=>q.placed))tray=nextSet();
-  updateHud();save();checkOver();
+  updateHud();save();advAfter(true);checkOver();
 }
 /* Rompe celdas, encadena superpoderes, suma puntos y llena la barra de furia */
 function blast(set,n,cr,cc){
@@ -1523,9 +1674,10 @@ function blast(set,n,cr,cc){
     else if(type==='x2'){x2T=X2_SECONDS;rings.push({x,y,t0:t,col:'#ffe14d',r:cell*3})}
     else if(type==='ice'){iceSets=Math.max(iceSets,1);tray=tray.map(p=>p.placed?p:Object.assign(makePiece([],true),{ci:p.ci}));trayT0=now();rings.push({x,y,t0:t,col:'#bff4ff',r:cell*3})}
   }
+  advFilter(set);if(mode==='adv'&&adv&&n)adv.ap.lines+=n;
   set.forEach(k=>{const i=k/N|0,j=k%N,d=Math.hypot(i+.5-cr,j+.5-cc);
     clearing.push({r:i,c:j,ci:grid[i][j],sp:spec[i][j],t0:t+d*26});grid[i][j]=-1;spec[i][j]=null});
-  let gain=n?10*n*(n+1)/2*Math.max(1,combo):0;gain+=(set.size-base+(n?0:base))*5;gain=Math.round(gain*mult());addScore(gain);
+  let gain=n?10*n*(n+1)/2*Math.max(1,combo):0;gain+=(n?Math.max(0,set.size-base):set.size)*5;gain=Math.round(gain*mult());addScore(gain);
   const px=bx+cc*cell,py=by+cr*cell;
   if(n){const praise=n>=5?T_('pr5'):n===4?T_('pr4'):n===3?T_('pr3'):n===2?T_('pr2'):'';
     if(praise)floatText(praise,W/2,by+cell*2.6,S.ui.accent2,cell*.75);
@@ -1549,12 +1701,12 @@ function openGiftBlock(x,y,t){floatText(T_('p_gift'),x,y-cell*1.3,'#ffd34d',cell
   if(r<.75){const c=10+Math.floor(Math.random()*5)*5;coins+=c;saveProg();syncCoins();floatText(T_('dCoins',{n:c}),x,y-cell*.45,'#ffd34d',cell*.42);return null}
   const k=['hammer','shuffle','undo'][Math.floor(Math.random()*3)];inv[k]++;saveProg();syncTools();floatText(T_('t_plusOne',{tool:T_(k)}),x,y-cell*.45,'#ffffff',cell*.42);return null}
 function checkOver(){if(state!=='play')return;const rest=tray.filter(q=>!q.placed);
-  if(rest.length&&!rest.some(canFit)){
+  if(rest.length&&!rest.some(canFit)&&!advRotFits(rest)){
     if(inv.hammer+inv.shuffle+inv.undo>0){state='stuck';$('#stuck').hidden=false;Snd.bad();vib([30,60,30]);save();return}
     die()}}
 function die(){$('#stuck').hidden=true;hammer=false;syncTools();state='dying';dieT0=now()+300;setTimeout(()=>Snd.over(),300);store.set(GK(),null);setTimeout(showOver,300+N*70+700)}
 $('#btnGiveUp').onclick=()=>{if(state==='stuck')die()};
-function showOver(){state='over';games++;store.set('games',games);mission('games',1);
+function showOver(){if(mode==='adv'&&adv){advLose('space',true);return}state='over';games++;store.set('games',games);mission('games',1);
   earned=Math.max(0,Math.floor(score/POINTS_PER_COIN)-paid);paid+=earned;coins+=earned;saveProg();syncCoins();
   const rec=mode!=='daily'&&score>gameBest&&score>0;dailyOver();
   $('#overScore').textContent=score;$('#overBest').textContent=best;$('#overRecord').hidden=!rec;
@@ -1573,9 +1725,10 @@ async function again(){$('#ovOver').hidden=true;$('#btnOverMenu').hidden=true;
 
 /* ================= HUD ================= */
 let lastShown=-1;
-function updateHud(force){if(mode!=='daily'&&score>best){best=score;store.set('best',best)}$('#best').textContent=best;$('#startBest').textContent=best;if(force){shown=score;lastShown=-1}
+function updateHud(force){if(mode==='normal'&&score>best){best=score;store.set('best',best)}$('#best').textContent=best;$('#startBest').textContent=best;if(force){shown=score;lastShown=-1}
   const tb=$('#tobest');
   if(state!=='play'&&state!=='stuck'){tb.textContent='';tb.className='tobest'}
+  else if(mode==='adv'&&adv&&adv.ap){tb.textContent=advHud();tb.className='tobest rec adv'}
   else if(mode==='daily'&&dSpec){tb.textContent=dHit?'✅ '+T_(dSpec.xmas?'xBoardWin':'dWin'):`${dSpec.xmas?'🎄':'🎯 '+T_('dShort')+':'} ${Math.min(dProg,dSpec.goal)} / ${dSpec.goal}`;tb.className='tobest rec'}
   else if(recShown){tb.textContent=T_('newRecord').toUpperCase();tb.className='tobest rec'}
   else if(gameBest>0&&score>=gameBest*.6){tb.textContent=T_('toBest',{n:gameBest-score+1});tb.className='tobest'}
@@ -1590,16 +1743,17 @@ function dragGeom(){const p=tray[drag.i],g=ease((now()-drag.t0)/120),s=tc+(cell-
 cv.addEventListener('pointerdown',e=>{const p=pt(e);
   if(hammer&&(state==='play'||state==='stuck')){const c=Math.floor((p.x-bx)/cell),r=Math.floor((p.y-by)/cell);
     if(r>=0&&c>=0&&r<N&&c<N&&grid[r][c]>=0){undoSnap=null;inv.hammer--;hammer=false;saveProg();syncTools();Snd.hammer();
-      blast(new Set([r*N+c]),0,r+.5,c+.5);rings.push({x:bx+(c+.5)*cell,y:by+(r+.5)*cell,t0:now(),col:'#ffffff',r:cell*1.2});
-      unstick();updateHud();save();checkOver()}
+      advForce=true;blast(new Set([r*N+c]),0,r+.5,c+.5);advForce=false;rings.push({x:bx+(c+.5)*cell,y:by+(r+.5)*cell,t0:now(),col:'#ffffff',r:cell*1.2});
+      unstick();updateHud();save();advAfter(false);checkOver()}
     else{hammer=false;syncTools()}return}
   if(state!=='play'||drag||(TUT&&TUT.step>1))return;
   for(let i=0;i<3;i++){const q=tray[i];if(!q||q.placed)continue;if(TUT&&i!==0)continue;const c=slotC(i);
     if(Math.abs(p.x-c.x)<slotW/2&&p.y>ty-cell*.4&&p.y<ty+trayH+cell){
-      drag={i,x:p.x,y:p.y,t0:now(),mouse:e.pointerType==='mouse'};q.ret=null;try{cv.setPointerCapture(e.pointerId)}catch(_){}Snd.pick();vib(6);updGhost();break}}});
+      drag={i,x:p.x,y:p.y,sx:p.x,sy:p.y,t0:now(),mouse:e.pointerType==='mouse'};q.ret=null;try{cv.setPointerCapture(e.pointerId)}catch(_){}Snd.pick();vib(6);updGhost();break}}});
 cv.addEventListener('pointermove',e=>{if(!drag)return;const p=pt(e);drag.x=p.x;drag.y=p.y;updGhost()});
 function endDrag(){if(!drag)return;const q=tray[drag.i];
-  if(ghost&&ghost.ok){place(q,ghost.r,ghost.c)}else{const g=dragGeom();q.ret={x:g.x,y:g.y,s:g.s,t0:now()};if(ghost)Snd.bad()}
+  const tap=!(ghost&&ghost.ok)&&Math.hypot(drag.x-drag.sx,drag.y-drag.sy)<14&&now()-drag.t0<400;
+  if(ghost&&ghost.ok){place(q,ghost.r,ghost.c)}else if(tap&&mode==='adv'&&adv&&adv.rl>0){q.ret=null;drag=null;ghost=null;advRotate();return}else{const g=dragGeom();q.ret={x:g.x,y:g.y,s:g.s,t0:now()};if(ghost)Snd.bad()}
   drag=null;ghost=null}
 cv.addEventListener('pointerup',endDrag);cv.addEventListener('pointercancel',endDrag);
 function updGhost(){const q=tray[drag.i],g=dragGeom();
@@ -1608,7 +1762,8 @@ function updGhost(){const q=tray[drag.i],g=dragGeom();
   if(!inside){ghost=null;return}
   if(!canPlace(q,r,c)||(TUT&&(r!==TUT_R||c!==TUT_C))){ghost={ok:false};return}
   const occ=grid.map(row=>row.slice());q.cells.forEach(([dr,dc])=>occ[r+dr][c+dc]=q.ci);
-  const lines=new Set();for(let i=0;i<N;i++){if(occ[i].every(v=>v>=0))for(let j=0;j<N;j++)lines.add(i*N+j);if(occ.every(row=>row[i]>=0))for(let j=0;j<N;j++)lines.add(j*N+i)}
+  const lines=new Set(),fl=findLines(occ);fl.rows.forEach(i=>{for(let j=0;j<N;j++)if(occ[i][j]>=0)lines.add(i*N+j)});fl.cols.forEach(i=>{for(let j=0;j<N;j++)if(occ[j][i]>=0)lines.add(j*N+i)});if(ob)for(const k of [...lines])if(ob[k/N|0][k%N]==='S')lines.delete(k);
+  fl.sqs.forEach(([a,b])=>{for(let i=a;i<a+3;i++)for(let j=b;j<b+3;j++)lines.add(i*N+j)});
   ghost={ok:true,r,c,ci:q.ci,lines}}
 
 /* ================= RENDER ================= */
@@ -1650,13 +1805,15 @@ function frame(){const t=now(),dt=Math.min(.05,(t-last)/1000);last=t;const S=SKI
   ctx.lineWidth=fury?3:2;ctx.strokeStyle=fury?(XS?'#ffd34d':'#ff7a1a'):S.boardEdge;rr(ctx,bx-pad,by-pad,bs+pad*2,bs+pad*2,cell*.3);ctx.stroke();
   if(XS)drawXmasFrame(t,fury);
   if(S.ambient==='grid'){ctx.strokeStyle='rgba(120,90,255,.18)';ctx.lineWidth=1;for(let i=1;i<N;i++){ctx.beginPath();ctx.moveTo(bx+i*cell,by);ctx.lineTo(bx+i*cell,by+bs);ctx.moveTo(bx,by+i*cell);ctx.lineTo(bx+bs,by+i*cell);ctx.stroke()}}
-  ctx.fillStyle=S.cell;for(let i=0;i<N;i++)for(let j=0;j<N;j++){rr(ctx,bx+j*cell+cell*.04,by+i*cell+cell*.04,cell*.92,cell*.92,cell*.15);ctx.fill()}
+  ctx.fillStyle=S.cell;for(let i=0;i<N;i++)for(let j=0;j<N;j++){if(grid&&grid[i][j]===-2)continue;rr(ctx,bx+j*cell+cell*.04,by+i*cell+cell*.04,cell*.92,cell*.92,cell*.15);ctx.fill()}
+  if(grid&&tg)for(let i=0;i<N;i++)for(let j=0;j<N;j++)if(tg[i][j]===1&&grid[i][j]===-1)drawTarget(ctx,bx+j*cell,by+i*cell,cell,t);
   if(grid){
     const gl=ghost&&ghost.ok?ghost.lines:null;
     for(let i=0;i<N;i++)for(let j=0;j<N;j++){let ci=grid[i][j];if(ci<0)continue;
       if(state==='dying'&&t>dieT0+i*70)ci=-1;else if(gl&&gl.has(i*N+j))ci=ghost.ci;
       let sc=1;for(let k=pops.length-1;k>=0;k--){const p=pops[k];if(p.r===i&&p.c===j){const u=(t-p.t0)/220;if(u<1)sc=1+.18*Math.sin(u*Math.PI);break}}
-      const x=bx+j*cell,y=by+i*cell;ctx.drawImage(sprite(ci,cell),x+cell*(1-sc)/2,y+cell*(1-sc)/2,cell*sc,cell*sc);
+      const x=bx+j*cell,y=by+i*cell,o=ob&&ob[i][j];if(o==='S'&&!(gl&&gl.has(i*N+j)))drawOb(ctx,o,x,y,cell,t);else ctx.drawImage(sprite(ci,cell),x+cell*(1-sc)/2,y+cell*(1-sc)/2,cell*sc,cell*sc);
+      if(o&&o!=='S'&&state!=='dying')drawOb(ctx,o,x,y,cell,t);
       if(spec&&spec[i][j]&&ci>=0)drawPower(ctx,spec[i][j],x,y,cell,t);
       if(gl&&gl.has(i*N+j)){ctx.fillStyle=`rgba(255,255,255,${.12+.1*Math.sin(t/90)})`;rr(ctx,x+cell*.05,y+cell*.05,cell*.9,cell*.9,cell*.15);ctx.fill()}
       if(hammer){ctx.strokeStyle=`rgba(255,255,255,${.35+.3*Math.sin(t/120)})`;ctx.lineWidth=2;rr(ctx,x+cell*.08,y+cell*.08,cell*.84,cell*.84,cell*.15);ctx.stroke()}}
@@ -1682,7 +1839,9 @@ function frame(){const t=now(),dt=Math.min(.05,(t-last)/1000);last=t;const S=SKI
       const u=ease((t-trayT0-i*70)/320);let s=tc,x=c.x-q.w*tc/2+(1-u)*W*.6,y=c.y-q.h*tc/2;
       if(q.ret){const v=ease((t-q.ret.t0)/180);x=q.ret.x+(x-q.ret.x)*v;y=q.ret.y+(y-q.ret.y)*v;s=q.ret.s+(tc-q.ret.s)*v;if(v>=1)q.ret=null}
       const fits=state==='menu'||canFit(q);ctx.globalAlpha=(fits?1:.35)*Math.max(0,u);
-      q.cells.forEach(([dr,dc],k)=>{ctx.drawImage(sprite(q.ci,s),x+dc*s,y+dr*s,s,s);if(q.sp&&q.sp.i===k)drawPower(ctx,q.sp.t,x+dc*s,y+dr*s,s,t)});ctx.globalAlpha=1}
+      q.cells.forEach(([dr,dc],k)=>{ctx.drawImage(sprite(q.ci,s),x+dc*s,y+dr*s,s,s);if(q.sp&&q.sp.i===k)drawPower(ctx,q.sp.t,x+dc*s,y+dr*s,s,t)});ctx.globalAlpha=1;
+      if(mode==='adv'&&adv&&adv.rl>0&&state==='play'&&u>=1){ctx.font=`${Math.round(cell*.42)}px Bungee, Impact, sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';
+        ctx.fillStyle=`rgba(255,225,77,${.6+.3*Math.sin(t/200)})`;ctx.fillText('↻',c.x+slotW*.36,ty+cell*.15)}}
   }
   ctx.restore();
   // pieza arrastrada
@@ -1854,6 +2013,201 @@ $('#btnOverMenu').onclick=()=>{Snd.tap();$('#ovOver').hidden=true;$('#btnOverMen
 const _againD=again;again=async function(){if(mode==='daily'){$('#ovOver').hidden=true;$('#btnOverMenu').hidden=true;if(games>1&&games%INTERSTITIAL_EVERY===0)await Ads.interstitial();dSpec=dSpec&&dSpec.xmas?xBoardSpec(dSpec.xmas):dailySpec();newGame();return}return _againD()};
 $('#btnAgain').onclick=()=>again();
 
+/* ================= MODO AVENTURA (30 niveles) ================= */
+// Tablero: . vacío  # hueco  x bloque  S piedra  I hielo  G gema  B bomba  * casilla de la figura a pintar
+// g: objetivos extra (lines / score). Gemas, hielo, bombas y figura: hay que completarlos todos.
+// mv: piezas disponibles · rot: giros por tanda · law: rows | cols | square | cross | color · bn: cuenta de las bombas · colors: colores de las piezas
+const ADV=[
+ // ---- 🔥 VOLCÁN ----
+ {g:{lines:4},mv:18},
+ {g:{lines:5},mv:20,rot:1,b:['........','........','........','........','........','........','xx.xx.xx','x.xx.xxx']},
+ {g:{score:350},mv:17,rot:1,b:['........','........','........','........','........','xxxx.xxx','xxx.xxxx','xx.xxxxx']},
+ {mv:22,rot:1,b:['........','.**..**.','********','********','.******.','..****..','...**...','........']},
+ {mv:18,b:['........','........','..G.....','........','.....G..','........','xG.xxx.x','xxxx.Gxx']},
+ {g:{lines:6},mv:22,b:['##....##','#......#','........','........','........','........','#......#','##....##']},
+ {g:{lines:5},mv:22,rot:1,law:'rows'},
+ {mv:24,rot:1,b:['#..**..#','...**...','********','.******.','..****..','.**..**.','**....**','#......#']},
+ {mv:20,law:'square',b:['........','.G....G.','........','...GG...','........','.G......','........','........']},
+ {g:{lines:8},mv:22,rot:1,boss:1,b:['##.GG.##','##....##','G......G','........','........','G......G','##....##','##....##']},
+ // ---- ❄️ GLACIAR ----
+ {mv:18,b:['........','........','.I....I.','........','........','........','.I....I.','........']},
+ {g:{lines:7},mv:26,b:['........','..S.....','........','.....S..','.S......','........','......S.','...S....']},
+ {mv:22,rot:1,law:'cols',b:['........','.I...I..','........','........','........','..I...I.','........','........']},
+ {mv:26,rot:1,b:['S..**..S','.*.**.*.','..****..','********','********','..****..','.*.**.*.','S..**..S']},
+ {mv:26,rot:2,b:['I......I','..G.....','........','...II...','...II...','.....G..','........','IG.....I']},
+ {g:{score:800},mv:28,law:'square',b:['........','.SS..SS.','.S....S.','........','........','.S....S.','.SS..SS.','........']},
+ {g:{lines:8},mv:26,b:['........','........','........','...##...','...##...','........','........','........']},
+ {g:{score:700},mv:26,rot:1,law:'color',colors:3,b:['........','........','........','........','........','........','x......x','xx....xx']},
+ {mv:26,b:['I......I','........','S..II..S','........','........','S..II..S','........','I......I']},
+ {mv:30,rot:1,law:'square',boss:1,b:['S......S','.I.GG.I.','........','.I......','......I.','........','.I.GG.I.','S......S']},
+ // ---- ⚡ TORMENTA ----
+ {mv:16,bn:14,b:['........','........','..B.....','........','........','.....B..','........','........']},
+ {mv:20,bn:16,law:'rows',b:['........','.B......','........','....B...','........','........','......B.','........']},
+ {g:{lines:6},mv:24,rot:1,law:'cross'},
+ {mv:24,rot:1,bn:20,b:['B...***.','...***..','..***...','.******.','...***..','..***...','.***....','.**....B']},
+ {mv:30,bn:18,b:['I.....GI','........','..B...I.','.G....G.','........','I....I..','........','IG......']},
+ {g:{lines:8},mv:28,rot:1,law:'cols',b:['........','........','.##..##.','........','........','.##..##.','........','........']},
+ {mv:18,rot:2,bn:13,b:['B......B','........','........','...xx...','...xx...','........','........','B......B']},
+ {mv:22,rot:1,law:'cross',b:['..G.....','.....G..','........','G......G','........','........','..G..G..','........']},
+ {mv:24,rot:1,b:['S......S','.*.**.*.','.******.','.******.','.******.','........','I......I','I.....II']},
+ {mv:30,rot:2,law:'square',bn:17,boss:1,b:['#I....I#','..G..G..','B......B','...GG...','.I....I.','....G...','..I..I.B','#......#']},
+];
+const ADV_WORLDS=[{e:'🔥',k:'aW1',c:'#ff6a1a'},{e:'❄️',k:'aW2',c:'#5fd0ff'},{e:'⚡',k:'aW3',c:'#b07bff'}];
+const advSt=()=>store.get('adv',{s:[]});
+const advStars=i=>advSt().s[i]||0;
+const advTotal=()=>advSt().s.reduce((a,b)=>a+(b||0),0);
+const advOpen=i=>i===0||advStars(i-1)>0;
+function advGoals(){const L=ADV[adv.lv],t=adv.tot,g=L.g||{};
+  return{lines:g.lines||0,score:g.score||0,gems:t.gems,ice:t.ice,bombs:t.bombs,paint:t.paint}}
+function advApply(){const L=ADV[adv.lv];ob=emptyGrid(null);tg=emptyGrid(0);const tot={gems:0,ice:0,bombs:0,paint:0};
+  const rnd=mulberry(hashStr('adv'+adv.lv)),nc=L.colors||7;
+  (L.b||[]).forEach((row,r)=>[...row].forEach((ch,c)=>{const col=Math.floor(rnd()*nc);
+    if(ch==='#')grid[r][c]=-2;
+    else if(ch==='x')grid[r][c]=col;
+    else if(ch==='S'){grid[r][c]=col;ob[r][c]='S'}
+    else if(ch==='I'){grid[r][c]=col;ob[r][c]='I';tot.ice++}
+    else if(ch==='G'){grid[r][c]=col;ob[r][c]='G';tot.gems++}
+    else if(ch==='B'){grid[r][c]=col;ob[r][c]='B'+(L.bn||12);tot.bombs++}
+    else if(ch==='*'){tg[r][c]=1;tot.paint++}}));
+  adv.tot=tot;adv.ap={lines:0,gems:0,ice:0,bombs:0,paint:0};adv.mv=L.mv;adv.won=false;adv.cont=false;adv.end=null;
+  recShown=true;gameBest=Infinity;sets=0;tray=nextSet();sets=0;
+  if((L.rot||0)>0&&!store.get('advRotTip',false)){store.set('advRotTip',true);setTimeout(()=>toast(T_('tRot',{n:L.rot})),600)}}
+function advDone(){const g=advGoals(),p=adv.ap;
+  return p.lines>=g.lines&&score>=g.score&&p.gems>=g.gems&&p.ice>=g.ice&&p.bombs>=g.bombs&&p.paint>=g.paint}
+// Las líneas que explotan según la ley del nivel (sirve para el juego normal también)
+function findLines(g){const rows=[],cols=[],sqs=[],law=mode==='adv'&&adv?ADV[adv.lv].law:null;
+  const full=a=>a.every(v=>v!==-1)&&a.some(v=>v>=0);
+  for(let i=0;i<N;i++){if(law!=='cols'&&full(g[i]))rows.push(i);if(law!=='rows'&&full(g.map(row=>row[i])))cols.push(i)}
+  if(law==='square')for(let i=0;i<=N-3;i++)for(let j=0;j<=N-3;j++){let ok=true;
+    for(let a=0;a<3&&ok;a++)for(let b=0;b<3;b++)if(g[i+a][j+b]<0){ok=false;break}if(ok)sqs.push([i,j])}
+  if(law==='cross'&&rows.length+cols.length<2){rows.length=0;cols.length=0}
+  return{rows,cols,sqs}}
+// líneas de un solo color (ley del color)
+function colorLines(rows,cols){if(mode!=='adv'||!adv||ADV[adv.lv].law!=='color')return 0;let n=0;
+  const one=a=>{const v=a.filter((x,k)=>x>=0);return v.length>0&&v.every(x=>x===v[0])};
+  rows.forEach(i=>{if(one(grid[i]))n++});cols.forEach(j=>{if(one(grid.map(r=>r[j])))n++});return n}
+// Piedra, hielo, gemas y bombas: deciden qué se rompe de verdad
+function advFilter(set){if(mode!=='adv'||!ob)return;const t=now();
+  for(const k of [...set]){const i=k/N|0,j=k%N;if(grid[i][j]<0){set.delete(k);continue}const o=ob[i][j];if(!o)continue;
+    const x=bx+(j+.5)*cell,y=by+(i+.5)*cell;
+    if(o==='S'){if(advForce){ob[i][j]=null;spawn(x,y,'#9a9aa6',8)}else set.delete(k);continue}
+    if(o==='I'){ob[i][j]=null;adv.ap.ice++;spawn(x,y,'#d8f6ff',REDUCE?2:8,'chip');rings.push({x,y,t0:t,col:'#bff4ff',r:cell*.9});if(!advForce)set.delete(k);continue}
+    if(o==='G'){ob[i][j]=null;adv.ap.gems++;rings.push({x,y,t0:t,col:'#7ff3ff',r:cell*1.3});spawn(x,y,'#7ff3ff',REDUCE?2:8,'sparkle');floatText('💎',x,y-cell*.4,'#ffffff',cell*.5);continue}
+    if(o[0]==='B'){ob[i][j]=null;adv.ap.bombs++;rings.push({x,y,t0:t,col:'#7dff8a',r:cell*1.3});floatText(T_('aSafe'),x,y-cell*.5,'#7dff8a',cell*.36);continue}}}
+// Giro Furioso: giran todas las piezas que quedan
+function rotPiece(q){q.cells=q.cells.map(([r,c])=>[c,q.h-1-r]);const w=q.w;q.w=q.h;q.h=w}
+function advRotate(){if(mode!=='adv'||!adv||adv.rl<=0||state!=='play')return false;adv.rl--;
+  tray.forEach(q=>{if(q&&!q.placed){rotPiece(q);q.ret=null}});trayT0=now()-400;
+  Snd.pick();vib(10);const c=slotC(1);floatText('↻',c.x,c.y-cell*.6,'#ffe14d',cell*.7);updateHud();save();checkOver();return true}
+function advAfter(placed){if(mode!=='adv'||!adv||adv.won||adv.end||state!=='play')return;let boom=null;
+  if(placed){adv.mv--;
+    for(let i=0;i<N;i++)for(let j=0;j<N;j++){const o=ob[i][j];if(o&&o[0]==='B'){const n=+o.slice(1)-1;ob[i][j]='B'+n;if(n<=0&&!boom)boom=[i,j]}}}
+  if(advDone()){advWin();return}
+  if(boom){const[i,j]=boom,x=bx+(j+.5)*cell,y=by+(i+.5)*cell;rings.push({x,y,t0:now(),col:'#ff3b2f',r:cell*3});shake=18;
+    for(let k=0;k<3;k++)spawn(x,y,'#ff7a1a',10,'ember');floatText(T_('aBoom'),W/2,by+cell*3,'#ff3b2f',cell*.7);advLose('bomb');return}
+  if(placed&&adv.mv<=0){advLose('moves');return}
+  updateHud()}
+function advStarsFor(){const r=adv.mv/ADV[adv.lv].mv;return r>=.3?3:r>=.12?2:1}
+function advWin(){adv.won=true;state='won';const st=advStarsFor(),lv=adv.lv,L=ADV[lv],s=advSt(),prev=s.s[lv]||0;
+  let earned=0,extra='';if(st>prev){earned=(st-prev)*15*(L.boss?2:1);s.s[lv]=st;store.set('adv',s);coins+=earned;saveProg();syncCoins()}
+  if(L.boss&&!prev)extra=unlockSomething();
+  games++;store.set('games',games);mission('games',1);
+  Snd.record();vib([30,40,90]);floatText(T_('aWin'),W/2,by+cell*3,'#ffe14d',cell*.7);
+  for(let i=0;i<7;i++)spawn(bx+Math.random()*cell*N,by+Math.random()*cell*4,SKINS[skin].colors[i],12,'confetti');
+  adv.end={win:1,st,earned,extra};setTimeout(advShowEnd,1300)}
+function advLose(reason,now_){if(!adv||adv.end)return;state='over';adv.end={win:0,reason};games++;store.set('games',games);mission('games',1);
+  hammer=false;$('#stuck').hidden=true;syncTools();if(!now_){Snd.over();setTimeout(advShowEnd,900)}else advShowEnd()}
+function advShowEnd(){if(!adv||!adv.end||state==='play')return;const e=adv.end,L=ADV[adv.lv];$('#ovAdvEnd').hidden=false;
+  $('#aeTitle').textContent=e.win?T_('aWin'):T_('aLose_'+e.reason);
+  $('#aeLv').textContent=T_('aLevel',{n:adv.lv+1});
+  $('#aeStars').innerHTML=e.win?[1,2,3].map(k=>`<i class="${k<=e.st?'on':''}" style="animation-delay:${k*.18}s">★</i>`).join(''):'';
+  $('#aeEarn').innerHTML=e.win&&e.earned?`+${e.earned} ${COIN}`:'';
+  $('#aeExtra').textContent=e.win?(e.extra||''):'';$('#aeExtra').hidden=!(e.win&&e.extra);
+  const more=$('#btnAeMore');more.hidden=!!(e.win||adv.cont);
+  if(!e.win)$('#aeMoreTxt').textContent=T_(e.reason==='bomb'?'aMoreBomb':e.reason==='space'?'aMoreSpace':'aMore');
+  $('#btnAeNext').hidden=!(e.win&&adv.lv<ADV.length-1);
+  $('#btnAeRetry').className=e.win?'btn ghost':'btn';
+  $('#aeLeft').textContent=e.win?T_('aLeft',{n:adv.mv}):''}
+async function advMore(){const e=adv.end;if(!e||e.win||adv.cont)return;$('#ovAdvEnd').hidden=true;const ok=await Ads.rewarded();
+  if(!ok){$('#ovAdvEnd').hidden=false;return}
+  adv.cont=true;adv.end=null;games--;state='play';
+  if(e.reason==='moves')adv.mv+=5;
+  else if(e.reason==='bomb'){for(let i=0;i<N;i++)for(let j=0;j<N;j++){const o=ob[i][j];if(o&&o[0]==='B')ob[i][j]='B'+(+o.slice(1)+5)}}
+  else{const set=new Set();for(let i=0;i<N;i++)for(let j=0;j<N;j++)if(((i>=3&&i<=4)||(j>=3&&j<=4))&&grid[i][j]>=0)set.add(i*N+j);
+    advForce=true;if(set.size)blast(set,0,4,4);advForce=false;tray=nextSet()}
+  updateHud();checkOver()}
+async function advStart(lv,ad){if(ad&&games>1&&games%INTERSTITIAL_EVERY===0)await Ads.interstitial();
+  if(mode!=='adv'&&(state==='play'||state==='stuck'))save();
+  mode='adv';dSpec=null;adv={lv};$$('.overlay').forEach(o=>o.hidden=true);$('#overDaily').hidden=true;newGame();
+  if(adv.lv===0&&!store.get('advIntro',false)){store.set('advIntro',true)}}
+function advHud(){const g=advGoals(),p=adv.ap,a=[T_('aLvShort',{n:adv.lv+1})];
+  if(g.lines)a.push(`🎯${Math.min(p.lines,g.lines)}/${g.lines}`);if(g.score)a.push(`🏁${g.score}`);
+  if(g.gems)a.push(`💎${p.gems}/${g.gems}`);if(g.ice)a.push(`🧊${p.ice}/${g.ice}`);if(g.bombs)a.push(`💣${p.bombs}/${g.bombs}`);if(g.paint)a.push(`✨${p.paint}/${g.paint}`);
+  a.push(`🧩${adv.mv}`);if((ADV[adv.lv].rot||0)>0)a.push(`↻${adv.rl}`);return a.join(' · ')}
+// dibujo de piedra, hielo, gema, bomba y casillas de la figura
+function drawOb(c,o,x,y,s,t){
+  if(o==='S'){const g=c.createLinearGradient(x,y,x,y+s);g.addColorStop(0,'#a3a3ad');g.addColorStop(1,'#5b5b66');rr(c,x+s*.04,y+s*.04,s*.92,s*.92,s*.16);c.fillStyle=g;c.fill();
+    c.strokeStyle='rgba(0,0,0,.35)';c.lineWidth=Math.max(1,s*.05);c.beginPath();c.moveTo(x+s*.28,y+s*.22);c.lineTo(x+s*.45,y+s*.48);c.lineTo(x+s*.35,y+s*.75);c.moveTo(x+s*.45,y+s*.48);c.lineTo(x+s*.72,y+s*.58);c.stroke();
+    c.fillStyle='rgba(255,255,255,.25)';rr(c,x+s*.12,y+s*.1,s*.76,s*.14,s*.07);c.fill();return}
+  if(o==='I'){c.fillStyle='rgba(200,245,255,.55)';rr(c,x+s*.04,y+s*.04,s*.92,s*.92,s*.16);c.fill();c.strokeStyle='rgba(255,255,255,.9)';c.lineWidth=Math.max(1,s*.05);
+    rr(c,x+s*.06,y+s*.06,s*.88,s*.88,s*.15);c.stroke();c.beginPath();c.moveTo(x+s*.2,y+s*.3);c.lineTo(x+s*.38,y+s*.2);c.moveTo(x+s*.62,y+s*.78);c.lineTo(x+s*.8,y+s*.62);c.stroke();return}
+  if(o==='G'){const cx=x+s/2,cy=y+s/2,r=s*.3,p=1+.06*Math.sin(t/180);c.save();c.shadowColor='#7ff3ff';c.shadowBlur=s*.35;c.beginPath();
+    c.moveTo(cx,cy-r*p);c.lineTo(cx+r*.8*p,cy-r*.2);c.lineTo(cx,cy+r*p);c.lineTo(cx-r*.8*p,cy-r*.2);c.closePath();
+    const g=c.createLinearGradient(cx,cy-r,cx,cy+r);g.addColorStop(0,'#ffffff');g.addColorStop(.5,'#7ff3ff');g.addColorStop(1,'#1aa6d8');c.fillStyle=g;c.fill();c.restore();
+    c.strokeStyle='rgba(255,255,255,.8)';c.lineWidth=Math.max(1,s*.03);c.beginPath();c.moveTo(cx-r*.8,cy-r*.2);c.lineTo(cx+r*.8,cy-r*.2);c.stroke();return}
+  if(o[0]==='B'){const n=+o.slice(1),cx=x+s/2,cy=y+s*.54,r=s*.3,hot=n<=3,p=hot?1+.08*Math.sin(t/90):1;
+    c.fillStyle='rgba(0,0,0,.35)';rr(c,x+s*.04,y+s*.04,s*.92,s*.92,s*.16);c.fill();
+    c.beginPath();c.arc(cx,cy,r*p,0,7);const g=c.createRadialGradient(cx-r*.3,cy-r*.3,r*.1,cx,cy,r);g.addColorStop(0,'#666');g.addColorStop(1,'#111');c.fillStyle=g;c.fill();
+    c.strokeStyle='#ffb020';c.lineWidth=Math.max(1,s*.05);c.beginPath();c.moveTo(cx+r*.5,cy-r*.8);c.quadraticCurveTo(cx+r*.9,cy-r*1.3,cx+r*1.2,cy-r*1.2);c.stroke();
+    c.fillStyle=Math.sin(t/70)>0?'#ffe14d':'#ff5a14';c.beginPath();c.arc(cx+r*1.2,cy-r*1.2,s*.06,0,7);c.fill();
+    c.font=`${Math.round(s*.36)}px Bungee, Impact, sans-serif`;c.textAlign='center';c.textBaseline='middle';c.fillStyle=hot?'#ff4d3d':'#ffffff';c.fillText(n,cx,cy+s*.02);return}}
+function drawTarget(c,x,y,s,t){const a=.35+.2*Math.sin(t/260+x*.05);c.strokeStyle=`rgba(255,225,77,${a+.2})`;c.lineWidth=Math.max(1.5,s*.05);c.setLineDash([s*.12,s*.08]);
+  rr(c,x+s*.12,y+s*.12,s*.76,s*.76,s*.14);c.stroke();c.setLineDash([]);star(c,x+s/2,y+s/2,s*.18,a+.3)}
+
+/* ---- pantallas: mapa, presentación del nivel y final ---- */
+function renderAdvMap(){const el=$('#advMap');el.innerHTML='';const s=advSt();
+  $('#advStars').textContent=T_('aStars',{n:advTotal(),m:ADV.length*3});
+  let cur=0;while(cur<ADV.length-1&&(s.s[cur]||0)>0)cur++;
+  ADV_WORLDS.forEach((w,wi)=>{const h=document.createElement('div');h.className='awld';h.style.setProperty('--wc',w.c);
+    const got=s.s.slice(wi*10,wi*10+10).reduce((a,b)=>a+(b||0),0);
+    h.innerHTML=`<b>${w.e} ${T_(w.k)}</b><span>★ ${got}/30</span>`;el.append(h);
+    const g=document.createElement('div');g.className='agrid';
+    for(let k=0;k<10;k++){const i=wi*10+k,L=ADV[i],op=advOpen(i),st=s.s[i]||0,b=document.createElement('button');
+      b.className='alv'+(op?'':' lock')+(L.boss?' boss':'')+(i===cur&&op?' cur':'');b.style.setProperty('--wc',w.c);
+      b.innerHTML=op?`<span>${L.boss?'👑':i+1}</span><small>${[1,2,3].map(n=>n<=st?'★':'☆').join('')}</small>`:`<span>🔒</span>`;
+      b.onclick=()=>{Snd.tap();if(!op){toast(T_('aLocked'));return}openLvl(i)};g.append(b)}
+    el.append(g)});
+  setTimeout(()=>{const c=el.querySelector('.cur');if(c)c.scrollIntoView({block:'center'})},60)}
+function goalLines(lv){const L=ADV[lv],g=L.g||{},b=(L.b||[]).join(''),cnt=ch=>[...b].filter(x=>x===ch).length,out=[];
+  if(g.lines)out.push('🎯 '+T_('gLines',{n:g.lines}));if(g.score)out.push('🏁 '+T_('gScore',{n:g.score}));
+  if(cnt('G'))out.push('💎 '+T_('gGems',{n:cnt('G')}));if(cnt('I'))out.push('🧊 '+T_('gIce',{n:cnt('I')}));
+  if(cnt('B'))out.push('💣 '+T_('gBombs',{n:cnt('B')}));if(cnt('*'))out.push('✨ '+T_('gPaint',{n:cnt('*')}));return out}
+function tipLines(lv){const L=ADV[lv],b=(L.b||[]).join(''),out=[];
+  if(L.rot)out.push(T_('tRot',{n:L.rot}));if(L.law)out.push(T_('t_'+L.law));
+  if(b.includes('#'))out.push(T_('tHole'));if(b.includes('S'))out.push(T_('tStone'));if(b.includes('I'))out.push(T_('tIce'));
+  if(b.includes('G'))out.push(T_('tGem'));if(b.includes('B'))out.push(T_('tBomb',{n:L.bn||12}));if(b.includes('*'))out.push(T_('tPaint'));return out}
+let lvlSel=0;
+function openLvl(i){lvlSel=i;const L=ADV[i],w=ADV_WORLDS[Math.floor(i/10)];
+  $('#lvlTitle').textContent=(L.boss?'👑 ':'')+T_('aLevel',{n:i+1});$('#lvlWorld').textContent=w.e+' '+T_(w.k)+(L.boss?' · '+T_('aBoss'):'');
+  $('#lvlGoals').innerHTML=goalLines(i).map(x=>`<li>${x}</li>`).join('')+`<li>🧩 ${T_('gMoves',{n:L.mv})}</li>`;
+  const tips=tipLines(i);$('#lvlTips').innerHTML=tips.map(x=>`<li>${x}</li>`).join('');$('#lvlTips').hidden=!tips.length;
+  const bd=$('#lvlBoard');bd.innerHTML='';const rows=L.b||Array(N).fill('........');
+  rows.forEach(r=>[...r].forEach(ch=>{const d=document.createElement('i');d.className='lc '+({'#':'h','x':'x','S':'s','I':'i','G':'g','B':'b','*':'t'}[ch]||'e');d.textContent={G:'💎',B:'💣',I:'',S:''}[ch]||'';bd.append(d)}));
+  const st=advStars(i);$('#lvlStars').innerHTML=[1,2,3].map(k=>`<i class="${k<=st?'on':''}">★</i>`).join('');
+  $('#ovAdv').hidden=true;$('#ovLvl').hidden=false}
+$('#btnStartAdv').onclick=()=>{Snd.unlock();Snd.tap();renderAdvMap();openOv('#ovAdv','#ovStart')};
+$('#btnAdvBack').onclick=()=>{Snd.tap();closeOv('#ovAdv');syncAdvBtn()};
+$('#btnLvlBack').onclick=()=>{Snd.tap();$('#ovLvl').hidden=true;renderAdvMap();$('#ovAdv').hidden=false};
+$('#btnLvlPlay').onclick=()=>{Snd.tap();back=null;advStart(lvlSel,false)};
+$('#btnAeMore').onclick=()=>advMore();
+$('#btnAeNext').onclick=()=>{Snd.tap();advStart(adv.lv+1,true)};
+$('#btnAeRetry').onclick=()=>{Snd.tap();advStart(adv.lv,true)};
+$('#btnAeMap').onclick=()=>{Snd.tap();$('#ovAdvEnd').hidden=true;state='menu';updateHud();renderAdvMap();back='#ovStart';$('#ovAdv').hidden=false;syncAdvBtn()};
+function syncAdvBtn(){const el=$('#advSub');if(el)el.textContent=T_('aStars',{n:advTotal(),m:ADV.length*3})}
+syncAdvBtn();
+function advRotFits(rest){if(mode!=='adv'||!adv||!(adv.rl>0))return false;
+  for(let k=1;k<=Math.min(3,adv.rl);k++){const cp=rest.map(q=>{let o={cells:q.cells,w:q.w,h:q.h};for(let m=0;m<k;m++){o={cells:o.cells.map(([r,c])=>[c,o.h-1-r]),w:o.h,h:o.w}}return o});if(cp.some(canFit))return true}return false}
+
 /* ================= NOTIFICACIONES DIARIAS ================= */
 const LNP=(window.Capacitor&&window.Capacitor.isNativePlatform&&window.Capacitor.isNativePlatform())?((window.Capacitor.Plugins&&window.Capacitor.Plugins.LocalNotifications)||(window.Capacitor.registerPlugin&&window.Capacitor.registerPlugin('LocalNotifications'))):null;
 let notifGranted=false;
@@ -1939,7 +2293,7 @@ if(AppP&&AppP.addListener){try{AppP.addListener('backButton',()=>{
   if(!$('#adsim').hidden)return;
   const open=[...$$('.overlay')].filter(o=>!o.hidden);const top=open[open.length-1];
   if(!top){if(state==='play'||state==='stuck')$('#ovPause').hidden=false;return}
-  const close={ovMusic:'#btnMusDone',ovSnd:'#btnSndDone',ovSkin:'#btnSkinDone',ovMis:'#btnMisDone',ovTool:'#btnToolClose',ovHelp:'#btnHelpDone',ovLang:'#btnLangDone',ovExit:'#btnExitCancel',ovXmas:'#btnXDone',ovXYear:'#btnXYearDone',ovXIntro:'#btnXLater'}[top.id];
+  const close={ovMusic:'#btnMusDone',ovSnd:'#btnSndDone',ovSkin:'#btnSkinDone',ovMis:'#btnMisDone',ovTool:'#btnToolClose',ovHelp:'#btnHelpDone',ovLang:'#btnLangDone',ovExit:'#btnExitCancel',ovXmas:'#btnXDone',ovXYear:'#btnXYearDone',ovXIntro:'#btnXLater',ovAdv:'#btnAdvBack',ovLvl:'#btnLvlBack',ovAdvEnd:'#btnAeMap'}[top.id];
   if(close){$(close).click();return}
   if(top.id==='ovPause'){top.hidden=true;return}
   if(top.id==='ovGift'){top.hidden=true;return}

@@ -2,7 +2,7 @@ name: Construir APK
 
 on:
   push:
-    branches: [main, navidad]   # otras ramas = versiones de prueba (no tocan el release de Play)
+    branches: [main, navidad, aventura]   # otras ramas = versiones de prueba (no tocan el release de Play)
   workflow_dispatch: {}
 
 permissions:
