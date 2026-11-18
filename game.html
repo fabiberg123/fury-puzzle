@@ -31,6 +31,7 @@ svg.coin{width:17px;height:17px;flex:none}
 @keyframes bump{40%{transform:scale(1.12)}}
 .tobest{height:16px;font-size:13px;font-weight:700;color:var(--muted);margin-top:2px}
 .tobest.rec{color:var(--accent2);font-family:var(--display);font-weight:400}
+.tobest.low{color:#ff6b7a;animation:bump .5s ease-in-out infinite}
 #stage{position:relative;flex:1;min-height:0}
 #cv{position:absolute;inset:0;width:100%;height:100%;touch-action:none;display:block}
 .tools{display:flex;justify-content:center;gap:14px;padding:6px 16px 4px;flex:none}
@@ -176,6 +177,14 @@ svg.coin{width:17px;height:17px;flex:none}
 .btn.xmas .xl{display:flex;align-items:center;gap:8px}
 .btn.xmas small{font-family:var(--body);font-weight:800;font-size:12.5px;opacity:.95}
 .btn.xmas.soon{filter:saturate(.55) brightness(.9)}
+.xhat{display:none}
+.xon .logo{position:relative;align-self:center}
+.xon .xhat{display:block;position:absolute;left:-17px;top:-19px;width:52px;height:52px;transform:rotate(-24deg);pointer-events:none;z-index:1;filter:drop-shadow(0 3px 2px rgba(0,0,0,.45))}
+.xon #ovStart .card{position:relative}
+.xon #ovStart .card::before{content:"";position:absolute;left:18px;right:18px;top:7px;height:9px;pointer-events:none;background:radial-gradient(circle,#ff4d5e 3.6px,transparent 4.2px) 0 0/54px 9px repeat-x,radial-gradient(circle,#3ddc7a 3.6px,transparent 4.2px) 18px 0/54px 9px repeat-x,radial-gradient(circle,#ffd34d 3.6px,transparent 4.2px) 36px 0/54px 9px repeat-x;filter:drop-shadow(0 0 4px rgba(255,220,120,.8));animation:xtw 1.6s ease-in-out infinite alternate}
+@keyframes xtw{from{opacity:.55}to{opacity:1}}
+.xon #ovStart::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.5;background-image:radial-gradient(circle,#fff 1.6px,transparent 2.2px),radial-gradient(circle,#fff 2.4px,transparent 3.2px),radial-gradient(circle,#fff 1.2px,transparent 1.8px);background-size:90px 90px,150px 150px,60px 60px;background-position:0 0,40px 60px,20px 30px;animation:xsnow 10s linear infinite}
+@keyframes xsnow{to{background-position:30px 450px,10px 510px,50px 330px}}
 .flakes{display:inline-flex;align-items:center;gap:4px;color:#bfe9ff}
 .flakes.bump{animation:bump .25s ease-out}
 .xsim{display:flex;align-items:center;justify-content:center;gap:5px;font-size:12.5px;font-weight:800;color:#fff;background:#2b7bff;border-radius:12px;padding:5px 6px;flex-wrap:wrap}
@@ -244,7 +253,7 @@ svg.coin{width:17px;height:17px;flex:none}
 
   <div class="overlay" id="ovStart">
     <div class="card">
-      <div class="logo"><span class="l1">FURY</span><span class="l2">PUZZLE</span></div>
+      <div class="logo"><svg class="xhat" viewBox="0 0 64 64" aria-hidden="true"><path d="M8 46C10 22 26 8 44 10c8 1 13 6 15 14-6-5-12-5-15-3 6 6 9 15 9 25z" fill="#e8283c"/><path d="M44 21c6 6 9 15 9 25H40c0-9-1-17 4-25z" fill="#b3122a" opacity=".55"/><rect x="3" y="42" width="55" height="13" rx="6.5" fill="#fff"/><circle cx="58" cy="25" r="6.5" fill="#fff"/></svg><span class="l1">FURY</span><span class="l2">PUZZLE</span></div>
       <div class="xsim" id="xSim" hidden>🧪 <button data-s="-1" aria-label="Día anterior">◀</button><b id="xSimD"></b><button data-s="1" aria-label="Día siguiente">▶</button><button data-s="p">⏩</button><button data-s="0">Hoy</button><button data-s="r" aria-label="Reiniciar evento">♻</button></div>
       <span class="pill"><i class="coinslot"></i><span class="coinval">0</span></span>
       <button class="btn" id="btnPlay"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l13-7.5z"/></svg><span data-i="play"></span></button>
@@ -764,6 +773,19 @@ const I18N_V11={
 "ur":{"xNY":"1","xName":"سرمائی میلہ","xSoon":"{n} دن میں شروع","xSoon1":"کل سے شروع!","xSoonT":"1 دسمبر سے شروع 🎄","xWinReady":"🎁 تحفہ {n} تیار ہے!","xToXmas":"نئے سال میں {n} دن باقی","xToXmas1":"کل نیا سال ہے!","xMerry":"چھٹیاں مبارک!","xToNY":"{y} میں {n} دن باقی","xToNYt":"⏳ {y} میں {t} باقی","xHappyNY":"نیا سال {y} مبارک!","xEnds":"میلہ {n} دن میں ختم ہوگا","xLast":"میلے کا آخری دن!","xIntroT":"سرمائی میلہ آ گیا!","xIntro":"کیلنڈر میں روز ایک تحفہ، سرپرائز تحفہ بلاکس اور برف کے گالوں ❄ سے سجانے کے لیے ایک درخت۔ سرمائی تھیم 6 جنوری تک مفت ہے۔","xAll":"🎄 سب کچھ سرمائی بنائیں","xLater":"ابھی نہیں","xCal":"کیلنڈر","xTree":"درخت","xYearB":"🎆 Fury Puzzle میں آپ کا {y}","xOpen":"🎁 تحفہ کھولیں!","xLocked":"🔒 {d} کو کھلے گا","xMissed":"آپ یہ دن چوک گئے، مگر اب بھی کھول سکتے ہیں۔","xRecVideo":"ویڈیو سے کھولیں","xRecCoins":"{n} میں کھولیں","xDbl":"ویڈیو سے دگنا کریں","xGot":"آپ کا تحفہ","xBoard":"🎄 خاص بورڈ: {n} لائنیں توڑیں","xBoardRw":"انعام:","xBoardPlay":"بورڈ کھیلیں","xBoardDone":"✅ بورڈ مکمل!","xBoardWin":"خاص بورڈ مکمل!","xDay25":"بڑا تحفہ","xDay31":"نیا سال","xDayR":"آخری تحفہ","xTreeInfo":"کسی بھی کھیل میں لائنیں توڑ کر برف کے گالے ❄ جمع کریں (غصے کے موڈ میں دگنے)۔ ان سے سجاوٹ لٹکائیں، ہر سجاوٹ کے ساتھ انعام ملتا ہے۔","xNext":"اگلی سجاوٹ: {a} / {b} ❄","xNextRw":"اگلی سجاوٹ کا انعام:","xHang":"سجاوٹ لٹکائیں","xTreeDone":"درخت مکمل! سرمائی تھیم ہمیشہ کے لیے آپ کی۔","xStar":"⭐ سرمائی تھیم ہمیشہ کے لیے","t_xOrn":"نئی سجاوٹ! اسے درخت پر لٹکائیں 🎄","t_xHung":"سجاوٹ لٹک گئی!","skin_xmas":"سرما","xFree":"مفت","xUseTheme":"🎄 سرمائی تھیم لگائیں","snd_bells":"گھنٹیاں","xPackEvt":"🎄 کیلنڈر کا بڑا تحفہ","p_gift":"تحفہ!","h_gift":"تحفہ: کھل کر سکے، کوئی ٹول یا سرپرائز طاقت دیتا ہے (صرف میلے میں)۔","trk_2":"سرمائی دھنیں","xFury":"سرمائی غصہ!","xYearT":"Fury Puzzle میں آپ کا {y}","y_lines":"ٹوٹی لائنیں","y_games":"کھیل","y_best":"ریکارڈ","y_combo":"بہترین کومبو","y_pieces":"رکھے گئے ٹکڑے","y_power":"طاقتیں","y_fury":"غصے کے موڈ","y_flakes":"برف کے گالے","xShareY":"اپنا سال شیئر کریں","xYearMsg":"Fury Puzzle میں میرا {y}: {l} لائنیں توڑیں، {b} پوائنٹس کا ریکارڈ اور x{c} کومبو 🔥 کیا آپ مجھے ہرا سکتے ہیں؟","nXsoon":"🎄 کل سے سرمائی میلہ شروع! روز ایک تحفہ۔","nXwin":"🎁 آپ کے کیلنڈر کا تحفہ {n} انتظار کر رہا ہے","nX24":"🎁 آج کا تحفہ آپ کا انتظار کر رہا ہے","nX25":"🎁 آپ کا بڑا تحفہ تیار ہے!","nX31":"🎆 سال کا آخری تحفہ! آدھی رات سے پہلے کھولیں","nXR":"🎁 آخری تحفہ آ گیا! میلے کا آخری دن","nXtree":"❄ برف کے گالے جمع کریں اور اپنا درخت سجائیں"}
 };
 for(const l in I18N_V11)Object.assign(I18N[l],I18N_V11[l]);
+const I18N_V12={
+"es":{"xBoardI":"🧊 Tablero congelado: rompe los {n} hielos con {p} piezas.","xBoardL":"🎄 Tablero navideño: rompe {n} líneas con {p} piezas.","xIce2":"El hielo grueso necesita 2 golpes.","xOutP":"¡Te quedaste sin piezas!","xLeft":"¡Quedan {n} piezas!","xLeft1":"¡Última pieza!","xMissI":"Te faltaron {n} hielos","xMissL":"Te faltaron {n} líneas","xPr2":"¡Jo, jo, jo!","xPr3":"¡Feliz Navidad!","xPr4":"¡Magia navideña!","xPr5":"¡MILAGRO DE NAVIDAD!","xClear":"¡Noche de paz!"},
+"en":{"xBoardI":"🧊 Frozen board: break all {n} ice blocks with {p} pieces.","xBoardL":"🎄 Christmas board: break {n} lines with {p} pieces.","xIce2":"Thick ice needs 2 hits.","xOutP":"You ran out of pieces!","xLeft":"{n} pieces left!","xLeft1":"Last piece!","xMissI":"{n} ice blocks to go","xMissL":"{n} lines to go","xPr2":"Ho ho ho!","xPr3":"Merry Christmas!","xPr4":"Christmas magic!","xPr5":"CHRISTMAS MIRACLE!","xClear":"Silent night!"},
+"pt":{"xBoardI":"🧊 Tabuleiro congelado: quebre os {n} gelos com {p} peças.","xBoardL":"🎄 Tabuleiro de Natal: quebre {n} linhas com {p} peças.","xIce2":"O gelo grosso precisa de 2 golpes.","xOutP":"Suas peças acabaram!","xLeft":"Restam {n} peças!","xLeft1":"Última peça!","xMissI":"Faltaram {n} gelos","xMissL":"Faltaram {n} linhas","xPr2":"Ho, ho, ho!","xPr3":"Feliz Natal!","xPr4":"Magia de Natal!","xPr5":"MILAGRE DE NATAL!","xClear":"Noite feliz!"},
+"fil":{"xBoardI":"🧊 Nagyelong board: basagin ang {n} yelo gamit ang {p} piraso.","xBoardL":"🎄 Pamaskong board: bumasag ng {n} linya gamit ang {p} piraso.","xIce2":"Kailangan ng 2 tama ang makapal na yelo.","xOutP":"Naubusan ka ng piraso!","xLeft":"{n} piraso na lang!","xLeft1":"Huling piraso!","xMissI":"Kulang ng {n} yelo","xMissL":"Kulang ng {n} linya","xPr2":"Ho ho ho!","xPr3":"Maligayang Pasko!","xPr4":"Mahika ng Pasko!","xPr5":"HIMALA NG PASKO!","xClear":"Payapang gabi!"},
+"vi":{"xBoardI":"🧊 Bàn đóng băng: phá hết {n} khối băng với {p} mảnh.","xBoardL":"🎄 Bàn Giáng sinh: phá {n} hàng với {p} mảnh.","xIce2":"Băng dày cần 2 lần phá.","xOutP":"Bạn đã hết mảnh!","xLeft":"Còn {n} mảnh!","xLeft1":"Mảnh cuối cùng!","xMissI":"Còn thiếu {n} khối băng","xMissL":"Còn thiếu {n} hàng","xPr2":"Hô hô hô!","xPr3":"Giáng sinh vui vẻ!","xPr4":"Phép màu Giáng sinh!","xPr5":"ĐIỀU KỲ DIỆU GIÁNG SINH!","xClear":"Đêm an lành!"},
+"hi":{"xBoardI":"🧊 जमा हुआ बोर्ड: {p} टुकड़ों में सभी {n} बर्फ़ तोड़ें।","xBoardL":"🎄 क्रिसमस बोर्ड: {p} टुकड़ों में {n} लाइनें तोड़ें।","xIce2":"मोटी बर्फ़ को 2 चोट चाहिए।","xOutP":"टुकड़े खत्म हो गए!","xLeft":"{n} टुकड़े बाकी!","xLeft1":"आख़िरी टुकड़ा!","xMissI":"{n} बर्फ़ बाकी रह गई","xMissL":"{n} लाइनें बाकी रह गईं","xPr2":"हो हो हो!","xPr3":"मेरी क्रिसमस!","xPr4":"क्रिसमस का जादू!","xPr5":"क्रिसमस का चमत्कार!","xClear":"शांत रात!"},
+"tr":{"xBoardI":"🧊 Donmuş tahta: {p} parçayla {n} buzun hepsini kır.","xBoardL":"🎄 Yılbaşı tahtası: {p} parçayla {n} çizgi kır.","xIce2":"Kalın buz 2 vuruş ister.","xOutP":"Parçaların bitti!","xLeft":"{n} parça kaldı!","xLeft1":"Son parça!","xMissI":"{n} buz kaldı","xMissL":"{n} çizgi kaldı","xPr2":"Ho ho ho!","xPr3":"Mutlu yıllar!","xPr4":"Yılbaşı büyüsü!","xPr5":"YILBAŞI MUCİZESİ!","xClear":"Kar gibi tertemiz!"},
+"ru":{"xBoardI":"🧊 Ледяное поле: разбей все льдинки ({n}) за {p} фигур.","xBoardL":"🎄 Новогоднее поле: сломай {n} линий за {p} фигур.","xIce2":"Толстый лёд ломается с 2 ударов.","xOutP":"Фигуры закончились!","xLeft":"Осталось фигур: {n}!","xLeft1":"Последняя фигура!","xMissI":"Не хватило льдинок: {n}","xMissL":"Не хватило линий: {n}","xPr2":"Хо-хо-хо!","xPr3":"С праздником!","xPr4":"Новогоднее чудо!","xPr5":"ЗИМНЯЯ СКАЗКА!","xClear":"Чисто, как снег!"},
+"id":{"xBoardI":"🧊 Papan beku: hancurkan semua {n} es dengan {p} balok.","xBoardL":"🎄 Papan spesial: hancurkan {n} garis dengan {p} balok.","xIce2":"Es tebal butuh 2 pukulan.","xOutP":"Balokmu habis!","xLeft":"Sisa {n} balok!","xLeft1":"Balok terakhir!","xMissI":"Kurang {n} es lagi","xMissL":"Kurang {n} garis lagi","xPr2":"Mantap!","xPr3":"Selamat berlibur!","xPr4":"Keajaiban liburan!","xPr5":"PESTA AKHIR TAHUN!","xClear":"Bersih seperti salju!"},
+"ur":{"xBoardI":"🧊 جما ہوا بورڈ: {p} ٹکڑوں سے تمام {n} برف توڑیں۔","xBoardL":"🎄 خاص بورڈ: {p} ٹکڑوں سے {n} لائنیں توڑیں۔","xIce2":"موٹی برف کو 2 ضربیں چاہییں۔","xOutP":"ٹکڑے ختم ہو گئے!","xLeft":"{n} ٹکڑے باقی!","xLeft1":"آخری ٹکڑا!","xMissI":"{n} برف باقی رہ گئی","xMissL":"{n} لائنیں باقی رہ گئیں","xPr2":"واہ واہ!","xPr3":"چھٹیاں مبارک!","xPr4":"سرمائی جادو!","xPr5":"برف کا جادو!","xClear":"برف جیسا صاف!"}
+};
+for(const l in I18N_V12)Object.assign(I18N[l],I18N_V12[l]);
 
 const detectLang=()=>{const list=(navigator.languages||[navigator.language||'en']).map(x=>String(x).toLowerCase());
   for(const l of list){const b=l.split('-')[0];if(b==='tl'||b==='fil')return'fil';if(b==='in')return'id';if(I18N[b])return b}return'en'};
@@ -937,6 +959,11 @@ function paintBlock(g,s,col,style,seed){
     x+=s*.02;y+=s*.02;w-=s*.04;
     g.save();rr(g,x,y,w,w,s*.11);g.clip();
     const gr=g.createLinearGradient(0,y,0,y+w);gr.addColorStop(0,L(col,.28));gr.addColorStop(.55,col);gr.addColorStop(1,D(col,.16));g.fillStyle=gr;g.fillRect(x,y,w,w);
+    // papel de regalo: lunares, rayas o estrellitas según el color
+    const pt=seed%4;g.fillStyle=lum>.7?'rgba(70,140,220,.22)':'rgba(255,255,255,.2)';
+    if(seed>0&&(pt===1||pt===0)){for(let a=0;a<5;a++)for(let b=0;b<5;b++){g.beginPath();g.arc(x+w*(.02+a*.24+(b%2?.12:0)),y+w*(.1+b*.2),w*.04,0,7);g.fill()}}
+    else if(pt===2){g.save();g.translate(x+w/2,y+w/2);g.rotate(-Math.PI/4);for(let a=-3;a<=3;a++)g.fillRect(-w,a*w*.24-w*.05,w*2,w*.1);g.restore()}
+    else if(pt===3){[[.22,.24],[.78,.22],[.22,.78],[.78,.78]].forEach(([a,b])=>star(g,x+w*a,y+w*b,w*.1,.6))}
     const rw=w*.17;g.fillStyle=rc;g.fillRect(x+w/2-rw/2,y,rw,w);g.fillRect(x,y+w/2-rw/2,w,rw);
     g.fillStyle='rgba(255,255,255,.35)';g.fillRect(x+w/2-rw/2,y,rw*.33,w);g.fillRect(x,y+w/2-rw/2,w,rw*.33);
     g.fillStyle='rgba(0,0,0,.16)';g.fillRect(x+w/2+rw*.2,y,rw*.3,w);g.fillRect(x,y+w/2+rw*.2,w,rw*.3);
@@ -956,6 +983,19 @@ function sprite(ci,size,sk=skin){
     paintBlock(c.getContext('2d'),px,ci<0?S.dead:S.colors[ci],S.style,ci+1);sprites.set(key,c)}
   return c;
 }
+/* Hielo de los tableros navideños: capa helada sobre el bloque (2 = hielo grueso, hay que romperlo dos veces) */
+const iceC=new Map();
+function iceSpr(size,lv){const px=Math.max(4,Math.round(size*DPR)),key=px+'|'+lv;let c=iceC.get(key);if(c)return c;
+  if(iceC.size>40)iceC.clear();c=document.createElement('canvas');c.width=c.height=px;const g=c.getContext('2d'),s=px,m=s*.03,w=s-2*m,th=lv===2;
+  rr(g,m,m,w,w,s*.13);const gr=g.createLinearGradient(0,0,s,s);
+  gr.addColorStop(0,`rgba(238,250,255,${th?.94:.6})`);gr.addColorStop(.5,`rgba(150,212,255,${th?.88:.34})`);gr.addColorStop(1,`rgba(208,240,255,${th?.94:.56})`);
+  g.fillStyle=gr;g.fill();g.lineWidth=s*(th?.085:.05);g.strokeStyle=th?'#ffffff':'rgba(255,255,255,.92)';g.stroke();
+  g.save();rr(g,m,m,w,w,s*.13);g.clip();g.fillStyle='rgba(255,255,255,.45)';g.beginPath();g.moveTo(0,s*.5);g.lineTo(s*.5,0);g.lineTo(s*.66,0);g.lineTo(0,s*.66);g.fill();
+  if(th){g.fillStyle='rgba(255,255,255,.5)';g.beginPath();g.moveTo(s*.55,s);g.lineTo(s,s*.55);g.lineTo(s,s*.68);g.lineTo(s*.68,s);g.fill()}g.restore();
+  g.strokeStyle=th?'#2a78cc':'rgba(255,255,255,.96)';g.lineWidth=s*(th?.06:.05);g.lineCap='round';g.translate(s/2,s/2);
+  for(let i=0;i<3;i++){g.save();g.rotate(i*Math.PI/3);g.beginPath();g.moveTo(0,-s*.25);g.lineTo(0,s*.25);g.moveTo(-s*.075,-s*.19);g.lineTo(0,-s*.115);g.lineTo(s*.075,-s*.19);g.moveTo(-s*.075,s*.19);g.lineTo(0,s*.115);g.lineTo(s*.075,s*.19);g.stroke();g.restore()}
+  iceC.set(key,c);return c}
+function iceBreak(x,y,lv){spawn(x,y,'#e6f6ff',REDUCE?2:lv===2?5:8,'chip');spawn(x,y,'#ffffff',REDUCE?1:3,'snow');rings.push({x,y,t0:now(),col:'#dff4ff',r:cell*.9})}
 /* Íconos de superpoderes dibujados sobre el bloque */
 
 const POWER_W={bomb:30,bolt:25,rainbow:15,x2:15,ice:15};
@@ -1009,7 +1049,7 @@ function makePiece(avoid,small){const s=pickW(small?SMALL:SHAPES);
 
 /* ================= ESTADO ================= */
 const N=8;
-let mode='normal',dSpec=null,dProg=0,dHit=false;
+let mode='normal',dSpec=null,dProg=0,dHit=false,xm=null,dUsed=0; // xm: hielo de los tableros navideños (0/1/2 por casilla) · dUsed: piezas usadas
 // los tableros navideños usan el mismo modo que el Desafío del día, pero con su propia partida guardada
 const GK=()=>mode==='daily'?(dSpec&&dSpec.xmas?'xgame':'dgame'):'game';
 const MK=()=>dSpec&&dSpec.xmas?'xmeta':'dmeta';
@@ -1019,6 +1059,9 @@ const pops=[],clearing=[],beams=[],parts=[],texts=[],rings=[];
 let drag=null,ghost=null,shake=0,trayT0=0,dieT0=0;
 const settings={snd:store.get('snd',true),vib:store.get('vib',true)};
 const emptyGrid=v=>Array.from({length:N},()=>Array(N).fill(v));
+const xLim=()=>mode==='daily'&&dSpec&&dSpec.xmas&&dSpec.lim?dSpec.lim:0;      // tablero navideño con piezas contadas
+const xOut=()=>xLim()&&!dHit&&dUsed>=dSpec.lim;
+const XF=()=>skin==='xmas'||(mode==='daily'&&!!dSpec&&!!dSpec.xmas);          // ¿festejos navideños?
 
 function canPlace(p,r,c){for(const[dr,dc]of p.cells){const a=r+dr,b=c+dc;if(a<0||b<0||a>=N||b>=N||grid[a][b]>=0)return false}return true}
 function canFit(p){for(let r=0;r<=N-p.h;r++)for(let c=0;c<=N-p.w;c++)if(canPlace(p,r,c))return true;return false}
@@ -1033,11 +1076,11 @@ function genSet(count=3){const small=iceSets>0;let bestSet=null,bf=-1;
   sets++;return bestSet}
 function nextSet(){const s=genSet(3);if(iceSets>0)iceSets--;trayT0=now();return s}
 function newGame(){grid=emptyGrid(-1);spec=emptyGrid(null);score=0;shown=0;combo=0;since=99;continued=false;sets=0;meter=0;furyT=0;x2T=0;iceSets=0;
-  gameBest=best;recShown=false;undoSnap=null;hammer=false;paid=0;
+  gameBest=best;recShown=false;undoSnap=null;hammer=false;paid=0;xm=null;dUsed=0;
   clearing.length=parts.length=texts.length=beams.length=rings.length=0;tray=nextSet();state='play';if(mode==='daily')applyDaily();save();updateHud(true);syncTools()}
-function snapshot(){return JSON.stringify({grid,spec,tray,score,combo,since,continued,sets,meter,furyT,x2T,iceSets,gameBest,recShown,paid})}
+function snapshot(){return JSON.stringify({grid,spec,tray,score,combo,since,continued,sets,meter,furyT,x2T,iceSets,gameBest,recShown,paid,xm,dUsed,xp:xLim()?dProg:null})}
 function restore(s){const g=JSON.parse(s);grid=g.grid;spec=g.spec||emptyGrid(null);tray=g.tray;score=g.score;combo=g.combo;since=g.since;continued=g.continued;
-  sets=g.sets||1;meter=g.meter||0;furyT=g.furyT||0;x2T=g.x2T||0;iceSets=g.iceSets||0;gameBest=g.gameBest!=null?g.gameBest:best;recShown=!!g.recShown;paid=g.paid||0}
+  sets=g.sets||1;meter=g.meter||0;furyT=g.furyT||0;x2T=g.x2T||0;iceSets=g.iceSets||0;gameBest=g.gameBest!=null?g.gameBest:best;recShown=!!g.recShown;paid=g.paid||0;xm=g.xm||null;dUsed=g.dUsed||0;if(g.xp!=null&&xLim()&&!dHit)dProg=g.xp}
 function save(){const live=state==='play'||state==='stuck';store.set(GK(),live?JSON.parse(snapshot()):null);if(mode==='daily'&&dSpec)store.set(MK(),{d:dSpec.d,p:dProg,h:dHit})}
 function load(){const g=store.get(GK(),null);if(!g||!g.grid)return false;if(mode==='daily'){const m=store.get(MK(),null);if(!m||!dSpec||m.d!==dSpec.d)return false;dProg=m.p||0;dHit=!!m.h}restore(JSON.stringify(g));shown=score;state='play';trayT0=now();updateHud(true);return true}
 
@@ -1420,7 +1463,7 @@ function resize(){DPR=Math.min(window.devicePixelRatio||1,3);W=stage.clientWidth
   bx=Math.round((W-bs)/2);by=Math.round(off+top+pad);
   // bandeja: las 3 piezas se reparten en todo el ancho de la pantalla (como Block Blast) y son más grandes
   ty=by+bs+pad+cell*.22;trayH=cell*2.78;slotW=Math.min((W-6)/3,(bs+pad*2)/3*1.2);tc=Math.min(cell*.6,slotW*.96/5,trayH/5);
-  sprites.clear();buildAmbient()}
+  sprites.clear();iceC.clear();buildAmbient();buildScene()}
 window.addEventListener('resize',resize);
 const now=()=>performance.now();
 const ease=t=>1-Math.pow(1-Math.min(1,Math.max(0,t)),3);
@@ -1431,11 +1474,23 @@ const overlayOpen=()=>!!document.querySelector('.overlay:not([hidden])');
 let amb=[];
 function buildAmbient(){amb=[];const k=SKINS[skin].ambient;if(REDUCE||k==='none'||k==='grid')return;const snow=k==='snow';
   for(let i=0;i<(snow?46:18);i++)amb.push({x:Math.random()*W,y:Math.random()*H,v:snow?14+Math.random()*30:8+Math.random()*22,s:snow?.8+Math.random()*2.6:1+Math.random()*3,p:Math.random()*7})}
+let scene=null;
+function buildScene(){scene=null;if(SKINS[skin].ambient!=='snow'||!W)return;const c=document.createElement('canvas');c.width=Math.round(W*DPR);c.height=Math.round(H*DPR);
+  const g=c.getContext('2d');g.scale(DPR,DPR);const y1=ty+trayH*.42,y2=ty+trayH*.74,R=mulberry(77);
+  const hill=(yb,amp,ph,c1,c2)=>{g.beginPath();g.moveTo(0,H);for(let x=0;x<=W;x+=6)g.lineTo(x,yb-Math.sin(x/W*Math.PI*1.6+ph)*amp-Math.sin(x/W*9+ph*2)*amp*.18);g.lineTo(W,H);g.closePath();
+    const gr=g.createLinearGradient(0,yb-amp,0,H);gr.addColorStop(0,c1);gr.addColorStop(1,c2);g.fillStyle=gr;g.fill();
+    g.beginPath();for(let x=0;x<=W;x+=6){const y=yb-Math.sin(x/W*Math.PI*1.6+ph)*amp-Math.sin(x/W*9+ph*2)*amp*.18;x?g.lineTo(x,y):g.moveTo(x,y)}g.strokeStyle='rgba(215,235,255,.38)';g.lineWidth=2;g.stroke();
+    return x=>yb-Math.sin(x/W*Math.PI*1.6+ph)*amp-Math.sin(x/W*9+ph*2)*amp*.18};
+  const pine=(x,y,h)=>{for(let k=0;k<3;k++){const w=h*(.42-k*.09),t=y-h*(.28+k*.24),b=y-h*k*.22;g.fillStyle='#0d2449';g.beginPath();g.moveTo(x,t-h*.12);g.lineTo(x+w,b);g.lineTo(x-w,b);g.closePath();g.fill();
+      g.fillStyle='rgba(235,245,255,.5)';g.beginPath();g.moveTo(x,t-h*.12);g.lineTo(x+w*.42,t+h*.06);g.lineTo(x,t+h*.02);g.lineTo(x-w*.42,t+h*.06);g.closePath();g.fill()}};
+  const f1=hill(y1,cell*.42,.4,'#1b3d78','#0c1d40');for(let i=0;i<7;i++){const x=W*(.04+i*.155+R()*.05);pine(x,f1(x)+2,cell*(.75+R()*.5))}
+  const f2=hill(y2,cell*.34,2.3,'#27508f','#0e2148');[.08,.9,.52].forEach((u,i)=>{const x=W*u;pine(x,f2(x)+3,cell*(1+i*.12))});
+  scene=c}
 function spawn(x,y,col,n,kind){const k=kind||SKINS[skin].particle;
-  for(let i=0;i<n;i++){const a=Math.random()*Math.PI*2,sp=(k==='bubble'?40:k==='snow'?60:k==='fw'?50:120)+Math.random()*(k==='snow'?170:220);
-    parts.push({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-(k==='bubble'?60:k==='fw'?20:k==='snow'?70:120),life:0,max:k==='fw'?1+Math.random()*.7:k==='snow'?.9+Math.random()*.7:.6+Math.random()*.5,col,k,
-      s:k==='confetti'?4+Math.random()*5:k==='bubble'?3+Math.random()*6:k==='snow'?2+Math.random()*2.4:k==='fw'?1.6+Math.random()*1.8:2+Math.random()*3.5,rot:Math.random()*6,vr:(Math.random()-.5)*(k==='snow'?5:14)})}}
-function floatText(txt,x,y,col,size){texts.push({txt,x:Math.max(size*2.4,Math.min(W-size*2.4,x)),y,col,size,t0:now()})}
+  for(let i=0;i<n;i++){const a=Math.random()*Math.PI*2,sp=(k==='bubble'?40:k==='snow'?60:k==='fw'?50:k==='gstar'?90:120)+Math.random()*(k==='snow'?170:220);
+    parts.push({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-(k==='bubble'?60:k==='fw'?20:k==='snow'?70:k==='gstar'?150:120),life:0,max:k==='fw'?1+Math.random()*.7:k==='snow'?.9+Math.random()*.7:k==='gstar'?1+Math.random()*.6:.6+Math.random()*.5,col,k,
+      s:k==='confetti'?4+Math.random()*5:k==='bubble'?3+Math.random()*6:k==='snow'?2+Math.random()*2.4:k==='fw'?1.6+Math.random()*1.8:k==='gstar'?4+Math.random()*4.5:2+Math.random()*3.5,rot:Math.random()*6,vr:(Math.random()-.5)*(k==='snow'?5:14)})}}
+function floatText(txt,x,y,col,size,xm){texts.push({txt,x:Math.max(size*2.4,Math.min(W-size*2.4,x)),y,col,size,t0:now(),xm:!!xm})}
 let toastT=0;function toast(msg){const t=$('#toast');t.textContent=msg;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>t.hidden=true,2200)}
 
 /* ================= MISIONES ================= */
@@ -1498,7 +1553,7 @@ function addScore(v){score+=v;mission('score',score,true);
 function place(p,r,c){
   undoSnap=snapshot();const t=now();
   p.cells.forEach(([dr,dc],k)=>{grid[r+dr][c+dc]=p.ci;spec[r+dr][c+dc]=p.sp&&p.sp.i===k?p.sp.t:null;pops.push({r:r+dr,c:c+dc,t0:t})});
-  p.placed=true;addScore(p.cells.length*mult());Snd.place();vib(12);mission('pieces',1);
+  p.placed=true;addScore(p.cells.length*mult());Snd.place();vib(12);mission('pieces',1);if(xLim())dUsed++;
   const rows=[],cols=[];
   for(let i=0;i<N;i++){if(grid[i].every(v=>v>=0))rows.push(i);if(grid.every(row=>row[i]>=0))cols.push(i)}
   const n=rows.length+cols.length,set=new Set();
@@ -1507,6 +1562,7 @@ function place(p,r,c){
   if(n){combo=since<3?combo+1:1;since=0}else{since++;if(since>=3)combo=0}
   if(set.size)blast(set,n,r+p.h/2,c+p.w/2);
   if(tray.every(q=>q.placed))tray=nextSet();
+  if(xLim()&&!dHit){const left=dSpec.lim-dUsed;if(left===3||left===1)floatText(T_(left===1?'xLeft1':'xLeft',{n:left}),W/2,by+cell*5.4,'#ff8a8a',cell*.42)}
   updateHud();save();checkOver();
 }
 /* Rompe celdas, encadena superpoderes, suma puntos y llena la barra de furia */
@@ -1524,21 +1580,26 @@ function blast(set,n,cr,cc){
     else if(type==='x2'){x2T=X2_SECONDS;rings.push({x,y,t0:t,col:'#ffe14d',r:cell*3})}
     else if(type==='ice'){iceSets=Math.max(iceSets,1);tray=tray.map(p=>p.placed?p:Object.assign(makePiece([],true),{ci:p.ci}));trayT0=now();rings.push({x,y,t0:t,col:'#bff4ff',r:cell*3})}
   }
+  let xHit=0;
   set.forEach(k=>{const i=k/N|0,j=k%N,d=Math.hypot(i+.5-cr,j+.5-cc);
+    if(xm&&xm[k]){xHit++;iceBreak(bx+(j+.5)*cell,by+(i+.5)*cell,xm[k]);if(xm[k]===2){xm[k]=1;pops.push({r:i,c:j,t0:t});return}xm[k]=0}
     clearing.push({r:i,c:j,ci:grid[i][j],sp:spec[i][j],t0:t+d*26});grid[i][j]=-1;spec[i][j]=null});
+  if(xHit){if(settings.snd){Nz(.14,{hp:4200,v:.2});chime(98,0,.05,.35)}
+    if(mode==='daily'&&dSpec&&dSpec.type==='ice'&&!dHit){dProg+=xHit;if(dProg>=dSpec.goal)dailyWin()}}
   let gain=n?10*n*(n+1)/2*Math.max(1,combo):0;gain+=(set.size-base+(n?0:base))*5;gain=Math.round(gain*mult());addScore(gain);
   const px=bx+cc*cell,py=by+cr*cell;
-  if(n){const praise=n>=5?T_('pr5'):n===4?T_('pr4'):n===3?T_('pr3'):n===2?T_('pr2'):'';
-    if(praise)floatText(praise,W/2,by+cell*2.6,S.ui.accent2,cell*.75);
+  if(n){const X=XF(),praise=n>=2?T_((X?'xPr':'pr')+Math.min(n,5)):'';
+    if(praise)floatText(praise,W/2,by+cell*2.6,S.ui.accent2,cell*(X?.68:.75),X);
+    if(X&&(n>=2||combo>=3))xParty(n>=4?3:n===3||combo>=5?2:1,px,py);
     stat('comboMax',combo,true);if(combo>=2){floatText(T_('combo',{n:combo}),W/2,by+cell*(praise?3.6:3),S.ui.fg,cell*.55);mission('combo',1)}
     mission('lines',n);if(n>=3)mission('multi',1);Snd.clear(n,combo);xFlakes(n*(furyT>0?2:1));xFlash=t}
   if(gain)floatText('+'+gain,px,py,'#ffffff',cell*.5);
-  if(grid.every(row=>row.every(v=>v<0))){stat('clears',1);addScore(300*mult());floatText(T_('boardClear'),W/2,by+cell*4.6,S.ui.accent2,cell*.55)}
+  if(grid.every(row=>row.every(v=>v<0))){stat('clears',1);addScore(300*mult());const X=XF();floatText(T_(X?'xClear':'boardClear'),W/2,by+cell*4.6,S.ui.accent2,cell*.55,X);if(X)xParty(3,W/2,by+cell*4)}
   vib(n>1?[20,30,40]:25);if(!REDUCE)shake=Math.max(shake,Math.min(14,4+n*3+combo));
   if(furyT<=0){meter=Math.min(100,meter+n*11+(combo>1?(combo-1)*9:0)+powers*8);if(meter>=100)startFury()}
 }
 function startFury(){furyT=FURY_SECONDS;meter=100;lastFury=true;const xs=skin==='xmas';
-  floatText(T_(xs?'xFury':'furyMode'),W/2,by+cell*3.2,xs?'#ffd34d':'#ff6a1a',cell*(xs?.6:.8));floatText(T_('x3'),W/2,by+cell*4.2,'#ffe14d',cell*.5);
+  floatText(T_(xs?'xFury':'furyMode'),W/2,by+cell*3.2,xs?'#ffd34d':'#ff6a1a',cell*(xs?.6:.8),xs);if(xs){flySleigh();giftRain(REDUCE?4:10)}floatText(T_('x3'),W/2,by+cell*4.2,'#ffe14d',cell*.5);
   Snd.fury();if(xs&&settings.snd&&sndPack!=='bells')for(let i=0;i<5;i++)jingle(i*.13,.06);
   vib([40,30,40,30,80]);if(!REDUCE)shake=16;mission('fury',1);
   for(let i=0;i<40;i++)spawn(bx+Math.random()*cell*N,by+cell*N,xs?(i%2?'#ffffff':'#ffd34d'):'#ff7a1a',1,xs?'snow':'ember')}
@@ -1549,13 +1610,13 @@ function openGiftBlock(x,y,t){floatText(T_('p_gift'),x,y-cell*1.3,'#ffd34d',cell
   if(r<.45)return['bomb','bolt','rainbow'][Math.floor(Math.random()*3)];
   if(r<.75){const c=10+Math.floor(Math.random()*5)*5;coins+=c;saveProg();syncCoins();floatText(T_('dCoins',{n:c}),x,y-cell*.45,'#ffd34d',cell*.42);return null}
   const k=['hammer','shuffle','undo'][Math.floor(Math.random()*3)];inv[k]++;saveProg();syncTools();floatText(T_('t_plusOne',{tool:T_(k)}),x,y-cell*.45,'#ffffff',cell*.42);return null}
-function checkOver(){if(state!=='play')return;const rest=tray.filter(q=>!q.placed);
+function checkOver(){if(state!=='play')return;if(xOut()){toast(T_('xOutP'));Snd.bad();vib([30,60,30]);die();return}const rest=tray.filter(q=>!q.placed);
   if(rest.length&&!rest.some(canFit)){
     if(inv.hammer+inv.shuffle+inv.undo>0){state='stuck';$('#stuck').hidden=false;Snd.bad();vib([30,60,30]);save();return}
     die()}}
 function die(){$('#stuck').hidden=true;hammer=false;syncTools();state='dying';dieT0=now()+300;setTimeout(()=>Snd.over(),300);store.set(GK(),null);setTimeout(showOver,300+N*70+700)}
 $('#btnGiveUp').onclick=()=>{if(state==='stuck')die()};
-function showOver(){state='over';games++;store.set('games',games);mission('games',1);
+function showOver(){state='over';$('#ovOver h2').textContent=T_(xOut()?'xOutP':'noSpace');games++;store.set('games',games);mission('games',1);
   earned=Math.max(0,Math.floor(score/POINTS_PER_COIN)-paid);paid+=earned;coins+=earned;saveProg();syncCoins();
   const rec=mode!=='daily'&&score>gameBest&&score>0;dailyOver();
   $('#overScore').textContent=score;$('#overBest').textContent=best;$('#overRecord').hidden=!rec;
@@ -1565,7 +1626,7 @@ $('#btnDouble').onclick=async()=>{const b=$('#btnDouble');b.disabled=true;$('#ov
   if(ok){addCoins(earned);$('#overEarn').innerHTML=`+${earned*2} ${COIN}`;b.hidden=true}else b.disabled=false};
 async function doContinue(){$('#ovOver').hidden=true;const ok=await Ads.rewarded();
   if(!ok){$('#ovOver').hidden=false;return}
-  games--;continued=true;state='play';const set=new Set();
+  games--;continued=true;state='play';if(xOut())dUsed=dSpec.lim-5;const set=new Set();
   for(let i=0;i<N;i++)for(let j=0;j<N;j++)if(((i>=3&&i<=4)||(j>=3&&j<=4))&&grid[i][j]>=0)set.add(i*N+j);
   beams.push({rc:'r',i:3,t0:now(),ci:0},{rc:'r',i:4,t0:now(),ci:0},{rc:'c',i:3,t0:now(),ci:0},{rc:'c',i:4,t0:now(),ci:0});
   if(set.size)blast(set,0,4,4);tray=nextSet();save();checkOver()}
@@ -1577,7 +1638,7 @@ let lastShown=-1;
 function updateHud(force){if(mode!=='daily'&&score>best){best=score;store.set('best',best)}$('#best').textContent=best;$('#startBest').textContent=best;if(force){shown=score;lastShown=-1}
   const tb=$('#tobest');
   if(state!=='play'&&state!=='stuck'){tb.textContent='';tb.className='tobest'}
-  else if(mode==='daily'&&dSpec){tb.textContent=dHit?'✅ '+T_(dSpec.xmas?'xBoardWin':'dWin'):`${dSpec.xmas?'🎄':'🎯 '+T_('dShort')+':'} ${Math.min(dProg,dSpec.goal)} / ${dSpec.goal}`;tb.className='tobest rec'}
+  else if(mode==='daily'&&dSpec){const pl=xLim()?dSpec.lim-dUsed:0;tb.textContent=dHit?'✅ '+T_(dSpec.xmas?'xBoardWin':'dWin'):`${dSpec.xmas?(dSpec.type==='ice'?'🧊':'🎄'):'🎯 '+T_('dShort')+':'} ${Math.min(dProg,dSpec.goal)} / ${dSpec.goal}`+(xLim()?`  ·  🧩 ${pl}`:'');tb.className='tobest rec'+(xLim()&&!dHit&&pl<=3?' low':'')}
   else if(recShown){tb.textContent=T_('newRecord').toUpperCase();tb.className='tobest rec'}
   else if(gameBest>0&&score>=gameBest*.6){tb.textContent=T_('toBest',{n:gameBest-score+1});tb.className='tobest'}
   else{tb.textContent='';tb.className='tobest'}}
@@ -1622,6 +1683,7 @@ function frame(){const t=now(),dt=Math.min(.05,(t-last)/1000);last=t;const S=SKI
   const fury=furyT>0;
   ctx.setTransform(DPR,0,0,DPR,0,0);ctx.clearRect(0,0,W,H);
   // ambiente
+  if(scene)ctx.drawImage(scene,0,0,W,H);
   for(const a of amb){a.p+=dt;
     if(S.ambient==='snow'){a.y+=a.v*dt*(fury?2.2:1);if(a.y>H+10){a.y=-10;a.x=Math.random()*W}
       ctx.fillStyle=`rgba(255,255,255,${.28+.18*a.s})`;ctx.beginPath();ctx.arc(a.x+Math.sin(a.p*.9+a.s*3)*9,a.y,a.s,0,7);ctx.fill();continue}
@@ -1641,7 +1703,11 @@ function frame(){const t=now(),dt=Math.min(.05,(t-last)/1000);last=t;const S=SKI
     else if(iceSets>0){ctx.textAlign='right';ctx.fillStyle='#bff4ff';ctx.fillText(T_('c_ice'),x0+w0,barY-6)}
     rr(ctx,x0,barY,w0,barH,barH/2);ctx.fillStyle='rgba(0,0,0,.35)';ctx.fill();
     if(fill>0){const gr=ctx.createLinearGradient(x0,0,x0+w0,0);gr.addColorStop(0,'#ffc233');gr.addColorStop(.6,'#ff6a1a');gr.addColorStop(1,'#ff2d55');
-      ctx.save();if(fury||fill>.85){ctx.shadowColor='#ff6a1a';ctx.shadowBlur=12+6*Math.sin(t/100)}rr(ctx,x0,barY,Math.max(barH,w0*fill),barH,barH/2);ctx.fillStyle=gr;ctx.fill();ctx.restore()}
+      ctx.save();if(fury||fill>.85){ctx.shadowColor='#ff6a1a';ctx.shadowBlur=12+6*Math.sin(t/100)}rr(ctx,x0,barY,Math.max(barH,w0*fill),barH,barH/2);ctx.fillStyle=S.lights?'#e8283c':gr;ctx.fill();
+        if(S.lights){ctx.clip();ctx.shadowBlur=0;ctx.fillStyle='rgba(255,255,255,.9)';const st=barH*2,o=REDUCE?0:(t/45)%st;
+          for(let x=x0-st*2+o;x<x0+w0*fill+st;x+=st){ctx.beginPath();ctx.moveTo(x,barY+barH);ctx.lineTo(x+barH,barY);ctx.lineTo(x+barH+st*.5,barY);ctx.lineTo(x+st*.5,barY+barH);ctx.fill()}
+          ctx.fillStyle='rgba(255,255,255,.28)';ctx.fillRect(x0,barY,w0,barH*.35)}
+        ctx.restore()}
   }
   // tablero (en Modo Furia se prende fuego)
   const XS=!!S.lights; // Navidad: la Furia es dorada y con destellos
@@ -1649,7 +1715,8 @@ function frame(){const t=now(),dt=Math.min(.05,(t-last)/1000);last=t;const S=SKI
     if(!REDUCE&&Math.random()<.6){if(XS){if(Math.random()<.5)spawn(bx+Math.random()*bs,by+Math.random()*bs,'#ffffff',1,'sparkle')}else spawn(bx+Math.random()*bs,by+bs+pad,Math.random()<.5?'#ffc233':'#ff5a14',1,'ember')}}
   ctx.save();ctx.shadowColor=fury?(XS?'#ffd34d':'#ff5a14'):S.glow;ctx.shadowBlur=fury?cell*(1+.4*Math.sin(t/100)):cell*.7;rr(ctx,bx-pad,by-pad,bs+pad*2,bs+pad*2,cell*.3);ctx.fillStyle=S.board;ctx.fill();ctx.restore();
   ctx.lineWidth=fury?3:2;ctx.strokeStyle=fury?(XS?'#ffd34d':'#ff7a1a'):S.boardEdge;rr(ctx,bx-pad,by-pad,bs+pad*2,bs+pad*2,cell*.3);ctx.stroke();
-  if(XS)drawXmasFrame(t,fury);
+  if(XS){ctx.lineWidth=Math.max(3.5,cell*.11);ctx.strokeStyle=fury?'#fff6d6':'#f6f8ff';ctx.stroke();ctx.setLineDash([cell*.24,cell*.24]);ctx.lineDashOffset=fury?-t/28:0;ctx.strokeStyle=fury?'#ffb81f':'#e8283c';ctx.stroke();ctx.setLineDash([]);ctx.lineDashOffset=0;
+    drawXmasFrame(t,fury)}
   if(S.ambient==='grid'){ctx.strokeStyle='rgba(120,90,255,.18)';ctx.lineWidth=1;for(let i=1;i<N;i++){ctx.beginPath();ctx.moveTo(bx+i*cell,by);ctx.lineTo(bx+i*cell,by+bs);ctx.moveTo(bx,by+i*cell);ctx.lineTo(bx+bs,by+i*cell);ctx.stroke()}}
   ctx.fillStyle=S.cell;for(let i=0;i<N;i++)for(let j=0;j<N;j++){rr(ctx,bx+j*cell+cell*.04,by+i*cell+cell*.04,cell*.92,cell*.92,cell*.15);ctx.fill()}
   if(grid){
@@ -1658,6 +1725,7 @@ function frame(){const t=now(),dt=Math.min(.05,(t-last)/1000);last=t;const S=SKI
       if(state==='dying'&&t>dieT0+i*70)ci=-1;else if(gl&&gl.has(i*N+j))ci=ghost.ci;
       let sc=1;for(let k=pops.length-1;k>=0;k--){const p=pops[k];if(p.r===i&&p.c===j){const u=(t-p.t0)/220;if(u<1)sc=1+.18*Math.sin(u*Math.PI);break}}
       const x=bx+j*cell,y=by+i*cell;ctx.drawImage(sprite(ci,cell),x+cell*(1-sc)/2,y+cell*(1-sc)/2,cell*sc,cell*sc);
+      if(xm&&xm[i*N+j]&&ci>=0)ctx.drawImage(iceSpr(cell,xm[i*N+j]),x+cell*(1-sc)/2,y+cell*(1-sc)/2,cell*sc,cell*sc);
       if(spec&&spec[i][j]&&ci>=0)drawPower(ctx,spec[i][j],x,y,cell,t);
       if(gl&&gl.has(i*N+j)){ctx.fillStyle=`rgba(255,255,255,${.12+.1*Math.sin(t/90)})`;rr(ctx,x+cell*.05,y+cell*.05,cell*.9,cell*.9,cell*.15);ctx.fill()}
       if(hammer){ctx.strokeStyle=`rgba(255,255,255,${.35+.3*Math.sin(t/120)})`;ctx.lineWidth=2;rr(ctx,x+cell*.08,y+cell*.08,cell*.84,cell*.84,cell*.15);ctx.stroke()}}
@@ -1692,22 +1760,29 @@ function frame(){const t=now(),dt=Math.min(.05,(t-last)/1000);last=t;const S=SKI
     if(q.sp){const[dr,dc]=q.cells[q.sp.i];drawPower(ctx,q.sp.t,g.x+dc*g.s,g.y+dr*g.s,g.s,t)}}
   // partículas
   for(let k=parts.length-1;k>=0;k--){const p=parts[k];p.life+=dt;if(p.life>p.max){parts.splice(k,1);continue}
-    const grav=p.k==='bubble'?-160:p.k==='ember'?-260:p.k==='confetti'?380:p.k==='snow'?70:p.k==='fw'?150:600;p.vy+=grav*dt;p.vx*=.98;if(p.k==='fw'||p.k==='snow'){p.vx*=.975;p.vy*=.975}p.x+=p.vx*dt;p.y+=p.vy*dt;p.rot+=p.vr*dt;
+    const grav=p.k==='bubble'?-160:p.k==='ember'?-260:p.k==='confetti'?380:p.k==='snow'?70:p.k==='fw'?150:p.k==='gstar'?330:p.k==='gift'?260:600;p.vy+=grav*dt;p.vx*=.98;if(p.k==='fw'||p.k==='snow'){p.vx*=.975;p.vy*=.975}p.x+=p.vx*dt;p.y+=p.vy*dt;p.rot+=p.vr*dt;
     const al=1-p.life/p.max;ctx.globalAlpha=al;
     if(p.k==='bubble'){ctx.strokeStyle=L(p.col,.5);ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(p.x,p.y,p.s,0,7);ctx.stroke()}
     else if(p.k==='confetti'||p.k==='chip'){ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.rot);ctx.fillStyle=p.k==='chip'?D(p.col,.15):p.col;ctx.fillRect(-p.s/2,-p.s/4,p.s,p.s/2);ctx.restore()}
     else if(p.k==='sparkle'){star(ctx,p.x,p.y,p.s*1.6,al)}
+    else if(p.k==='gstar'){ctx.globalAlpha=Math.min(1,al*2.2);ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.rot);starPath(ctx,0,0,p.s,p.s*.46);ctx.fillStyle=p.col;ctx.fill();ctx.restore()}
+    else if(p.k==='gift'){ctx.globalAlpha=Math.min(1,al*4);ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.rot);ctx.drawImage(sprite(p.ci,p.s,'xmas'),-p.s/2,-p.s/2,p.s,p.s);ctx.restore()}
     else if(p.k==='snow'){ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.rot);ctx.strokeStyle=L(p.col,.72);ctx.lineWidth=Math.max(1,p.s*.38);ctx.lineCap='round';ctx.beginPath();
       for(let m=0;m<3;m++){const an=m*Math.PI/3,cx=Math.cos(an)*p.s*1.7,cy=Math.sin(an)*p.s*1.7;ctx.moveTo(-cx,-cy);ctx.lineTo(cx,cy)}ctx.stroke();ctx.restore()}
     else if(p.k==='fw'){ctx.globalCompositeOperation='lighter';ctx.fillStyle=p.col;ctx.beginPath();ctx.arc(p.x,p.y,p.s*(.5+al*.7),0,7);ctx.fill();ctx.globalCompositeOperation='source-over'}
     else{ctx.fillStyle=L(p.col,.35);ctx.beginPath();ctx.arc(p.x,p.y,p.s*al+.5,0,7);ctx.fill()}
     ctx.globalAlpha=1}
+  if(sleigh)drawSleigh(t);
   if(rockets.length)drawRockets(dt);
   // textos flotantes
   for(let k=texts.length-1;k>=0;k--){const f=texts[k],u=(t-f.t0)/1100;if(u>1){texts.splice(k,1);continue}
     const sc=u<.15?.5+u/.15*.6:u<.25?1.1-(u-.15):1;ctx.save();ctx.globalAlpha=u>.7?(1-u)/.3:1;ctx.translate(f.x,f.y-u*cell*1.2);ctx.scale(sc,sc);
     ctx.font=`${Math.round(f.size)}px Bungee, Impact, "Arial Black", sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';
-    ctx.lineWidth=f.size*.18;ctx.strokeStyle='rgba(0,0,0,.55)';ctx.lineJoin='round';ctx.strokeText(f.txt,0,0);ctx.fillStyle=f.col;ctx.fillText(f.txt,0,0);ctx.restore()}
+    const tw=ctx.measureText(f.txt).width;if(tw>W-18){const k=(W-18)/tw;ctx.scale(k,k)}
+    ctx.lineWidth=f.size*.18;ctx.strokeStyle=f.xm?'rgba(6,30,18,.8)':'rgba(0,0,0,.55)';ctx.lineJoin='round';ctx.strokeText(f.txt,0,0);
+    if(f.xm&&lang!=='hi'&&lang!=='ur'){ // letras rojas, blancas y verdes, como un bastón de caramelo
+      ctx.textAlign='left';let x=-tw/2,n=0;for(const ch of f.txt){const cw=ctx.measureText(ch).width;if(ch.trim()){ctx.fillStyle=XTC[n++%3];ctx.fillText(ch,x,0)}x+=cw}}
+    else{ctx.fillStyle=f.col;ctx.fillText(f.txt,0,0)}ctx.restore()}
   tickHud();
   if(fury!==lastFury&&!fury)lastFury=false;
   requestAnimationFrame(frame)}
@@ -1715,7 +1790,7 @@ function frame(){const t=now(),dt=Math.min(.05,(t-last)/1000);last=t;const S=SKI
 /* ================= TEMAS: APLICAR, COMPRAR Y ELEGIR ================= */
 function applySkin(k){skin=k;store.set('skin',k);const S=SKINS[k],app=$('#app');app.style.background=S.bg;
   const u=S.ui;for(const p of['fg','muted','accent','accent2','panel','edge','btnfg'])app.style.setProperty('--'+p,u[p]);
-  document.body.style.background=S.board;sprites.clear();buildAmbient()}
+  document.body.style.background=S.board;sprites.clear();buildAmbient();buildScene()}
 let pendingBuy=null;
 function buildSkinList(){const list=$('#skinList');list.innerHTML='';
   for(const k in SKINS){const S=SKINS[k],own=skinOwned(k),b=document.createElement('button');
@@ -1819,7 +1894,7 @@ function dailySpec(d=dayKey()){const r=mulberry(hashStr('fury-'+d));const type=r
   return{d,type,goal,cells}}
 function dlyState(){const g=store.get('dly',{last:null,streak:0});const today=dayKey(),yest=dayKey(new Date(Date.now()-864e5));
   const doneToday=g.last===today;const cur=(doneToday||g.last===yest)?g.streak:0;const next=doneToday?g.streak:(g.last===yest?g.streak%7+1:1);return{g,doneToday,cur,next}}
-function applyDaily(){for(const[r,c,ci]of dSpec.cells)grid[r][c]=ci;dProg=0;dHit=false;recShown=false;gameBest=Infinity}
+function applyDaily(){xm=dSpec.type==='ice'?Array(N*N).fill(0):null;for(const[r,c,ci,lv]of dSpec.cells){grid[r][c]=ci;if(xm)xm[r*N+c]=lv||1}dProg=0;dUsed=0;dHit=false;recShown=false;gameBest=Infinity}
 function dailyTrack(id,v){if(!dSpec||dHit)return;if(dSpec.type==='score'&&id==='score')dProg=Math.max(dProg,v);else if(dSpec.type==='lines'&&id==='lines')dProg+=v;else return;
   if(dProg>=dSpec.goal)dailyWin();updateHud()}
 function unlockSomething(){const ls=Object.keys(SKINS).filter(k=>k!=='xmas'&&!owned.includes(k)).map(k=>['s',k]),lp=PACK_ORDER.filter(k=>k!=='bells'&&!sndOwned.includes(k)).map(k=>['p',k]);
@@ -1832,7 +1907,7 @@ function dailyWin(){if(dSpec&&dSpec.xmas)return xBoardWin();dHit=true;const st=d
     msg+=' '+(rw==='unlock'?unlockSomething():(addCoins(rw),T_('dCoins',{n:rw})))}
   Snd.record();vib([30,40,90]);floatText(T_('dWin'),W/2,by+cell*2.2,'#ffe14d',cell*.62);toast(msg);save();syncDailyDot();scheduleNotifs()}
 function dailyOver(){const el=$('#overDaily');if(mode!=='daily'||!dSpec){el.hidden=true;$('#btnOverMenu').hidden=true;$('#btnAgain').textContent=T_('playAgain');return}
-  el.hidden=false;el.textContent=dHit?'✅ '+T_(dSpec.xmas?'xBoardWin':'dWin'):T_('dMiss',{n:dSpec.goal-dProg});$('#btnOverMenu').hidden=false;$('#btnAgain').textContent=T_('dTry')}
+  el.hidden=false;el.textContent=dHit?'✅ '+T_(dSpec.xmas?'xBoardWin':'dWin'):T_(dSpec.xmas?(dSpec.type==='ice'?'xMissI':'xMissL'):'dMiss',{n:dSpec.goal-dProg});$('#btnOverMenu').hidden=false;$('#btnAgain').textContent=T_('dTry')}
 function syncDailyDot(){const d=$('.dlydot');if(d)d.hidden=dlyState().doneToday}
 function renderDaily(){const sp=dailySpec(),st=dlyState();
   $('#dGoal').textContent=sp.type==='score'?T_('dGoalScore',{n:sp.goal}):T_('dGoalLines',{n:sp.goal});
@@ -1983,8 +2058,13 @@ const XSHAPES=[
   ['.y.yy.y.','.yyyyyy.','.yryyry.','.yyyyyy.']];                              // corona (Reyes)
 function xBoardSpec(day){const sp=day>24,idx=day===25?0:day===31?1:day===37?9:(day-1)%9,flip=!sp&&Math.floor((day-1)/9)%2===1;
   const sh=XSHAPES[idx],off=Math.floor((N-sh.length)/2),cells=[],map={r:0,g:1,y:2,w:3,b:4,p:5,o:6};
-  sh.forEach((row,r)=>[...row].slice(0,N).forEach((ch,c)=>{if(map[ch]!=null)cells.push([r+off,flip?N-1-c:c,map[ch]])}));
-  return{d:'x'+xYearOf()+'-'+day,type:'lines',goal:sp?12:5+Math.floor(day/4),cells,xmas:day,rw:{c:sp?100:40+day*2,f:25}}}
+  // dos tipos de tablero: 'ice' = descongelar toda la figura · 'lines' = romper líneas; los dos con piezas contadas.
+  // Desde el día 13 parte del hielo es grueso (2 golpes). XLIM sale de simular cientos de partidas con un bot.
+  const type=sp||day%3!==2?'ice':'lines',dbl=sp?2:day>=19?3:day>=13?4:0;
+  sh.forEach((row,r)=>[...row].slice(0,N).forEach((ch,c)=>{if(map[ch]!=null){const cc=flip?N-1-c:c;cells.push([r+off,cc,map[ch],type==='ice'?(dbl&&(r+cc)%dbl===0?2:1):0])}}));
+  return{d:'x'+xYearOf()+'-'+day+'b',type,goal:type==='ice'?cells.reduce((a,x)=>a+x[3],0):6+Math.floor(day/3),lim:XLIM[day],dbl:!!dbl,cells,xmas:day,rw:{c:sp?150:60+day*3,f:sp?60:30}}}
+const XLIM={1:19,2:16,3:19,4:18,5:21,6:19,7:19,8:19,9:17,10:17,11:23,12:16,13:33,14:27,15:34,16:34,17:25,18:29,19:31,20:29,21:31,22:34,23:34,24:31,25:38,31:31,37:41};
+const xBoardTxt=sp=>T_(sp.type==='ice'?'xBoardI':'xBoardL',{n:sp.goal,p:sp.lim})+(sp.dbl?' '+T_('xIce2'):'');
 function xRwHtml(r){const a=[];if(r.c)a.push(`<b>${r.c} ${COIN}</b>`);if(r.f)a.push(`<b>${r.f} ❄</b>`);if(r.tl)for(const k in r.tl)a.push(`<b>${r.tl[k]}× ${ICONS[k]}</b>`);
   if(r.pack)a.push(`<b>🎵 ${sndOwned.includes(r.pack)?'+500 '+COIN:T_('snd_'+r.pack)}</b>`);if(r.skin)a.push(`<b>${T_('xStar')}</b>`);return a.join(' ')}
 function xGrant(r,x=1){if(r.c)coins+=r.c*x;if(r.tl)for(const k in r.tl)inv[k]+=r.tl[k]*x;
@@ -2012,7 +2092,7 @@ function xCountText(){const n=xNow(),ph=xPhase(n);
   if(dd===6)return T_('xLast');const e=T_('xEnds',{n:7-dd});return dd===1?T_('xHappyNY',{y:n.getFullYear()})+' · '+e:e}
 function xMenuSub(){const ph=xPhase();if(ph==='soon')return xCountText();if(ph!=='on')return'';
   const c=xClaimable();if(c.cal){const w=xTodayW();return w.sp?T_('xOpen'):T_('xWinReady',{n:w.id})}if(c.tree)return T_('t_xOrn');return xCountText()}
-function syncXBtn(){const ph=xPhase(),b=$('#btnStartXmas');b.hidden=ph==='off';b.classList.toggle('soon',ph==='soon');$('#xSub').textContent=xMenuSub();syncXDot()}
+function syncXBtn(){const ph=xPhase(),b=$('#btnStartXmas');$('#app').classList.toggle('xon',ph==='on');b.hidden=ph==='off';b.classList.toggle('soon',ph==='soon');$('#xSub').textContent=xMenuSub();syncXDot()}
 
 /* ---- pantalla del evento ---- */
 function openXmas(tab){if(!xOn()){toast(T_('xSoonT'));return}Snd.unlock();if(tab)xTab=tab;xSel=null;renderXmas();openOv('#ovXmas','#ovStart')}
@@ -2041,7 +2121,7 @@ function renderXCal(body){const d=xData(),g=document.createElement('div');g.clas
   else{
     if(st.today&&!d.dbl[w.id])btn('video',T_('xDbl'),()=>video(()=>{d.dbl[w.id]=1;xSave();xGrant(Object.assign({},r,{pack:null}));Snd.record();toast(T_('t_double'));renderXmas()}));
     const sp=xBoardSpec(w.day),bw=d.board[w.id];
-    par(`${T_('xBoard',{n:sp.goal})}<br>${bw?T_('xBoardDone'):T_('xBoardRw')+' '+xRwHtml(sp.rw)}`);
+    par(`${xBoardTxt(sp)}<br>${bw?T_('xBoardDone'):T_('xBoardRw')+' '+xRwHtml(sp.rw)}`);
     btn(bw?'ghost':'',T_(bw?'dPlayAgain':'xBoardPlay'),()=>xPlayBoard(w))}
   body.append(det)}
 function xOpenW(w){const d=xData();if(d.open[w.id])return;d.open[w.id]=1;xSave();xGrant(XRW[w.id]);
@@ -2049,11 +2129,12 @@ function xOpenW(w){const d=xData();if(d.open[w.id])return;d.open[w.id]=1;xSave()
   const el=$(`.xw[data-id="${w.id}"]`);if(el)el.classList.add('pop');syncXBtn();scheduleNotifs()}
 function xPlayBoard(w){Snd.tap();back=null;$('#ovXmas').hidden=true;if(state==='play'||state==='stuck')save();
   mode='daily';dSpec=xBoardSpec(w.day);$('#ovStart').hidden=true;$('#ovOver').hidden=true;
-  if(!load())newGame();else{syncTools();updateHud(true);if(state==='play')checkOver()}}
+  if(!load())newGame();else{syncTools();updateHud(true);if(state==='play')checkOver()}
+  if(!dHit&&state==='play')toast(xBoardTxt(dSpec))}
 function xBoardWin(){dHit=true;const d=xData(),w=XW.find(x=>x.day===dSpec.xmas);
   if(w&&!d.board[w.id]){d.board[w.id]=1;xSave();xGrant(dSpec.rw);toast(T_('xBoardWin')+' '+T_('dCoins',{n:dSpec.rw.c})+' · +'+dSpec.rw.f+' ❄')}else toast(T_('xBoardWin'));
-  Snd.record();if(settings.snd&&sndPack!=='bells')jingle(0,.08);vib([30,40,90]);floatText(T_('xBoardDone'),W/2,by+cell*2.2,'#ffd34d',cell*.4);
-  for(let i=0;i<6;i++)spawn(bx+Math.random()*cell*N,by+Math.random()*cell*3,SKINS[skin].colors[i],10,'confetti');save();syncXBtn()}
+  Snd.record();if(settings.snd&&sndPack!=='bells')jingle(0,.08);vib([30,40,90]);xBig(T_('xBoardWin'),200,true);
+  for(let i=0;i<6;i++)spawn(bx+Math.random()*cell*N,by+Math.random()*cell*3,SKINS[skin].colors[i],10,'confetti');xParty(4,W/2,by+cell*4);save();syncXBtn()}
 
 /* ---- árbol ---- */
 const ORN_POS=[[.5,.76],[.33,.73],[.67,.71],[.42,.6],[.6,.55],[.38,.47],[.57,.41],[.46,.33],[.53,.24]];
@@ -2124,16 +2205,74 @@ function drawXmasFrame(t,fury){const x0=bx-pad,y0=by-pad,w=cell*N+pad*2,r0=cell*
   pts.forEach(([x,y],i)=>{const col=LIGHT_COLS[i%5];const a=fury?(Math.sin(t/110+i*.9)>-.2?1:.3):flash?1:i<lit?.8+.2*Math.sin(t/260+i*1.7):.22;
     if(a>.5&&!REDUCE){ctx.globalAlpha=a*.85;const gs=rad*(fury?7:5.5);ctx.drawImage(glowSpr(col),x-gs/2,y-gs/2,gs,gs)}
     ctx.globalAlpha=1;ctx.fillStyle=a>.5?L(col,.25):D(col,.45);ctx.beginPath();ctx.arc(x,y,rad,0,7);ctx.fill();
-    if(a>.5){ctx.fillStyle='rgba(255,255,255,.7)';ctx.beginPath();ctx.arc(x-rad*.3,y-rad*.3,rad*.35,0,7);ctx.fill()}});ctx.globalAlpha=1}
+    if(a>.5){ctx.fillStyle='rgba(255,255,255,.7)';ctx.beginPath();ctx.arc(x-rad*.3,y-rad*.3,rad*.35,0,7);ctx.fill()}});ctx.globalAlpha=1;
+  // acebo en las esquinas de abajo y gorro de Papá Noel colgado arriba a la derecha
+  for(const sd of[-1,1]){const hx=sd<0?x0+cell*.06:x0+w-cell*.06,hy=y0+w-cell*.02,q=cell*.34;ctx.save();ctx.translate(hx,hy);ctx.scale(sd,1);
+    ctx.fillStyle='#1c9a4c';ctx.strokeStyle='#0d5a2a';ctx.lineWidth=Math.max(1,q*.08);
+    for(const an of[-.9,.15]){ctx.save();ctx.rotate(an);ctx.beginPath();ctx.moveTo(0,0);ctx.quadraticCurveTo(q*.5,-q*.55,q*1.25,0);ctx.quadraticCurveTo(q*.5,q*.55,0,0);ctx.fill();ctx.stroke();ctx.beginPath();ctx.moveTo(q*.15,0);ctx.lineTo(q*1.05,0);ctx.stroke();ctx.restore()}
+    ctx.fillStyle='#e8283c';[[-.02,-.06],[.2,.1],[-.08,.2]].forEach(([a,b])=>{ctx.beginPath();ctx.arc(q*a,q*b,q*.2,0,7);ctx.fill()});
+    ctx.fillStyle='rgba(255,255,255,.7)';[[-.02,-.06],[.2,.1],[-.08,.2]].forEach(([a,b])=>{ctx.beginPath();ctx.arc(q*a-q*.06,q*b-q*.06,q*.06,0,7);ctx.fill()});ctx.restore()}
+  const hs=cell*.78;ctx.save();ctx.translate(x0+w-cell*.5,y0-cell*.02);ctx.rotate(.3+Math.sin(t/900)*.03);
+  ctx.fillStyle='#e8283c';ctx.beginPath();ctx.moveTo(-hs*.42,0);ctx.quadraticCurveTo(-hs*.3,-hs*.8,hs*.5,-hs*.5);ctx.quadraticCurveTo(hs*.2,-hs*.38,hs*.42,0);ctx.closePath();ctx.fill();
+  ctx.fillStyle='rgba(110,0,20,.3)';ctx.beginPath();ctx.moveTo(hs*.12,-hs*.5);ctx.quadraticCurveTo(hs*.2,-hs*.38,hs*.42,0);ctx.lineTo(hs*.16,0);ctx.closePath();ctx.fill();
+  ctx.fillStyle='#fff';rr(ctx,-hs*.52,-hs*.12,hs*1.04,hs*.25,hs*.12);ctx.fill();ctx.beginPath();ctx.arc(hs*.54,-hs*.46,hs*.14,0,7);ctx.fill();ctx.restore()}
+const XTC=['#ff5a6a','#ffffff','#46e08a'],XJB=[76,76,76,0,76,76,76,0,76,79,72,74,76];
+const sndOn=()=>settings.snd&&!!AU.c;
+function xTune(n,dl=0){if(sndOn())XJB.slice(0,n).forEach((m,i)=>{if(m)chime(m,dl+i*.17,.075,.55)})}            // «Jingle Bells» con campanitas
+function hoho(dl=0){if(sndOn())[0,.26,.52].forEach((d,i)=>T(168-i*16,.22,{type:'sawtooth',lp:620,v:.14,dl:dl+d,f2:122-i*12}))}
+function giftRain(n){for(let i=0;i<n;i++)parts.push({x:W*(.06+Math.random()*.88),y:-cell*.6-Math.random()*H*.55,vx:(Math.random()-.5)*50,vy:90+Math.random()*120,life:0,max:3.4,col:'#fff',k:'gift',
+  s:cell*(.4+Math.random()*.28),rot:(Math.random()-.5)*.8,vr:(Math.random()-.5)*2.4,ci:Math.floor(Math.random()*7)})}
+/* Festejo navideño: 1 = estrellas y campanitas · 2 = pasa el trineo · 3 = llueven regalos y hay fuegos · 4 = fiesta completa */
+function xParty(lv,x,y){spawn(x,y,'#ffd34d',REDUCE?3:5+lv*5,'gstar');if(!REDUCE)spawn(x,y,'#ffffff',4+lv*2,'snow');
+  if(lv>=2){flySleigh();xTune(lv>=4?13:7,.15)}else if(sndOn()){chime(84,0,.06,.5);chime(88,.12,.06,.6);if(sndPack!=='bells')jingle(0,.05)}
+  if(lv>=3){giftRain(REDUCE?5:lv>=4?26:14);fireworks(lv>=4?8:3)}}
+let sleigh=null;
+function flySleigh(){if(REDUCE||sleigh)return;if(lang==='id'||lang==='ur'){fireworks(3);return}
+  sleigh={t0:now(),dir:Math.random()<.5?1:-1,y:by+cell*(1.1+Math.random()*1.6)};if(sndOn()){for(let i=0;i<9;i++)jingle(i*.17,.045);hoho(.45)}}
+function drawSleigh(t){const u=(t-sleigh.t0)/3000;if(u>=1){sleigh=null;return}
+  const s=Math.min(cell*.92,W/10),len=s*5.4,d=sleigh.dir,px=d>0?-len+u*(W+len*1.6):W+len-u*(W+len*1.6),py=sleigh.y-Math.sin(u*Math.PI)*cell*.9+Math.sin(t/160)*s*.06;
+  if(Math.random()<.7)spawn(px-d*s*1.2,py+s*.3,Math.random()<.6?'#ffd34d':'#ffffff',1,Math.random()<.5?'gstar':'sparkle');
+  const g=ctx;g.save();g.translate(px,py);g.scale(d,1);g.rotate(-.1+Math.cos(u*Math.PI)*-.12);g.lineJoin=g.lineCap='round';
+  // riendas
+  g.strokeStyle='#ffd34d';g.lineWidth=s*.035;g.beginPath();g.moveTo(-.25*s,-.2*s);g.quadraticCurveTo(1*s,-.05*s,1.75*s,-.12*s);g.lineTo(3.35*s,-.12*s);g.stroke();
+  // renos
+  [[1.5,0],[3.1,1.3]].forEach(([cx,ph],k)=>{const sw=Math.sin(t/85+ph);g.save();g.translate(cx*s,Math.sin(t/170+ph)*s*.05);
+    g.strokeStyle='#7a4a26';g.lineWidth=s*.085;g.beginPath(); // patas al galope
+    g.moveTo(.28*s,.1*s);g.lineTo((.5+sw*.22)*s,.52*s);g.moveTo(.2*s,.1*s);g.lineTo((.3-sw*.2)*s,.55*s);g.moveTo(-.28*s,.1*s);g.lineTo((-.5-sw*.22)*s,.52*s);g.moveTo(-.2*s,.1*s);g.lineTo((-.28+sw*.2)*s,.55*s);g.stroke();
+    g.fillStyle='#a8683a';g.beginPath();g.ellipse(0,0,.45*s,.2*s,0,0,7);g.fill();                                            // cuerpo
+    g.beginPath();g.moveTo(.25*s,-.12*s);g.lineTo(.5*s,-.42*s);g.lineTo(.68*s,-.3*s);g.lineTo(.42*s,.05*s);g.closePath();g.fill();     // cuello
+    g.beginPath();g.ellipse(.68*s,-.4*s,.2*s,.13*s,.25,0,7);g.fill();                                                        // cabeza
+    g.fillStyle='#f3e3cf';g.beginPath();g.ellipse(-.44*s,-.08*s,.07*s,.1*s,0,0,7);g.fill();                                  // cola
+    g.strokeStyle='#5d3a1c';g.lineWidth=s*.05;g.beginPath();g.moveTo(.6*s,-.5*s);g.lineTo(.5*s,-.82*s);g.moveTo(.54*s,-.68*s);g.lineTo(.4*s,-.74*s);g.moveTo(.52*s,-.76*s);g.lineTo(.62*s,-.9*s);g.stroke(); // astas
+    g.fillStyle='#231208';g.beginPath();g.arc(.72*s,-.44*s,.028*s,0,7);g.fill();
+    if(k===1){g.drawImage(glowSpr('#ff3b4f'),.7*s,-.56*s,.4*s,.4*s);g.fillStyle='#ff2d42';g.beginPath();g.arc(.9*s,-.36*s,.07*s,0,7);g.fill()}                           // nariz roja
+    else{g.fillStyle='#3a2212';g.beginPath();g.arc(.88*s,-.36*s,.05*s,0,7);g.fill()}
+    g.fillStyle='#e8283c';g.fillRect(.2*s,-.2*s,.12*s,.34*s);g.fillStyle='#ffd34d';g.beginPath();g.arc(.26*s,.16*s,.05*s,0,7);g.fill();g.restore()});       // arnés y cascabel
+  // trineo
+  g.strokeStyle='#ffd34d';g.lineWidth=s*.07;g.beginPath();g.moveTo(-1.35*s,.62*s);g.lineTo(.25*s,.62*s);g.quadraticCurveTo(.62*s,.6*s,.56*s,.22*s);g.moveTo(-1*s,.62*s);g.lineTo(-1*s,.42*s);g.moveTo(-.1*s,.62*s);g.lineTo(-.1*s,.42*s);g.stroke();
+  g.fillStyle='#3aa655';g.beginPath();g.arc(-.98*s,-.3*s,.36*s,0,7);g.fill();g.fillStyle='#2c8444';g.beginPath();g.arc(-.9*s,-.2*s,.26*s,0,7);g.fill();     // bolsa de regalos
+  g.drawImage(sprite(2,s*.3,'xmas'),-1.3*s,-.74*s,s*.3,s*.3);g.drawImage(sprite(4,s*.26,'xmas'),-.98*s,-.86*s,s*.26,s*.26);
+  // Papá Noel
+  g.fillStyle='#e8283c';g.beginPath();g.ellipse(-.38*s,-.08*s,.3*s,.34*s,0,0,7);g.fill();
+  g.strokeStyle='#e8283c';g.lineWidth=s*.13;g.beginPath();g.moveTo(-.3*s,-.14*s);g.lineTo(-.02*s,-.2*s);g.stroke();g.fillStyle='#fff';g.beginPath();g.arc(-.02*s,-.2*s,.075*s,0,7);g.fill(); // brazo y guante
+  g.fillStyle='#ffd9b8';g.beginPath();g.arc(-.32*s,-.52*s,.16*s,0,7);g.fill();
+  g.fillStyle='#fff';g.beginPath();g.ellipse(-.27*s,-.4*s,.17*s,.15*s,0,0,Math.PI);g.fill();g.beginPath();g.ellipse(-.3*s,-.42*s,.19*s,.1*s,0,0,7);g.fill();       // barba
+  g.fillStyle='#ffd9b8';g.beginPath();g.arc(-.26*s,-.52*s,.1*s,0,7);g.fill();g.fillStyle='#231208';g.beginPath();g.arc(-.22*s,-.55*s,.022*s,0,7);g.fill();
+  g.fillStyle='#e8283c';g.beginPath();g.moveTo(-.5*s,-.62*s);g.quadraticCurveTo(-.4*s,-.98*s,-.82*s,-.82*s);g.quadraticCurveTo(-.5*s,-.8*s,-.16*s,-.62*s);g.closePath();g.fill();   // gorro
+  g.fillStyle='#fff';rr(g,-.52*s,-.68*s,.4*s,.1*s,.05*s);g.fill();g.beginPath();g.arc(-.84*s,-.82*s,.075*s,0,7);g.fill();
+  g.fillStyle='#d81e34';g.beginPath();g.moveTo(-1.42*s,-.42*s);g.quadraticCurveTo(-1.45*s,.5*s,-1.05*s,.48*s);g.lineTo(.2*s,.48*s);g.quadraticCurveTo(.6*s,.46*s,.56*s,-.02*s);g.lineTo(.4*s,-.02*s);
+  g.quadraticCurveTo(.38*s,.2*s,.1*s,.2*s);g.lineTo(-.7*s,.2*s);g.quadraticCurveTo(-1.02*s,.2*s,-1.12*s,-.42*s);g.closePath();g.fill();                           // caja del trineo
+  g.strokeStyle='#ffd34d';g.lineWidth=s*.05;g.beginPath();g.moveTo(-1.3*s,.34*s);g.lineTo(.36*s,.34*s);g.stroke();
+  g.restore()}
 function fireworks(n){for(let i=0;i<n;i++)setTimeout(()=>{rockets.push({x:W*(.15+Math.random()*.7),y:H+8,vy:-(H*.9+Math.random()*H*.5),ty:H*(.12+Math.random()*.38),col:LIGHT_COLS[Math.floor(Math.random()*5)]});
   if(settings.snd)T(380+Math.random()*200,.5,{f2:1400,v:.025,type:'triangle'})},i*(260+Math.random()*200))}
 function drawRockets(dt){for(let k=rockets.length-1;k>=0;k--){const r=rockets[k];r.y+=r.vy*dt;r.vy*=.985;
   ctx.fillStyle='#fff';ctx.globalAlpha=.9;ctx.beginPath();ctx.arc(r.x,r.y,2.2,0,7);ctx.fill();ctx.globalAlpha=.35;ctx.fillRect(r.x-1,r.y,2,14);ctx.globalAlpha=1;
   if(r.y<=r.ty){rockets.splice(k,1);[r.col,'#ffffff',LIGHT_COLS[(LIGHT_COLS.indexOf(r.col)+2)%5]].forEach(c=>spawn(r.x,r.y,c,REDUCE?6:18,'fw'));
     if(settings.snd){Nz(.5,{lp:1100,v:.22});Nz(.9,{hp:4000,v:.04,dl:.1})}vib(15)}}}
-function xBig(txt,ms){setTimeout(()=>floatText(txt.toLocaleUpperCase(lang==='fil'?'fil':lang),W/2,H*.3,'#ffd34d',Math.min(cell*.7,W/12)),ms)}
+function xBig(txt,ms,xm){setTimeout(()=>floatText(txt.toLocaleUpperCase(lang==='fil'?'fil':lang),W/2,H*.3,'#ffd34d',Math.min(cell*.7,W/12),xm),ms)}
 function xCelebrate(kind){if(kind==='ny'){fireworks(14);[0,1400,2800].forEach(ms=>xBig(T_('xHappyNY',{y:xNow().getFullYear()}),ms));setTimeout(()=>Snd.record(),300)}
-  else{for(let i=0;i<50;i++)setTimeout(()=>spawn(Math.random()*W,H*.2*Math.random(),'#ffffff',1,'snow'),i*45);fireworks(6);[0,1500].forEach(ms=>xBig(T_('xMerry'),ms));
+  else{for(let i=0;i<50;i++)setTimeout(()=>spawn(Math.random()*W,H*.2*Math.random(),'#ffffff',1,'snow'),i*45);fireworks(8);giftRain(REDUCE?6:24);setTimeout(flySleigh,700);xTune(13,.9);[0,1500].forEach(ms=>xBig(T_('xMerry'),ms,true));
     if(settings.snd)for(let i=0;i<6;i++)jingle(i*.15,.07);setTimeout(()=>Snd.record(),400)}}
 const otherOverlay=()=>[...$$('.overlay')].some(o=>!o.hidden&&o.id!=='ovStart');
 function xCheckParty(){if(!xOn()||otherOverlay())return;const d=xData(),dy=xDay();
