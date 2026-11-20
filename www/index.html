@@ -1212,16 +1212,38 @@ const Ads={A:null,
     try{await this.A.initialize({initializeForTesting:AD_TESTING});this.mute();
       try{const ci=await this.A.requestConsentInfo();if(ci&&ci.isConsentFormAvailable&&ci.status==='REQUIRED')await this.A.showConsentForm()}catch(e){}
       try{this.A.addListener('bannerAdSizeChanged',s=>{if(s&&s.height)bn.style.height=s.height+'px'})}catch(e){}
-      await this.A.showBanner({adId:AD_IDS.banner,adSize:'ADAPTIVE_BANNER',position:'BOTTOM_CENTER',margin:0,isTesting:AD_TESTING});
+      try{this.A.addListener('bannerAdLoaded',()=>{this.bOk=true;this._bN=0;clearTimeout(this._bT);this._bT=0})}catch(e){}
+      try{this.A.addListener('bannerAdFailedToLoad',()=>{this.bOk=false;this.bannerRetry()})}catch(e){}
     }catch(e){}
-    this.prepI();this.prepR()},
+    this.banner();this.prepI();this.prepR();
+    // al volver la conexión o volver a la app, reintenta lo que no haya cargado
+    const retryAds=()=>{if(document.hidden)return;if(!this.bOk){this._bN=0;this.bannerRetry(2)}this._iN=0;this._rN=0;if(!this.iOk)this.prepI();if(!this.rOk)this.prepR()};
+    window.addEventListener('online',retryAds);document.addEventListener('visibilitychange',retryAds)},
+  // Antes el banner se pedía una sola vez: si fallaba (sin conexión, sin anuncio) no volvía a intentarse en toda la sesión.
+  bOk:false,_bT:0,_bN:0,iOk:false,rOk:false,_iN:0,_rN:0,_iP:false,_rP:false,
+  async banner(){if(!this.A)return;
+    try{await this.A.showBanner({adId:AD_IDS.banner,adSize:'ADAPTIVE_BANNER',position:'BOTTOM_CENTER',margin:0,isTesting:AD_TESTING})}catch(e){this.bannerRetry()}},
+  bannerRetry(secs){if(!this.A||this.bOk||this._bT||this._bN>=8)return;
+    const d=secs||Math.min(120,15*Math.pow(2,this._bN));this._bN++;
+    this._bT=setTimeout(async()=>{this._bT=0;if(this.bOk)return;try{await this.A.removeBanner()}catch(e){}this.banner()},d*1000)},
   // si el jugador apagó el sonido, los anuncios también salen en silencio
   mute(){if(this.A&&this.A.setApplicationMuted)this.A.setApplicationMuted({muted:!settings.snd}).catch(()=>{})},
-  prepI(){this.A&&this.A.prepareInterstitial({adId:AD_IDS.interstitial,isTesting:AD_TESTING}).catch(()=>{})},
-  prepR(){this.A&&this.A.prepareRewardVideoAd({adId:AD_IDS.rewarded,isTesting:AD_TESTING}).catch(()=>{})},
-  async interstitial(){Music.pause();if(this.A){try{await this.A.showInterstitial()}catch(e){}this.prepI();Music.resume();return}
+  // precargas con reintento (10 s, 20 s, 40 s… hasta 2 min)
+  prepI(){if(!this.A||this._iP)return;this._iP=true;this.iOk=false;
+    this.A.prepareInterstitial({adId:AD_IDS.interstitial,isTesting:AD_TESTING}).then(()=>{this._iP=false;this.iOk=true;this._iN=0})
+      .catch(()=>{this._iP=false;if(this._iN<6)setTimeout(()=>{if(!this.iOk)this.prepI()},Math.min(120,10*Math.pow(2,this._iN++))*1000)})},
+  prepR(){if(!this.A||this._rP)return;this._rP=true;this.rOk=false;
+    this.A.prepareRewardVideoAd({adId:AD_IDS.rewarded,isTesting:AD_TESTING}).then(()=>{this._rP=false;this.rOk=true;this._rN=0})
+      .catch(()=>{this._rP=false;if(this._rN<6)setTimeout(()=>{if(!this.rOk)this.prepR()},Math.min(120,10*Math.pow(2,this._rN++))*1000)})},
+  // Reseña en Google Play: solo tras un récord nuevo, con 5+ partidas jugadas, como mucho 3 veces y con 60 días entre pedidos.
+  // Google decide si muestra el cuadro o no; en la app de PRUEBA no se pide.
+  review(){try{const C=window.Capacitor;if(!this.A||TEST_APP||games<5)return;
+    const n=store.get('revN',0),t=store.get('revT',0);if(n>=3||Date.now()-t<60*864e5)return;
+    const R=(C.Plugins&&C.Plugins.InAppReview)||(C.registerPlugin&&C.registerPlugin('InAppReview'));if(!R)return;
+    store.set('revN',n+1);store.set('revT',Date.now());setTimeout(()=>{R.requestReview().catch(()=>{})},1800)}catch(e){}},
+  async interstitial(){Music.pause();if(this.A){try{await this.A.showInterstitial()}catch(e){}this.iOk=false;this.prepI();Music.resume();return}
     await sim(T_('adTitle'),T_('adText'),3);Music.resume()},
-  async rewarded(){Music.pause();try{if(this.A){try{const r=await this.A.showRewardVideoAd();this.prepR();return!!r}catch(e){this.prepR();toast(T_('t_noVideo'));return false}}
+  async rewarded(){Music.pause();try{if(this.A){try{const r=await this.A.showRewardVideoAd();this.rOk=false;this.prepR();return!!r}catch(e){this.rOk=false;this.prepR();toast(T_('t_noVideo'));return false}}
     return await sim(T_('adRewardTitle'),T_('adRewardText'),4)}finally{Music.resume()}}
 };
 function sim(title,text,secs){return new Promise(res=>{const o=$('#adsim'),b=$('#adClose'),p=$('#adProg');
@@ -1371,7 +1393,7 @@ function showOver(){state='over';games++;store.set('games',games);mission('games
   const rec=mode!=='daily'&&score>gameBest&&score>0;dailyOver();
   $('#overScore').textContent=score;$('#overBest').textContent=best;$('#overRecord').hidden=!rec;
   $('#overEarn').innerHTML=`+${earned} ${COIN}`;$('#btnDouble').hidden=earned<=0;$('#btnDouble').disabled=false;
-  $('#btnContinue').hidden=continued;$('#ovOver').hidden=false;if(rec){Snd.record()}}
+  $('#btnContinue').hidden=continued;$('#ovOver').hidden=false;if(rec){Snd.record();Ads.review()}}
 $('#btnDouble').onclick=async()=>{const b=$('#btnDouble');b.disabled=true;$('#ovOver').hidden=true;const ok=await Ads.rewarded();$('#ovOver').hidden=false;
   if(ok){addCoins(earned);$('#overEarn').innerHTML=`+${earned*2} ${COIN}`;b.hidden=true}else b.disabled=false};
 async function doContinue(){$('#ovOver').hidden=true;const ok=await Ads.rewarded();
