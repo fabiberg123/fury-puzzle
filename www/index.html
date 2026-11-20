@@ -1688,7 +1688,7 @@ async function scheduleNotifs(){if(!LNP)return;try{
   const st=dlyState(),now=new Date(),list=[],gen=[T_('nDaily'),T_('nGift'),T_('nBack')];
   for(let k=0;k<7;k++){const at=new Date(now);at.setDate(now.getDate()+k);at.setHours(19,0,0,0);if(at<=now)continue;if(k===0&&st.doneToday)continue;
     let body;if(k===0)body=st.cur>0?T_('nStreak',{n:st.cur}):T_('nDaily');else if(k===1)body=st.doneToday&&st.cur>0?T_('nStreak',{n:st.cur}):T_('nDaily');else body=gen[k%3];
-    list.push({id:101+k,title:'Fury Puzzle',body,schedule:{at,allowWhileIdle:true},smallIcon:'ic_stat_fury',iconColor:'#FF6A1A'})}
+    list.push({id:101+k,title:'Fury Puzzle',body,schedule:{at,allowWhileIdle:true},isExactNotification:false,smallIcon:'ic_stat_fury',iconColor:'#FF6A1A'})}
   if(list.length)await LNP.schedule({notifications:list})}catch(e){}}
 $('#chkNotif').onchange=async e=>{const on=e.target.checked;store.set('notif',on);
   if(on){const ok=await notifPerm(true);if(!ok){e.target.checked=false;store.set('notif',false);toast(T_('dNotifOff'))}}scheduleNotifs()};
