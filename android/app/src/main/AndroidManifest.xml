@@ -2,6 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- La pantalla vertical no es obligatoria: así Play no excluye tablets, Chromebooks ni PC -->
+    <uses-feature android:name="android.hardware.screen.portrait" android:required="false"/>
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
