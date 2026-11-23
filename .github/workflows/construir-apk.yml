@@ -2,7 +2,7 @@ name: Construir APK
 
 on:
   push:
-    branches: [main, navidad, anuncios-v16]   # otras ramas = versiones de prueba (no tocan el release de Play)
+    branches: [main, navidad, anuncios-v16, analytics]   # otras ramas = versiones de prueba (no tocan el release de Play)
   workflow_dispatch: {}
 
 permissions:
@@ -36,6 +36,19 @@ jobs:
       - name: Número de versión automático
         run: sed -i "s/versionCode [0-9]*/versionCode ${{ github.run_number }}/" android/app/build.gradle
 
+      # Firebase Analytics: solo si existe el secreto GOOGLE_SERVICES_JSON (el contenido de google-services.json).
+      # Sin el secreto la app se construye igual, sin medición.
+      - name: Firebase Analytics (opcional)
+        env:
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+        run: |
+          if [ -z "$GOOGLE_SERVICES_JSON" ]; then echo "Sin secreto GOOGLE_SERVICES_JSON: se construye sin Analytics"; exit 0; fi
+          printf '%s' "$GOOGLE_SERVICES_JSON" > "$RUNNER_TEMP/google-services.json"
+          python3 -c "import json,sys; json.load(open(sys.argv[1]))" "$RUNNER_TEMP/google-services.json" || { echo "::error::GOOGLE_SERVICES_JSON no es un JSON válido"; exit 1; }
+          grep -q '"com.furypuzzle.game"' "$RUNNER_TEMP/google-services.json" || { echo "::error::El google-services.json no es de com.furypuzzle.game"; exit 1; }
+          # La app de PRUEBA (com.furypuzzle.game.test) solo lleva Analytics si también está registrada en Firebase
+          if grep -q '"com.furypuzzle.game.test"' "$RUNNER_TEMP/google-services.json"; then cp "$RUNNER_TEMP/google-services.json" android/app/google-services.json; echo "Analytics también en la app de PRUEBA"; fi
+
       - name: Construir APK (para instalar en el celular)
         run: |
           chmod +x android/gradlew
@@ -58,6 +71,7 @@ jobs:
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: |
           echo "$KEYSTORE_BASE64" | base64 -d > upload.jks
+          if [ -f "$RUNNER_TEMP/google-services.json" ]; then cp "$RUNNER_TEMP/google-services.json" android/app/google-services.json; fi
           cd android && ./gradlew bundleRelease --no-daemon
           jarsigner -keystore ../upload.jks -storepass "$KEYSTORE_PASSWORD" -keypass "$KEY_PASSWORD" \
             app/build/outputs/bundle/release/app-release.aab "$KEY_ALIAS"

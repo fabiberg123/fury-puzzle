@@ -1420,6 +1420,13 @@ function renderSnd(){const el=$('#sndList');el.innerHTML='';
 
 const vib=ms=>{if(settings.vib&&navigator.vibrate)try{navigator.vibrate(ms)}catch(e){}};
 
+/* ================= MEDICIÓN (Firebase Analytics, solo en la app) =================
+   Sirve para saber cuánta gente juega y cuánta vuelve. Si la app se construyó sin google-services.json no hace nada. */
+const Track={P:null,
+  init(){try{const C=window.Capacitor;if(!(C&&C.isNativePlatform&&C.isNativePlatform()))return;
+    this.P=(C.Plugins&&C.Plugins.FirebaseAnalytics)||(C.registerPlugin&&C.registerPlugin('FirebaseAnalytics'))||null}catch(e){this.P=null}},
+  ev(name,params){try{if(!this.P)return;const r=this.P.logEvent({name,params:params||{}});if(r&&r.catch)r.catch(()=>{})}catch(e){}}};
+
 /* ================= PUBLICIDAD (AdMob en la app / simulada en web) ================= */
 const Ads={A:null,
   async init(){const C=window.Capacitor;if(!(C&&C.isNativePlatform&&C.isNativePlatform()))return;
@@ -1460,9 +1467,9 @@ const Ads={A:null,
     const n=store.get('revN',0),t=store.get('revT',0);if(n>=3||Date.now()-t<60*864e5)return;
     const R=(C.Plugins&&C.Plugins.InAppReview)||(C.registerPlugin&&C.registerPlugin('InAppReview'));if(!R)return;
     store.set('revN',n+1);store.set('revT',Date.now());setTimeout(()=>{R.requestReview().catch(()=>{})},1800)}catch(e){}},
-  async interstitial(){Music.pause();if(this.A){try{await this.A.showInterstitial()}catch(e){}this.iOk=false;this.prepI();Music.resume();return}
+  async interstitial(){Music.pause();if(this.A){try{await this.A.showInterstitial();Track.ev('ad_interstitial')}catch(e){}this.iOk=false;this.prepI();Music.resume();return}
     await sim(T_('adTitle'),T_('adText'),3);Music.resume()},
-  async rewarded(){Music.pause();try{if(this.A){try{const r=await this.A.showRewardVideoAd();this.rOk=false;this.prepR();return!!r}catch(e){this.rOk=false;this.prepR();toast(T_('t_noVideo'));return false}}
+  async rewarded(){Music.pause();try{if(this.A){try{const r=await this.A.showRewardVideoAd();this.rOk=false;this.prepR();Track.ev('ad_reward',{ok:r?1:0});return!!r}catch(e){this.rOk=false;this.prepR();toast(T_('t_noVideo'));return false}}
     return await sim(T_('adRewardTitle'),T_('adRewardText'),4)}finally{Music.resume()}}
 };
 function sim(title,text,secs){return new Promise(res=>{const o=$('#adsim'),b=$('#adClose'),p=$('#adProg');
@@ -1637,7 +1644,7 @@ function checkOver(){if(state!=='play')return;if(xOut()){toast(T_('xOutP'));Snd.
     die()}}
 function die(){$('#stuck').hidden=true;hammer=false;syncTools();state='dying';dieT0=now()+300;setTimeout(()=>Snd.over(),300);store.set(GK(),null);setTimeout(showOver,300+N*70+700)}
 $('#btnGiveUp').onclick=()=>{if(state==='stuck')die()};
-function showOver(){state='over';$('#ovOver h2').textContent=T_(xOut()?'xOutP':'noSpace');games++;store.set('games',games);mission('games',1);
+function showOver(){state='over';$('#ovOver h2').textContent=T_(xOut()?'xOutP':'noSpace');games++;store.set('games',games);mission('games',1);Track.ev('game_over',{score:score|0,games:games|0,mode:String(typeof mode==='string'?mode:'classic')});
   earned=Math.max(0,Math.floor(score/POINTS_PER_COIN)-paid);paid+=earned;coins+=earned;saveProg();syncCoins();
   const rec=mode!=='daily'&&score>gameBest&&score>0;dailyOver();
   $('#overScore').textContent=score;$('#overBest').textContent=best;$('#overRecord').hidden=!rec;
@@ -2324,7 +2331,7 @@ grid=emptyGrid(-1);spec=emptyGrid(null);sets=0;meter=35;furyT=0;x2T=0;iceSets=0;
 [[7,0,0],[7,1,0],[7,2,1],[7,3,1],[7,5,2],[7,6,2],[7,7,3],[6,0,4],[6,1,4],[6,6,5],[6,7,5],[5,0,6],[5,7,2],[4,7,0]].forEach(([r,c,ci])=>grid[r][c]=ci);
 spec[7][3]='bomb';spec[6][6]='bolt';
 tray=[makePiece([]),makePiece([]),makePiece([])];tray[1].sp={i:0,t:'rainbow'};
-applySkin(skin);applyLang();loadSongs();document.addEventListener('pointerdown',()=>Snd.unlock(),{once:true});syncCoins();syncTools();syncDots();resize();updateHud(true);requestAnimationFrame(frame);Ads.init();
+applySkin(skin);applyLang();loadSongs();document.addEventListener('pointerdown',()=>Snd.unlock(),{once:true});syncCoins();syncTools();syncDots();resize();updateHud(true);requestAnimationFrame(frame);Track.init();Ads.init();
 xLastKey=dayKey(xNow());xSimInit();syncXBtn();syncFlakes();
 const xIntro=xOn()&&!xData().intro;if(xIntro)xShowIntro();
 if(giftState().avail){$('#btnStartGift').hidden=false;if(!xIntro)openGift()}
