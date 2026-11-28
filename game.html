@@ -840,7 +840,7 @@ const START_COINS=100;
 const START_TOOLS={hammer:1,shuffle:1,undo:1};
 const TOOL_PRICE={hammer:60,shuffle:50,undo:40};
 const SKIN_PRICE={fury:0,neon:300,candy:300,ocean:500,wood:500,gems:800,xmas:800};
-const POINTS_PER_COIN=500;      // monedas al terminar = puntos / 500 (era 200: con las piezas inteligentes de la 1.5.3 los puntajes suben)
+const POINTS_PER_COIN=2000;      // monedas al terminar = puntos / 2000 (era 200: con las piezas inteligentes y el combo de 3 piezas los puntajes suben mucho)
 const FURY_SECONDS=15, X2_SECONDS=20;
 const SPECIAL_CHANCE=.14;       // probabilidad de que una pieza traiga un superpoder
 const GIFTS=[{c:50},{t:'hammer',n:1},{c:100},{t:'shuffle',n:2},{c:150},{t:'undo',n:2},{c:400,t:'hammer',n:2}];
@@ -1054,7 +1054,8 @@ const partNow=()=>bstyle&&STYLE_PART[bstyle]||undefined;
 /* alarga el orden barajado: cada vuelta pasa por todos los estilos una vez, sin repetir el último de la vuelta anterior */
 function moreStyles(){const own=SKINS[skin].style,l=STYLE_ROT.filter(v=>v!==own);for(let i=l.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[l[i],l[j]]=[l[j],l[i]]}
   if(sord.length&&l[0]===sord[sord.length-1])l.push(l.shift());sord=sord.concat(l)}
-function syncStyle(){const k=Math.floor(lineTot/STYLE_EVERY)+gClears;if(!k){bstyle=null;return}while(sord.length<k)moreStyles();bstyle=sord[k-1]}
+function syncStyle(){const k=gClears;   // el diseño de los bloques cambia solo cuando se limpia el tablero (antes: también cada STYLE_EVERY líneas)
+ if(!k){bstyle=null;return}while(sord.length<k)moreStyles();bstyle=sord[k-1]}
 function sprite(ci,size,sk=skin,st){
   const S=SKINS[sk],style=st||(sk===skin&&bstyle)||S.style,px=Math.max(4,Math.round(size*DPR)),key=sk+'|'+style+'|'+ci+'|'+px;
   let c=sprites.get(key);
@@ -1124,8 +1125,10 @@ const SHAPES=[];
     vars.forEach(v=>SHAPES.push({cells:v,w:Math.max(...v.map(c=>c[1]))+1,h:Math.max(...v.map(c=>c[0]))+1,wt:wt*4/vars.length}))}
 })();
 const SMALL=SHAPES.filter(s=>s.cells.length<=3);
+/* partida clásica: sin diagonales y con menos piezas incómodas (S, Z y la L grande) */
+const isRect=s=>s.cells.length===s.w*s.h,EASY=SHAPES.filter(s=>isRect(s)||s.cells.length>Math.max(s.w,s.h)).map(s=>Object.assign({},s,{wt:s.wt*(isRect(s)?1.25:s.cells.length===4&&s.w!==s.h&&!s.cells.some(([a,d])=>a===0&&d===0)||s.cells.length===5&&s.w===3&&s.h===3?.5:1)}));
 function pickW(list,key){let r=Math.random()*list.reduce((a,x)=>a+(key?x[1]:x.wt),0);for(const x of list){r-=key?x[1]:x.wt;if(r<=0)return x}return list[0]}
-function makePiece(avoid,small){const s=pickW(small?SMALL:SHAPES);
+function makePiece(avoid,small){const s=pickW(small?SMALL:mode==='normal'?EASY:SHAPES);
   let ci;do{ci=Math.floor(Math.random()*7)}while(avoid.includes(ci));
   return{cells:s.cells,w:s.w,h:s.h,ci,placed:false,sp:null}}
 
@@ -1154,7 +1157,9 @@ function canPlace(p,r,c){for(const[dr,dc]of p.cells){const a=r+dr,b=c+dc;if(a<0|
 function canFit(p){for(let r=0;r<=N-p.h;r++)for(let c=0;c<=N-p.w;c++)if(canPlace(p,r,c))return true;return false}
 /* ===== 1.5.3 · Piezas inteligentes (solo partida clásica) =====
    HELP_MAX/HELP_MIN: probabilidad de que la tanda se elija "a medida" al empezar / con mucho puntaje; baja de una a otra hasta HELP_SCORE puntos. */
-const HELP_MAX=.8,HELP_MIN=.15,HELP_SCORE=150000,PRE2=.7,CLEAR_FILL=22,CLEAR_HELP=.6,FLAKE_CHANCE=.3;
+const HELP_MAX=.9,HELP_MIN=.3,HELP_SCORE=400000,PRE2=1,CLEAR_FILL=30,PERFECT_P=.75,FLAKE_CHANCE=.3;
+/* probabilidad de que la tanda sea parte de un plan para vaciar el tablero: muy alta en las primeras limpiezas de la partida, baja con cada una */
+const clearP=()=>helpNow()>0?Math.max(.45,1-gClears*.07):0;
 const helpNow=()=>mode==='normal'&&!TUT?Math.max(HELP_MIN,HELP_MAX-(HELP_MAX-HELP_MIN)*score/HELP_SCORE):0;
 const rnd=n=>Math.floor(Math.random()*n);
 /* cuánto rinde una tanda jugada con codicia sobre una copia del tablero: líneas (2 juntas valen más) y premio por dejarlo vacío */
@@ -1205,13 +1210,22 @@ function clearSearch(g,left){let fill=0;for(const x of g)for(const v of x)if(v)f
     const sub=clearSearch(h,left-1);if(sub)return[s].concat(sub)}
   return null}
 /* otra forma de vaciar el tablero: cubrir justo, con hasta `left` piezas, los huecos de las filas (o columnas) que tienen bloques */
-function tileSearch(need,left){let k=-1;for(let i=0;i<N*N;i++)if(need[i]){k=i;break}if(k<0)return[];if(!left)return null;
-  const r0=k/N|0,c0=k%N;
-  for(const s of SHAPES.slice().sort(()=>Math.random()-.5))for(const[a0,d0]of s.cells){const r=r0-a0,c=c0-d0;if(r<0||c<0||r+s.h>N||c+s.w>N)continue;
+let tileBudget=0;const BIGFIRST=SHAPES.slice().sort((x,y)=>y.cells.length-x.cells.length);
+function tileSearch(need,left){let k=-1,cnt=0;for(let i=0;i<N*N;i++)if(need[i]){if(k<0)k=i;cnt++}if(k<0)return[];if(!left||cnt>left*9||--tileBudget<0)return null;
+  const r0=k/N|0,c0=k%N,order=Math.random()<.5?BIGFIRST:BIGFIRST.slice().sort((x,y)=>y.cells.length-x.cells.length+(Math.random()-.5)*3);
+  for(const s of order)for(const[a0,d0]of s.cells){const r=r0-a0,c=c0-d0;if(r<0||c<0||r+s.h>N||c+s.w>N)continue;
     let ok=true;for(const[a,d]of s.cells)if(!need[(r+a)*N+c+d]){ok=false;break}if(!ok)continue;
     for(const[a,d]of s.cells)need[(r+a)*N+c+d]=0;const sub=tileSearch(need,left-1);for(const[a,d]of s.cells)need[(r+a)*N+c+d]=1;
-    if(sub)return[s].concat(sub)}
+    if(sub)return[s].concat(sub);if(tileBudget<0)return null}
   return null}
+/* plan para vaciar el tablero en una o dos tandas: cubre justo los huecos de las filas (o columnas) con bloques usando hasta 6 piezas */
+function clearPlan(g){let best=null;
+  for(const byRow of[1,0]){const need=new Array(N*N).fill(0);let cnt=0,lines=0;
+    for(let i=0;i<N;i++){let has=false;for(let j=0;j<N;j++)if(byRow?g[i][j]:g[j][i]){has=true;break}if(!has)continue;lines++;
+      for(let j=0;j<N;j++){const r=byRow?i:j,c=byRow?j:i;if(!g[r][c]){need[r*N+c]=1;cnt++}}}
+    if(lines>6||cnt>42)continue;
+    for(const left of[3,6]){if(best&&best.length<=left)break;if(cnt>left*9)continue;tileBudget=6000;const sh=tileSearch(need,left);if(sh&&(!best||sh.length<best.length)){best=sh;break}}}
+  return best}
 function clearTrio(g){for(const byRow of Math.random()<.5?[1,0]:[0,1]){const need=new Array(N*N).fill(0);let cnt=0,lines=0;
     for(let i=0;i<N;i++){let has=false;for(let j=0;j<N;j++)if(byRow?g[i][j]:g[j][i]){has=true;break}if(!has)continue;lines++;
       for(let j=0;j<N;j++){const r=byRow?i:j,c=byRow?j:i;if(!g[r][c]){need[r*N+c]=1;cnt++}}}
@@ -1219,10 +1233,7 @@ function clearTrio(g){for(const byRow of Math.random()<.5?[1,0]:[0,1]){const nee
   return clearSearch(g.map(z=>z.slice()),3)}
 /* tanda a medida: cada pieza es la que más líneas completa en el tablero que deja la anterior; con el tablero vacío, a veces una tanda perfecta */
 function smartSet(count,cur){const g=grid.map(r=>r.map(v=>v>=0?1:0)),set=[];
-  if(count===3&&g.every(r=>r.every(v=>!v))&&Math.random()<.6)return perfectSet();
-  {let fill=0;for(const z of g)for(const v of z)if(v)fill++;
-    if(count===3&&fill&&fill<=CLEAR_FILL&&sets>1&&Math.random()<CLEAR_HELP){const sh=clearTrio(g);
-      if(sh){while(sh.length<3)sh.push(pickW(SMALL));const cs=[];return sh.sort(()=>Math.random()-.5).map(s=>{let ci;do{ci=rnd(7)}while(cs.includes(ci));cs.push(ci);return{cells:s.cells,w:s.w,h:s.h,ci,placed:false,sp:null}})}}}
+  if(count===3&&g.every(r=>r.every(v=>!v))&&Math.random()<PERFECT_P)return perfectSet();
   for(let k=0;k<count;k++){const opts=[];let top=-1;
     for(const s of SHAPES){const b=bestSpot(g,s);if(b[0]<-1)continue;opts.push([s,b]);if(b[0]>top)top=b[0]}
     if(!opts.length)return cur;
@@ -1258,6 +1269,10 @@ function genSet(count=3){const small=iceSets>0;let bestSet=null,bf=-1;
   // piezas justas: si ninguna entra pero hay lugar, cambiamos una por la pieza más grande que sí entre
   if(!bestSet.some(canFit)){const pool=SHAPES.concat(SMALL).slice().sort((a,b)=>b.cells.length-a.cells.length);
     const ok=pool.find(s=>canFit({cells:s.cells,w:s.w,h:s.h}));if(ok)bestSet[Math.floor(Math.random()*count)]=Object.assign(makePiece(bestSet.map(p=>p.ci),false),{cells:ok.cells,w:ok.w,h:ok.h})}
+  if(!small&&count===3&&sets>0&&Math.random()<clearP()){const g=grid.map(r=>r.map(v=>v>=0?1:0));let fill=0;for(const z of g)for(const v of z)fill+=v;
+    if(fill&&fill<=CLEAR_FILL){const sh=clearPlan(g);
+      if(sh&&sh.length){const mk=list=>{const cs=[];while(list.length<3)list.push(pickW(SMALL));return list.sort(()=>Math.random()-.5).map(s=>{let ci;do{ci=rnd(7)}while(cs.includes(ci));cs.push(ci);return{cells:s.cells,w:s.w,h:s.h,ci,placed:false,sp:null}})};
+        const first=mk(sh.slice(0,3));if(first.every(canFit)){preNext=sh.length>3?mk(sh.slice(3)):null;if(xOn())first.forEach(addFlake);sets++;return first}}}}
   if(!small&&Math.random()<helpNow())bestSet=smartSet(count,bestSet);
   // superpoderes: nunca en la primera tanda; como máximo uno por tanda (dos si vas bien)
   if(sets>0){let maxSp=score>15000?2:1;for(const p of bestSet){if(maxSp>0&&Math.random()<SPECIAL_CHANCE){p.sp={i:Math.floor(Math.random()*p.cells.length),t:pickW(Object.entries(powW()),1)[0]};maxSp--}}}
@@ -1265,7 +1280,7 @@ function genSet(count=3){const small=iceSets>0;let bestSet=null,bf=-1;
   sets++;return bestSet}
 function nextSet(){const s=genSet(3);if(iceSets>0)iceSets--;trayT0=now();return s}
 function newGame(){grid=emptyGrid(-1);spec=emptyGrid(null);score=0;shown=0;combo=0;since=99;continued=false;sets=0;meter=0;furyT=0;x2T=0;iceSets=0;
-  gameBest=best;recShown=false;undoSnap=null;hammer=false;paid=0;xm=null;dUsed=0;lineTot=0;sord=[];gBlast=gClears=gCombo=0;syncStyle();nearShown=false;flk=emptyGrid(0);party=null;preNext=null;stuckBuys=0;stuckStop();$('#stuck').hidden=true;
+  gameBest=best;recShown=false;undoSnap=null;hammer=false;paid=0;xm=null;dUsed=0;lineTot=0;sord=[];gBlast=gClears=gCombo=0;syncStyle();nearShown=false;flk=emptyGrid(0);party=null;preNext=null;randomMusic();stuckBuys=0;stuckStop();$('#stuck').hidden=true;
   clearing.length=parts.length=texts.length=beams.length=rings.length=0;tray=nextSet();state='play';if(mode==='daily')applyDaily();else if(mode==='normal')prefill();syncTint();save();updateHud(true);syncTools()}
 function snapshot(){return JSON.stringify({grid,spec,tray,score,combo,since,continued,sets,meter,furyT,x2T,iceSets,gameBest,recShown,paid,xm,dUsed,lt:lineTot,so:sord,gs:[gBlast,gClears,gCombo],fk:flk,xp:xLim()?dProg:null})}
 function restore(s){const g=JSON.parse(s);grid=g.grid;spec=g.spec||emptyGrid(null);tray=g.tray;score=g.score;combo=g.combo;since=g.since;continued=g.continued;
@@ -1501,6 +1516,10 @@ function stat(k,v,max){if(!(k in stats))return;const b=stats[k];stats[k]=max?Mat
 const TRACKS=[
   {bpm:112,style:'beat',prog:[[57,60,64],[53,57,60],[48,52,55],[55,59,62]]},
   {bpm:78,style:'chill',prog:[[53,57,60,64],[52,55,59,62],[50,53,57,60],[48,52,55,59]]}];
+const TRACKS_MORE=[   // 1.5.3: se agregan al final (después de los villancicos) para no mover los números de las pistas guardadas
+  {bpm:124,style:'beat',prog:[[50,53,57],[58,62,65],[53,57,60],[48,52,55]]},
+  {bpm:92,style:'chill',prog:[[57,60,64,67],[50,53,57,60],[55,59,62,65],[48,52,55,59]]},
+  {bpm:104,style:'beat',prog:[[52,55,59],[48,52,55],[55,59,62],[50,54,57]]}];
 /* Villancicos (dominio público): Jingle Bells (estribillo, 1857) + We Wish You a Merry Christmas (tradicional).
    Cada nota: [midi, duración en semicorcheas]. Acordes: [bajo, [notas]]. Solo se ofrece durante el evento. */
 (()=>{const G=[43,[59,62,67]],C=[48,[60,64,67]],A7=[45,[61,64,67]],D7=[50,[60,62,66]],Dm=[50,[62,66,69]],B7=[47,[63,66,69]],Em=[52,[59,64,67]];
@@ -1516,7 +1535,12 @@ const TRACKS=[
     let q=s0;for(const[c,d]of sc.ch){(ev[q]=ev[q]||{}).c=c;q+=d}
     for(let k=0;k<p-s0;k++){const e=ev[s0+k]=ev[s0+k]||{};e.k=k%bar;e.bar=bar}s0=p}
   TRACKS.push({bpm:120,style:'song',ev,len:s0,xmas:true})})();
-const trackOn=i=>!TRACKS[i].xmas||xOn();
+TRACKS_MORE.forEach(x=>TRACKS.push(x));
+const trackOn=i=>!!TRACKS[i]&&(!TRACKS[i].xmas||xOn());
+Object.assign(I18N.en,{trk_3:'Pulse',trk_4:'Sunset',trk_5:'Arcade'});Object.assign(I18N.es,{trk_3:'Pulso',trk_4:'Atardecer',trk_5:'Arcade'});Object.assign(I18N.pt,{trk_3:'Pulso',trk_4:'Pôr do sol',trk_5:'Arcade'});
+/* música al azar: cada partida nueva empieza con otra pista (las del juego y las canciones propias), nunca la misma dos veces seguidas */
+function randomMusic(){try{const list=TRACKS.map((_,i)=>'b'+i).filter((_,i)=>trackOn(i)).concat(songs.map(x=>'u:'+x.id)).filter(id=>id!==sndSet.sel);if(!list.length)return;
+  sndSet.sel=list[Math.floor(Math.random()*list.length)];store.set('musSel',sndSet.sel);Music.apply();if(!$('#ovMusic').hidden)renderMusic()}catch(e){}}
 const DB={db:null,open(){return new Promise((res,rej)=>{if(this.db)return res(this.db);try{const r=indexedDB.open('fury',1);
     r.onupgradeneeded=()=>r.result.createObjectStore('songs',{keyPath:'id'});r.onsuccess=()=>{this.db=r.result;res(this.db)};r.onerror=()=>rej(r.error)}catch(e){rej(e)}})},
   async tx(mode,fn){const db=await this.open();return new Promise((res,rej)=>{const t=db.transaction('songs',mode);const q=fn(t.objectStore('songs'));t.oncomplete=()=>res(q&&q.result);t.onerror=()=>rej(t.error);t.onabort=()=>rej(t.error)})},
@@ -1718,7 +1742,7 @@ const MPOOL=[
   {id:'multi',n:[1,2,4],r:[70,110,170]},
   {id:'power',n:[2,4,7],r:[60,100,150]},
   {id:'fury',n:[1,2,3],r:[80,130,200]},
-  {id:'score',n:[8000,15000,25000],r:[60,100,160],max:1},
+  {id:'score',n:[40000,80000,150000],r:[60,100,160],max:1},
   {id:'games',n:[2,3,5],r:[40,60,90]},
   {id:'pieces',n:[40,80,150],r:[40,70,110]}];
 const dayKey=(d=new Date())=>d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();
@@ -1765,7 +1789,7 @@ function unstick(){if(state==='stuck'){state='play';$('#stuck').hidden=true;stuc
 
 /* ================= JUGADA ================= */
 const mult=()=>(furyT>0?3:1)*(x2T>0?2:1);
-/* multiplicador del combo: 1, 2, 4, 7, 11, 16… (tope 50). El combo se corta a la segunda pieza seguida que no rompe línea */
+/* multiplicador del combo: 1, 2, 4, 7, 11, 16… (tope 50). El combo se corta a la tercera pieza seguida que no rompe línea (como Block Blast) */
 const comboMul=c=>c<2?1:Math.min(50,c+(c-1)*(c-2)/2);
 function addScore(v){score+=v;mission('score',score,true);
   if(!recShown&&gameBest>0&&score>gameBest){recShown=true;nearShown=true;floatText(T_('newRecord').toUpperCase(),W/2,by+cell*1.6,SKINS[skin].ui.accent2,cell*.7,false,'gold');
@@ -1782,7 +1806,7 @@ function place(p,r,c){
   const n=rows.length+cols.length,set=new Set();
   rows.forEach(i=>{for(let j=0;j<N;j++)set.add(i*N+j);beams.push({rc:'r',i,t0:t,ci:p.ci})});
   cols.forEach(j=>{for(let i=0;i<N;i++)set.add(i*N+j);beams.push({rc:'c',i:j,t0:t,ci:p.ci})});
-  if(n){combo=since<2?combo+1:1;since=0}else{since++;if(since>=2)combo=0}
+  if(n){combo=since<3?combo+1:1;since=0}else{since++;if(since>=3)combo=0}
   const full0=n?grid.reduce((a,row)=>a+row.filter(v=>v>=0).length,0)/(N*N):0,sc0=score;
   if(set.size)blast(set,n,r+p.h/2,c+p.w/2);
   if(n){gBlast=Math.max(gBlast,score-sc0);gCombo=Math.max(gCombo,combo);const S=SKINS[skin];
@@ -1825,8 +1849,7 @@ function blast(set,n,cr,cc){
     if(X&&(n>=2||combo>=3))xParty(n>=4?3:n===3||combo>=5?2:1,px,py);
     stat('comboMax',combo,true);if(combo>=2){floatText(T_('combo',{n:comboMul(combo)}),W/2,by+cell*(praise?3.6:3),S.ui.fg,cell*.55);mission('combo',1)}
     mission('lines',n);if(n>=3)mission('multi',1);Snd.clear(n,combo);
-    {const k0=Math.floor(lineTot/STYLE_EVERY);lineTot+=n;if(Math.floor(lineTot/STYLE_EVERY)!==k0){styleOld=styleNow();syncStyle();styleT0=t+380;
-      rings.push({x:bx+cell*N/2,y:by+cell*N/2,t0:t+380,col:S.ui.accent2,r:cell*N*.75});if(!REDUCE)for(let i=0;i<6;i++)spawn(bx+Math.random()*cell*N,by+Math.random()*cell*N,S.colors[i],5,'sparkle');setTimeout(()=>{Snd.coin();vib([15,30,15])},380)}}xFlakes(n*(furyT>0?2:1));xFlash=t}
+    lineTot+=n;xFlakes(n*(furyT>0?2:1));xFlash=t}
   if(gain)floatText('+'+gain,px,py,gain>=3000?'#ff9a3d':gain>=1000?'#ffe14d':'#ffffff',cell*(gain>=3000?.85:gain>=1000?.7:gain>=300?.58:.5));
   if(grid.every(row=>row.every(v=>v<0))){stat('clears',1);gClears++;if(!REDUCE)tiltT0=t;frameGlow={t0:t,col:'#7fe0ff',dur:1400};const cb=clearBonus(gClears)*mult();addScore(cb);floatText('+'+cb,W/2,by+cell*5.5,'#ffe14d',cell*.7);
     // fiesta de tablero limpio: el tablero se llena de colores, "xN", confeti; cambian el estilo de bloques y el color del fondo
@@ -1837,7 +1860,9 @@ function blast(set,n,cr,cc){
   if(furyT<=0){meter=Math.min(100,meter+n*11+(combo>1?(combo-1)*9:0)+powers*8);if(meter>=100)startFury()}
 }
 function startFury(){furyT=FURY_SECONDS;meter=100;lastFury=true;const xs=skin==='xmas';
-  floatText(T_(xs?'xFury':'furyMode'),W/2,by+cell*3.2,xs?'#ffd34d':'#ff6a1a',cell*(xs?.6:.8),xs);if(xs){flySleigh();giftRain(REDUCE?4:10)}floatText(T_('x3'),W/2,by+cell*4.2,'#ffe14d',cell*.5);
+  floatText(T_(xs?'xFury':'furyMode'),W/2,by+cell*3.2,xs?'#ffd34d':'#ff6a1a',cell*(xs?.6:.8),xs);if(xs){flySleigh();giftRain(REDUCE?4:10)}floatText(T_('x3'),W/2,by+cell*4.1,'#ffe14d',cell*.5);
+  floatText('x3',W/2,by+cell*5.6,'#ffc233',cell*1.7,false,'gold');rings.push({x:W/2,y:by+cell*N/2,t0:now(),col:'#ffe14d',r:cell*N*.85},{x:W/2,y:by+cell*N/2,t0:now()+140,col:'#ff7a1a',r:cell*N*.6});
+  frameGlow={t0:now(),col:'#ffe14d',dur:1500};if(!REDUCE){for(let i=0;i<34;i++)spawn(W/2,by+cell*N/2,i%3?'#ffe14d':'#ffffff',1,'gstar');for(let i=0;i<10;i++)spawn(bx+Math.random()*cell*N,by+Math.random()*cell*N,'#ffffff',2,'sparkle')}
   Snd.fury();if(xs&&settings.snd&&sndPack!=='bells')for(let i=0;i<5;i++)jingle(i*.13,.06);
   vib([40,30,40,30,80]);if(!REDUCE)shake=16;mission('fury',1);
   for(let i=0;i<40;i++)spawn(bx+Math.random()*cell*N,by+cell*N,xs?(i%2?'#ffffff':'#ffd34d'):'#ff7a1a',1,xs?'snow':'ember')}
@@ -1955,7 +1980,7 @@ let last=now(),beatN=0;
 function frame(){const t=now(),dt=Math.min(.05,(t-last)/1000);last=t;const S=SKINS[skin];
   // relojes de poderes (solo corren mientras juegas)
   if((state==='play'||state==='stuck')&&!overlayOpen()){
-    if(furyT>0){furyT-=dt;beatAcc+=dt;if(beatAcc>=.42){beatAcc=0;Snd.beat(beatN++);if(S.lights&&settings.snd&&sndPack!=='bells')jingle(0,.025)}if(furyT<=0){furyT=0;meter=0;toast(T_('t_furyEnd'));save()}}
+    if(furyT>0){furyT-=dt;beatAcc+=dt;if(beatAcc>=.42){beatAcc=0;Snd.beat(beatN++);if(S.lights&&settings.snd&&sndPack!=='bells')jingle(0,.025)}if(furyT<=0){furyT=0;meter=0;save()}}
     if(x2T>0){x2T-=dt;if(x2T<=0)x2T=0}}
   const fury=furyT>0;
   ctx.setTransform(DPR,0,0,DPR,0,0);ctx.clearRect(0,0,W,H);
