@@ -1126,7 +1126,7 @@ const SHAPES=[];
 })();
 const SMALL=SHAPES.filter(s=>s.cells.length<=3);
 /* piezas en contra (dificultad alta): más piezas grandes y diagonales, menos chicas */
-const HARD=SHAPES.map(s=>Object.assign({},s,{wt:s.wt*(s.cells.length>=5?2.2:s.cells.length<=2?.45:s.cells.length<Math.max(s.w,s.h)+1&&s.w>1&&s.h>1?2:1)}));
+const HARD=SHAPES.map(s=>Object.assign({},s,{wt:s.wt*(s.cells.length>=5?3:s.cells.length<=2?.45:s.cells.length<Math.max(s.w,s.h)+1&&s.w>1&&s.h>1?2:1)}));
 /* partida clásica: sin diagonales y con menos piezas incómodas (S, Z y la L grande) */
 const isRect=s=>s.cells.length===s.w*s.h,EASY=SHAPES.filter(s=>isRect(s)||s.cells.length>Math.max(s.w,s.h)).map(s=>Object.assign({},s,{wt:s.wt*(isRect(s)?1.25:s.cells.length===4&&s.w!==s.h&&!s.cells.some(([a,d])=>a===0&&d===0)||s.cells.length===5&&s.w===3&&s.h===3?.5:1)}));
 function pickW(list,key){let r=Math.random()*list.reduce((a,x)=>a+(key?x[1]:x.wt),0);for(const x of list){r-=key?x[1]:x.wt;if(r<=0)return x}return list[0]}
@@ -1164,12 +1164,12 @@ function canFit(p){for(let r=0;r<=N-p.h;r++)for(let c=0;c<=N-p.w;c++)if(canPlace
    Cada DIF_EVERY tandas sube un escalón. Con cada escalón baja la ayuda (HELP_*), salen menos planes para limpiar el tablero (CL_*)
    y, desde el escalón HARD_FROM, las piezas se van poniendo en contra hasta el máximo HARD_SPAN escalones después.
    Al seguir con un video se bajan VIDEO_BACK escalones y vuelve a subir desde ahí. */
-const DIF_EVERY=5,HELP_MAX=.85,HELP_STEP=.12,CL_MAX=.8,CL_STEP=.12,HARD_FROM=6,HARD_SPAN=6,VIDEO_BACK=3,PRE2=.35,CLEAR_FILL=30,PLAN_TANDAS=3,PLAN_FULL=.5,FLAKE_CHANCE=.3;
+const DIF_EVERY=5,HELP_MAX=.85,HELP_STEP=.12,CL_MAX=.8,CL_STEP=.12,HARD_FROM=6,HARD_SPAN=6,VIDEO_BACK=3,PRE2=.35,PRE_MID=.75,PRE_TOP=.35,CLEAR_FILL=30,PLAN_TANDAS=3,PLAN_FULL=.5,FLAKE_CHANCE=.3;
+let lastClear=-99;const CLEAR_COOL=6;   // tras limpiar el tablero, CLEAR_COOL tandas sin planes para volver a limpiarlo
 let dSets=0,planLeft=0;   // planLeft: tandas que faltan del plan de limpieza en curso (se recalcula en cada tanda)
 const difOn=()=>mode==='normal'&&!TUT,difLevel=()=>difOn()?Math.floor(dSets/DIF_EVERY):0;
 const helpNow=()=>difOn()?Math.max(0,HELP_MAX-difLevel()*HELP_STEP):0;
-const clearP=()=>difOn()?Math.max(0,CL_MAX-difLevel()*CL_STEP):0;
-const perfectP=()=>difOn()?Math.max(0,.5-difLevel()*.08):0;
+const clearP=()=>difOn()&&dSets-lastClear>=CLEAR_COOL?Math.max(0,CL_MAX-difLevel()*CL_STEP):0;
 const hardNow=()=>difOn()?Math.min(1,Math.max(0,(difLevel()-HARD_FROM)/HARD_SPAN)):0;
 const rnd=n=>Math.floor(Math.random()*n);
 /* cuánto rinde una tanda jugada con codicia sobre una copia del tablero: líneas (2 juntas valen más) y premio por dejarlo vacío */
@@ -1243,9 +1243,8 @@ function clearTrio(g){for(const byRow of Math.random()<.5?[1,0]:[0,1]){const nee
   return clearSearch(g.map(z=>z.slice()),3)}
 /* tanda a medida: cada pieza es la que más líneas completa en el tablero que deja la anterior; con el tablero vacío, a veces una tanda perfecta */
 function smartSet(count,cur){const g=grid.map(r=>r.map(v=>v>=0?1:0)),set=[];
-  if(count===3&&g.every(r=>r.every(v=>!v))&&Math.random()<perfectP())return perfectSet();
   for(let k=0;k<count;k++){const opts=[];let top=-1;
-    for(const s of SHAPES){const b=bestSpot(g,s);if(b[0]<-1)continue;opts.push([s,b]);if(b[0]>top)top=b[0]}
+    for(const s of SHAPES){if(set.some(q=>q.cells===s.cells))continue;const b=bestSpot(g,s);if(b[0]<-1)continue;opts.push([s,b]);if(b[0]>top)top=b[0]}
     if(!opts.length)return cur;
     const pool=opts.filter(o=>o[1][0]>=top-1&&(top<0||o[1][0]>=0)),pk=pickW(pool.map(o=>[o,o[0].wt*(o[1][0]===top?3:1)]),1)[0],s=pk[0],[n,r,c]=pk[1];
     for(const[a,d]of s.cells)g[r+a][c+d]=1;
@@ -1264,7 +1263,9 @@ function holeBlock(top){const pool=SHAPES.filter(s=>s.cells.length>=3&&s.cells.l
 function prefill(){planLeft=0;const A=holeBlock(5),B=Math.random()<PRE2?holeBlock(2):null;if(!A)return;
   const g=emptyGrid(-1),col=(i,j)=>{const nb=[[i-1,j],[i,j-1]].filter(([a,b])=>a>=0&&b>=0&&g[a][b]>=0);if(nb.length&&Math.random()<.62){const[a,b]=nb[rnd(nb.length)];return g[a][b]}return rnd(7)};
   for(let i=5;i<8;i++)for(let j=0;j<N;j++)if(!A.res[i][j])g[i][j]=col(i,j);
-  for(let i=2;i<5;i++){for(let j=0;j<N;j++)if(B?!B.res[i][j]:Math.random()<.6)g[i][j]=col(i,j);if(g[i].every(v=>v>=0))g[i][rnd(N)]=-1}
+  for(let i=2;i<5;i++){for(let j=0;j<N;j++)if(B?!B.res[i][j]:Math.random()<PRE_MID)g[i][j]=col(i,j);if(g[i].every(v=>v>=0))g[i][rnd(N)]=-1}
+  for(let i=0;i<2;i++)for(let j=0;j<N;j++)if(Math.random()<PRE_TOP)g[i][j]=col(i,j);
+  for(let j=0;j<N;j++)if(g.every(row=>row[j]>=0))g[rnd(2)][j]=-1;   // ninguna columna completa de entrada
   const flip=Math.random()<.4,tr=Math.random()<.4;
   const mapP=p=>{let cells=p.cells,w=p.w,h=p.h;if(flip)cells=cells.map(([a,d])=>[h-1-a,d]);if(tr){cells=cells.map(([a,d])=>[d,a]);[w,h]=[h,w]}return{cells,w,h}};
   grid=emptyGrid(-1);for(let i=0;i<N;i++)for(let j=0;j<N;j++){const r=flip?N-1-i:i;if(tr)grid[j][r]=g[i][j];else grid[r][j]=g[i][j]}
@@ -1272,12 +1273,15 @@ function prefill(){planLeft=0;const A=holeBlock(5),B=Math.random()<PRE2?holeBloc
   planLeft=B?PLAN_TANDAS:2;tray=planSet(mk(A.ps).slice(0,2));if(xOn())tray.forEach(addFlake)}
 function addFlake(p){if(Math.random()<FLAKE_CHANCE){const o=p.cells.map((_,i)=>i).filter(i=>!(p.sp&&p.sp.i===i));if(o.length)p.fl=o[rnd(o.length)]}}
 /* arma una tanda con hasta 2 piezas del plan y el resto de relleno: así las piezas que limpian no vienen todas juntas ni solas */
-function planSet(shapes){const set=[],cs=[];const add=s=>{let ci;do{ci=rnd(7)}while(cs.includes(ci));cs.push(ci);set.push({cells:s.cells,w:s.w,h:s.h,ci,placed:false,sp:null})};
-  shapes.forEach(add);while(set.length<3){let p=null;for(let k=0;k<12;k++){p=makePiece(cs,true);if(canFit(p))break}cs.push(p.ci);set.push(p)}
+const shapeKey=p=>p.cells.map(c=>c[0]+','+c[1]).join('|');
+/* pieza al azar distinta de las que ya hay en la tanda (partida clásica) */
+function freshPiece(set,small){let p=null;for(let k=0;k<10;k++){p=makePiece(set.map(q=>q.ci),small);if(mode!=='normal'||hardNow()>=.5||!set.some(q=>shapeKey(q)===shapeKey(p)))break}return p}
+function planSet(shapes){const set=[],cs=[];shapes=shapes.filter((s,i)=>!shapes.slice(0,i).some(q=>shapeKey(q)===shapeKey(s)));const add=s=>{let ci;do{ci=rnd(7)}while(cs.includes(ci));cs.push(ci);set.push({cells:s.cells,w:s.w,h:s.h,ci,placed:false,sp:null})};
+  shapes.forEach(add);while(set.length<3){let p=null;for(let k=0;k<14;k++){p=makePiece(cs,true);if(canFit(p)&&!set.some(q=>shapeKey(q)===shapeKey(p)))break}cs.push(p.ci);set.push(p)}
   return set.sort(()=>Math.random()-.5)}
 function genSet(count=3){const small=iceSets>0;let bestSet=null,bf=-1;
   const tries=Math.round(40-34*hardNow());
-  for(let a=0;a<tries;a++){const set=[];for(let i=0;i<count;i++)set.push(makePiece(set.map(p=>p.ci),small));
+  for(let a=0;a<tries;a++){const set=[];for(let i=0;i<count;i++)set.push(freshPiece(set,small));
     const f=set.filter(canFit).length;if(f===count||(a>6&&f>=Math.min(2,count))||(a>20&&f>=1)){bestSet=set;break}if(f>bf){bf=f;bestSet=set}}
   // piezas justas: si ninguna entra pero hay lugar, cambiamos una por la pieza más grande que sí entre
   if(!bestSet.some(canFit)){const pool=SHAPES.concat(SMALL).slice().sort((a,b)=>b.cells.length-a.cells.length);
@@ -1295,11 +1299,11 @@ function genSet(count=3){const small=iceSets>0;let bestSet=null,bf=-1;
   sets++;return bestSet}
 function nextSet(){dSets++;const s=genSet(3);if(iceSets>0)iceSets--;trayT0=now();return s}
 function newGame(){grid=emptyGrid(-1);spec=emptyGrid(null);score=0;shown=0;combo=0;since=99;continued=false;sets=0;meter=0;furyT=0;x2T=0;iceSets=0;
-  gameBest=best;recShown=false;undoSnap=null;hammer=false;paid=0;xm=null;dUsed=0;lineTot=0;sord=[];gBlast=gClears=gCombo=0;syncStyle();nearShown=false;flk=emptyGrid(0);party=null;planLeft=0;dSets=0;randomMusic();stuckBuys=0;stuckStop();$('#stuck').hidden=true;
+  gameBest=best;recShown=false;undoSnap=null;hammer=false;paid=0;xm=null;dUsed=0;lineTot=0;sord=[];gBlast=gClears=gCombo=0;syncStyle();nearShown=false;flk=emptyGrid(0);party=null;planLeft=0;dSets=0;lastClear=-99;randomMusic();stuckBuys=0;stuckStop();$('#stuck').hidden=true;
   clearing.length=parts.length=texts.length=beams.length=rings.length=0;tray=nextSet();state='play';if(mode==='daily')applyDaily();else if(mode==='normal')prefill();syncTint();save();updateHud(true);syncTools()}
-function snapshot(){return JSON.stringify({grid,spec,tray,score,combo,since,continued,sets,meter,furyT,x2T,iceSets,gameBest,recShown,paid,xm,dUsed,lt:lineTot,so:sord,gs:[gBlast,gClears,gCombo],fk:flk,ds:dSets,xp:xLim()?dProg:null})}
+function snapshot(){return JSON.stringify({grid,spec,tray,score,combo,since,continued,sets,meter,furyT,x2T,iceSets,gameBest,recShown,paid,xm,dUsed,lt:lineTot,so:sord,gs:[gBlast,gClears,gCombo],fk:flk,ds:dSets,lc:lastClear,xp:xLim()?dProg:null})}
 function restore(s){const g=JSON.parse(s);grid=g.grid;spec=g.spec||emptyGrid(null);tray=g.tray;score=g.score;combo=g.combo;since=g.since;continued=g.continued;
-  sets=g.sets||1;meter=g.meter||0;furyT=g.furyT||0;x2T=g.x2T||0;iceSets=g.iceSets||0;gameBest=g.gameBest!=null?g.gameBest:best;recShown=!!g.recShown;paid=g.paid||0;xm=g.xm||null;dUsed=g.dUsed||0;lineTot=g.lt||0;sord=Array.isArray(g.so)?g.so.filter(v=>STYLE_ROT.includes(v)):[];syncStyle();{const s=g.gs||[0,0,0];gBlast=s[0]||0;gClears=s[1]||0;gCombo=s[2]||0}flk=g.fk||emptyGrid(0);dSets=g.ds||0;planLeft=0;syncStyle();syncTint();nearShown=gameBest>0&&score>=gameBest*.9;if(g.xp!=null&&xLim()&&!dHit)dProg=g.xp}
+  sets=g.sets||1;meter=g.meter||0;furyT=g.furyT||0;x2T=g.x2T||0;iceSets=g.iceSets||0;gameBest=g.gameBest!=null?g.gameBest:best;recShown=!!g.recShown;paid=g.paid||0;xm=g.xm||null;dUsed=g.dUsed||0;lineTot=g.lt||0;sord=Array.isArray(g.so)?g.so.filter(v=>STYLE_ROT.includes(v)):[];syncStyle();{const s=g.gs||[0,0,0];gBlast=s[0]||0;gClears=s[1]||0;gCombo=s[2]||0}flk=g.fk||emptyGrid(0);dSets=g.ds||0;lastClear=g.lc==null?-99:g.lc;planLeft=0;syncStyle();syncTint();nearShown=gameBest>0&&score>=gameBest*.9;if(g.xp!=null&&xLim()&&!dHit)dProg=g.xp}
 function save(){const live=state==='play'||state==='stuck';store.set(GK(),live?JSON.parse(snapshot()):null);if(mode==='daily'&&dSpec)store.set(MK(),{d:dSpec.d,p:dProg,h:dHit})}
 function load(){const g=store.get(GK(),null);if(!g||!g.grid)return false;if(mode==='daily'){const m=store.get(MK(),null);if(!m||!dSpec||m.d!==dSpec.d)return false;dProg=m.p||0;dHit=!!m.h}restore(JSON.stringify(g));shown=score;state='play';trayT0=now();updateHud(true);return true}
 
@@ -1868,7 +1872,7 @@ function blast(set,n,cr,cc){
     mission('lines',n);if(n>=3)mission('multi',1);Snd.clear(n,combo);
     lineTot+=n;xFlakes(n*(furyT>0?2:1));xFlash=t}
   if(gain)floatText('+'+gain,px,py,gain>=3000?'#ff9a3d':gain>=1000?'#ffe14d':'#ffffff',cell*(gain>=3000?.85:gain>=1000?.7:gain>=300?.58:.5),false,gain>=100&&!REDUCE?'fly':null);
-  if(grid.every(row=>row.every(v=>v<0))){stat('clears',1);gClears++;if(!REDUCE)tiltT0=t+hold;frameGlow={t0:t+hold,col:'#7fe0ff',dur:1400};const cb=clearBonus(gClears)*mult();addScore(cb);floatText('+'+cb,W/2,by+cell*5.5,'#ffe14d',cell*.7);
+  if(grid.every(row=>row.every(v=>v<0))){stat('clears',1);gClears++;lastClear=dSets;planLeft=0;if(!REDUCE)tiltT0=t+hold;frameGlow={t0:t+hold,col:'#7fe0ff',dur:1400};const cb=clearBonus(gClears)*mult();addScore(cb);floatText('+'+cb,W/2,by+cell*5.5,'#ffe14d',cell*.7);
     // fiesta de tablero limpio: el tablero se llena de colores, "xN", confeti; cambian el estilo de bloques y el color del fondo
     party={t0:t+hold,n:gClears};floatText('x'+gClears,W/2,by+cell*3.4,'#ffc233',cell*1.5,false,'gold');
     if(!REDUCE)for(let i=0;i<18;i++){spawn(bx-pad,by+cell*N,S.colors[i%7],2,'confetti');spawn(bx+cell*N+pad,by+cell*N,S.colors[(i+3)%7],2,'confetti')}
@@ -2273,7 +2277,7 @@ function dailyWin(){if(dSpec&&dSpec.xmas)return xBoardWin();dHit=true;const st=d
   if(!st.doneToday){const day=st.next;store.set('dly',{last:dayKey(),streak:day});const rw=DREW[day-1];
     msg+=' '+(rw==='unlock'?unlockSomething():(addCoins(rw),T_('dCoins',{n:rw})))}
   Snd.record();vib([30,40,90]);floatText(T_('dWin'),W/2,by+cell*2.2,'#ffe14d',cell*.62);toast(msg);save();syncDailyDot();scheduleNotifs()}
-function dailyOver(){const el=$('#overDaily');if(mode!=='daily'||!dSpec){el.hidden=true;$('#btnOverMenu').hidden=true;$('#btnAgain').textContent=T_('playAgain');return}
+function dailyOver(){const el=$('#overDaily');if(mode!=='daily'||!dSpec){el.hidden=true;$('#btnOverMenu').hidden=false;$('#btnAgain').textContent=T_('playAgain');return}
   el.hidden=false;el.textContent=dHit?'✅ '+T_(dSpec.xmas?'xBoardWin':'dWin'):T_(dSpec.xmas?(dSpec.type==='ice'?'xMissI':'xMissL'):'dMiss',{n:dSpec.goal-dProg});$('#btnOverMenu').hidden=false;$('#btnAgain').textContent=T_('dTry')}
 function syncDailyDot(){const d=$('.dlydot');if(d)d.hidden=dlyState().doneToday}
 function renderDaily(){const sp=dailySpec(),st=dlyState();
