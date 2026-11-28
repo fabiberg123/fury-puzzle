@@ -2242,7 +2242,7 @@ function buildHelp(){const el=$('#helpBody');el.innerHTML='';
   for(const k of['hammer','shuffle','undo']){const li=document.createElement('li');li.innerHTML=`<i class="hi">${ICONS[k]}</i><span><b>${T_(k)}:</b> ${T_(k+'D')}</span>`;ul2.append(li)}tl.append(ul2);
   sec('h_coins_t','h_coins');sec('h_music_t','h_music');
   const fbs=document.createElement('section');fbs.className='fbsec';fbs.innerHTML=`<p>${T_('fbQ')}</p>`;const fbb=document.createElement('button');fbb.className='btn ghost';fbb.innerHTML=`✉️ <span>${T_('fbWrite')}</span>`;fbb.onclick=sendFeedback;fbs.append(fbb);el.append(fbs);el.scrollTop=0}
-const FB_MAIL='fabiberg123@gmail.com',FB_REWARD=50,APP_VER='1.5.0';
+const FB_MAIL='fabiberg123@gmail.com',FB_REWARD=50,APP_VER='1.5.1';
 function devModel(){const ua=navigator.userAgent||'';const m=ua.match(/Android\s([\d.]+);\s*([^;)]+?)(?:\sBuild|\)|;)/);return m?('Android '+m[1]+' · '+m[2].trim()):ua.slice(0,80)}
 function syncFbDot(){const d=$('.fbdot');if(d)d.hidden=!!store.get('fbDone',false)}
 function sendFeedback(){Snd.unlock();Snd.tap();
