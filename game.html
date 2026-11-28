@@ -1721,6 +1721,8 @@ function tickHud(){shown+=(score-shown)*.18;if(Math.abs(score-shown)<.5)shown=sc
 function pt(e){const b=cv.getBoundingClientRect();return{x:e.clientX-b.left,y:e.clientY-b.top}}
 /* tgt=true: posición exacta del dedo (para decidir la casilla); sin tgt: posición suavizada que se dibuja */
 const LIFT_PX=82; // 13 mm: 1 px CSS = 1/160 de pulgada en Android
+/* Manejo (1.5.1): MAGNET = hasta cuántas casillas busca el imán un lugar libre; GAIN = cuánto más que el dedo se mueve la pieza */
+const MAGNET=1.3,GAIN_X=1.15,GAIN_Y=1.3;
 function dragGeom(tgt){const p=tray[drag.i],g=ease((now()-drag.t0)/70),s=tc+(cell-tc)*g,w=p.w*s,h=p.h*s;
   const lift=drag.mouse?h/2:h+LIFT_PX*g,X=tgt?drag.x:drag.sx,Y=tgt?drag.y:drag.sy;return{x:X-w/2,y:Y-lift,s}}
 cv.addEventListener('pointerdown',e=>{const p=pt(e);
@@ -1730,20 +1732,35 @@ cv.addEventListener('pointerdown',e=>{const p=pt(e);
       unstick();updateHud();save();checkOver()}
     else{hammer=false;syncTools()}return}
   if(state!=='play'||drag||(TUT&&TUT.step>1))return;
-  for(let i=0;i<3;i++){const q=tray[i];if(!q||q.placed)continue;if(TUT&&i!==0)continue;const c=slotC(i);
-    if(Math.abs(p.x-c.x)<slotW/2&&p.y>ty-cell*.4&&p.y<ty+trayH+cell){
-      drag={i,x:p.x,y:p.y,sx:p.x,sy:p.y,t0:now(),mouse:e.pointerType==='mouse'};q.ret=null;try{cv.setPointerCapture(e.pointerId)}catch(_){}Snd.pick();vib(6);updGhost();break}}});
-cv.addEventListener('pointermove',e=>{if(!drag)return;const p=pt(e);drag.x=p.x;drag.y=p.y;updGhost()},{passive:true});
+  // agarre amplio: toda la zona de abajo del tablero agarra la pieza libre más cercana (no hace falta tocarla)
+  if(p.y>ty-cell*.4){let bi=-1,bd=1e9;
+    for(let i=0;i<3;i++){const q=tray[i];if(!q||q.placed)continue;if(TUT&&i!==0)continue;const d=Math.abs(p.x-slotC(i).x);if(d<bd){bd=d;bi=i}}
+    if(bi>=0){const q=tray[bi],mouse=e.pointerType==='mouse';
+      drag={i:bi,x:p.x,y:p.y,x0:p.x,y0:p.y,sx:p.x,sy:p.y,t0:now(),mouse};q.ret=null;try{cv.setPointerCapture(e.pointerId)}catch(_){}Snd.pick();vib(6);updGhost()}}});
+/* la pieza se mueve un poco más que el dedo (GAIN), así se llega arriba del tablero sin estirarlo; con mouse va 1 a 1 */
+cv.addEventListener('pointermove',e=>{if(!drag)return;const p=pt(e);
+  if(drag.mouse){drag.x=p.x;drag.y=p.y}else{drag.x=drag.x0+(p.x-drag.x0)*GAIN_X;drag.y=drag.y0+(p.y-drag.y0)*GAIN_Y}
+  updGhost()},{passive:true});
 function endDrag(){if(!drag)return;const q=tray[drag.i];
   if(ghost&&ghost.ok){const g=dragGeom();dropOff={dx:g.x-(bx+ghost.c*cell),dy:g.y-(by+ghost.r*cell)};place(q,ghost.r,ghost.c);dropOff=null}else{const g=dragGeom();q.ret={x:g.x,y:g.y,s:g.s,t0:now()};if(ghost)Snd.bad()}
   drag=null;ghost=null}
 cv.addEventListener('pointerup',endDrag);cv.addEventListener('pointercancel',endDrag);
 let dropOff=null;
+function linesIf(q,r,c){const occ=grid.map(row=>row.slice());q.cells.forEach(([dr,dc])=>occ[r+dr][c+dc]=q.ci);let n=0;
+  for(let i=0;i<N;i++){if(occ[i].every(v=>v>=0))n++;if(occ.every(row=>row[i]>=0))n++}return n}
 function updGhost(){const q=tray[drag.i],g=dragGeom(true);
-  const c=Math.round((g.x-bx)/cell),r=Math.round((g.y-by)/cell);
+  const fc=(g.x-bx)/cell,fr=(g.y-by)/cell;let c=Math.round(fc),r=Math.round(fr);
   const inside=g.x+q.w*cell>bx-cell*.5&&g.x<bx+N*cell+cell*.5&&g.y+q.h*cell>by-cell*.5&&g.y<by+N*cell+cell*.5;
   if(!inside){ghost=null;return}
-  if(!canPlace(q,r,c)||(TUT&&(r!==TUT_R||c!==TUT_C))){ghost={ok:false};return}
+  if(TUT){if(Math.hypot(TUT_C-fc,TUT_R-fr)>2||!canPlace(q,TUT_R,TUT_C)){ghost={ok:false};return}r=TUT_R;c=TUT_C}
+  else if(!canPlace(q,r,c)){
+    // imán: el lugar libre más cercano dentro de MAGNET casillas (a distancia parecida, el que rompe líneas; y no salta si el anterior sigue cerca)
+    let best=null,bd=1e9;
+    for(let a=0;a<=N-q.h;a++)for(let b=0;b<=N-q.w;b++){const d0=Math.hypot(b-fc,a-fr);if(d0>MAGNET||!canPlace(q,a,b))continue;
+      let d=d0-(linesIf(q,a,b)?.25:0);if(ghost&&ghost.ok&&ghost.r===a&&ghost.c===b)d-=.15;
+      if(d<bd){bd=d;best=[a,b]}}
+    if(!best){ghost={ok:false};return}
+    r=best[0];c=best[1]}
   const occ=grid.map(row=>row.slice());q.cells.forEach(([dr,dc])=>occ[r+dr][c+dc]=q.ci);
   const lines=new Set();for(let i=0;i<N;i++){if(occ[i].every(v=>v>=0))for(let j=0;j<N;j++)lines.add(i*N+j);if(occ.every(row=>row[i]>=0))for(let j=0;j<N;j++)lines.add(j*N+i)}
   ghost={ok:true,r,c,ci:q.ci,lines}}
@@ -1830,6 +1847,12 @@ function frame(){const t=now(),dt=Math.min(.05,(t-last)/1000);last=t;const S=SKI
     for(let i=0;i<3;i++){const q=tray[i];if(!q||q.placed||(drag&&drag.i===i))continue;const c=slotC(i);
       const u=ease((t-trayT0-i*70)/320);let s=tc,x=c.x-q.w*tc/2+(1-u)*W*.6,y=c.y-q.h*tc/2;
       if(q.ret){const v=ease((t-q.ret.t0)/130);x=q.ret.x+(x-q.ret.x)*v;y=q.ret.y+(y-q.ret.y)*v;s=q.ret.s+(tc-q.ret.s)*v;if(v>=1)q.ret=null}
+      {const v=(t-trayT0-i*70-220)/520;if(v>0&&v<1&&!q.ret&&!REDUCE){const R=tc*(2+v*1.6),gr=ctx.createRadialGradient(c.x,c.y,0,c.x,c.y,R);
+        gr.addColorStop(0,A('#ffffff',.55*(1-v)));gr.addColorStop(.5,A(L(S.colors[q.ci]||'#fff',.5),.3*(1-v)));gr.addColorStop(1,'rgba(255,255,255,0)');
+        ctx.fillStyle=gr;ctx.beginPath();ctx.arc(c.x,c.y,R,0,7);ctx.fill();
+        ctx.fillStyle=A('#ffffff',.9*(1-v));for(let k=0;k<5;k++){const an=k*1.257+i+v*1.4,d=tc*(1.3+v*1.9),z=tc*.16*(1-v)+1;
+          const sx=c.x+Math.cos(an)*d,sy=c.y+Math.sin(an)*d;ctx.beginPath();ctx.moveTo(sx,sy-z*2);ctx.lineTo(sx+z*.6,sy);ctx.lineTo(sx,sy+z*2);ctx.lineTo(sx-z*.6,sy);ctx.fill();
+          ctx.beginPath();ctx.moveTo(sx-z*2,sy);ctx.lineTo(sx,sy+z*.6);ctx.lineTo(sx+z*2,sy);ctx.lineTo(sx,sy-z*.6);ctx.fill()}}}
       const fits=state==='menu'||canFit(q);ctx.globalAlpha=(fits?1:.35)*Math.max(0,u);
       q.cells.forEach(([dr,dc],k)=>{ctx.drawImage(sprite(q.ci,s,skin,pst),x+dc*s,y+dr*s,s,s);if(q.sp&&q.sp.i===k)drawPower(ctx,q.sp.t,x+dc*s,y+dr*s,s,t)});ctx.globalAlpha=1}
   }
